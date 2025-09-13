@@ -9,6 +9,11 @@ const state = {
   zoom: null,
   startPosition: [0, 0],
   position: [0, 0],
+  currentPosition: [0, 0],
+  isDragging: false,
+  touchStartDistance: 0,
+  touchStartZoom: 0,
+  currentTouches: [],
   palette: null,
   fileName: null,
   image: null,
@@ -499,30 +504,178 @@ function initState() {
 // 드래그 임계값 설정 (의도하지 않은 작은 움직임 무시)
 const DRAG_THRESHOLD = 3;
 
-// PointerDown 이벤트 리스너
+// 핀치 줌을 위한 보조 함수들 추가
+const getTouchDistance = (touch1, touch2) => {
+  const dx = touch2.clientX - touch1.clientX;
+  const dy = touch2.clientY - touch1.clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+const getMidpoint = (touch1, touch2) => {
+  return [
+    (touch1.clientX + touch2.clientX) / 2,
+    (touch1.clientY + touch2.clientY) / 2,
+  ];
+};
+
+// 핀치 줌 이벤트 처리
+const handlePinchZoom = (e) => {
+  if (state.currentTouches.length < 2) return;
+
+  // 두 터치 포인트 찾기
+  const touch1 = state.currentTouches[0];
+  const touch2 = state.currentTouches[1];
+
+  // 현재 거리 계산
+  const currentDistance = getTouchDistance(touch1, touch2);
+
+  if (state.touchStartDistance > 0) {
+    // 거리 변화에 따라 줌 조정
+    const zoomFactor = currentDistance / state.touchStartDistance;
+    const newZoom = Math.max(10, ~~(state.touchStartZoom * zoomFactor));
+
+    state.zoom = newZoom;
+    zoomInput.value = newZoom;
+
+    if (!validate()) return;
+
+    // 줌 중심을 기준으로 이미지 위치 조정
+    const midpoint = getMidpoint(touch1, touch2);
+    const canvasRect = canvas.getBoundingClientRect();
+
+    // 캔버스 내에서의 상대적 위치 계산
+    const canvasX = midpoint[0] - canvasRect.left;
+    const canvasY = midpoint[1] - canvasRect.top;
+
+    // 현재 이미지의 위치와 크기
+    const currentZoom = state.touchStartZoom / 100;
+    const currentImgWidth = state.resized.width * currentZoom;
+    const currentImgHeight = state.resized.height * currentZoom;
+
+    // 현재 이미지의 그려진 위치
+    const currentImgX =
+      (canvas.width - currentImgWidth) / 2 + state.touchStartPosition[0];
+    const currentImgY =
+      (canvas.height - currentImgHeight) / 2 + state.touchStartPosition[1];
+
+    // 터치 지점의 이미지 내 상대적 위치 계산
+    const imgRelativeX = (canvasX - currentImgX) / currentImgWidth;
+    const imgRelativeY = (canvasY - currentImgY) / currentImgHeight;
+
+    // 새로운 줌에서의 이미지 크기
+    const newZoomValue = newZoom / 100;
+    const newImgWidth = state.resized.width * newZoomValue;
+    const newImgHeight = state.resized.height * newZoomValue;
+
+    // 새로운 이미지 위치 계산 (터치 지점을 기준으로)
+    const newImgX = canvasX - imgRelativeX * newImgWidth;
+    const newImgY = canvasY - imgRelativeY * newImgHeight;
+
+    // 캔버스 중심을 기준으로 한 오프셋 계산
+    const newOffsetX = newImgX - (canvas.width - newImgWidth) / 2;
+    const newOffsetY = newImgY - (canvas.height - newImgHeight) / 2;
+
+    state.position = [newOffsetX, newOffsetY];
+    state.currentPosition = [newOffsetX, newOffsetY];
+
+    draw();
+  }
+};
+
+// 터치 시작 이벤트 처리
+canvasControlLayer.addEventListener("touchstart", (e) => {
+  preventDefaults(e);
+
+  // 모든 터치 포인트 저장
+  state.currentTouches = Array.from(e.touches);
+
+  if (e.touches.length === 2) {
+    // 핀치 줌 시작
+    const touch1 = e.touches[0];
+    const touch2 = e.touches[1];
+
+    state.touchStartDistance = getTouchDistance(touch1, touch2);
+    state.touchStartZoom = state.zoom;
+    state.touchStartPosition = [...state.position]; // 핀치 시작 시 위치 저장
+  } else if (e.touches.length === 1) {
+    // 드래그 시작
+    state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
+    state.currentPosition = [...state.position];
+    state.isDragging = true;
+    canvasOverlay.classList.add("dragging");
+  }
+});
+
+// 터치 이동 이벤트 처리
+canvasControlLayer.addEventListener("touchmove", (e) => {
+  preventDefaults(e);
+
+  // 터치 포인트 업데이트
+  state.currentTouches = Array.from(e.touches);
+
+  if (e.touches.length === 2) {
+    // 핀치 줌 처리
+    handlePinchZoom(e);
+  } else if (e.touches.length === 1 && state.isDragging) {
+    // 드래그 처리
+    const touch = e.touches[0];
+    const movedX = touch.clientX - state.startPosition[0];
+    const movedY = touch.clientY - state.startPosition[1];
+
+    state.position = [
+      state.currentPosition[0] + movedX,
+      state.currentPosition[1] + movedY,
+    ];
+
+    if (!validate()) return;
+    draw();
+  }
+});
+
+// 터치 종료 이벤트 처리
+canvasControlLayer.addEventListener("touchend", (e) => {
+  preventDefaults(e);
+
+  // 터치 포인트 업데이트
+  state.currentTouches = Array.from(e.touches);
+
+  if (e.touches.length < 2) {
+    // 핀치 줌 종료
+    state.touchStartDistance = 0;
+    state.touchStartPosition = null;
+  }
+
+  if (e.touches.length === 0) {
+    // 모든 터치 종료
+    state.isDragging = false;
+    state.currentPosition = [...state.position];
+    canvasOverlay.classList.remove("dragging");
+  }
+});
+
 canvasControlLayer.addEventListener(
   "pointerdown",
   (e) => {
-    if (e.button === 0 || e.pointerType === "touch") {
-      // 상태 초기화 확인
-      initState();
-
-      // 시작 위치 저장 및 드래그 상태 설정
-      state.startPosition = [e.clientX, e.clientY];
-      state.isDragging = false; // 아직 드래그 시작 안 함
-
-      canvasControlLayer.setPointerCapture(e.pointerId);
-      canvasOverlay.classList.add("dragging");
+    if (e.pointerType !== "touch") {
+      if (e.button === 0) {
+        initState();
+        state.startPosition = [e.clientX, e.clientY];
+        state.isDragging = false;
+        canvasControlLayer.setPointerCapture(e.pointerId);
+        canvasOverlay.classList.add("dragging");
+      }
     }
   },
   false
 );
 
-// PointerMove 이벤트 리스너
 canvasControlLayer.addEventListener(
   "pointermove",
   (e) => {
-    if (canvasControlLayer.hasPointerCapture(e.pointerId)) {
+    if (
+      e.pointerType !== "touch" &&
+      canvasControlLayer.hasPointerCapture(e.pointerId)
+    ) {
       e.preventDefault();
 
       // 드래그 임계값 체크
