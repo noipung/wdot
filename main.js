@@ -495,9 +495,7 @@ const links = [
   {
     link: ["width", "height"],
     logic: (value, name) =>
-      ~~(
-        value * (name === "width" ? 1 / state.aspectRatio : state.aspectRatio)
-      ),
+      ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
     cb: () => {
       zoomInput.value = state.zoom = getZoom();
     },
