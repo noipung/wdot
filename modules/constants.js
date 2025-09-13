@@ -24,12 +24,5 @@ export const dialog = document.querySelector(".dialog");
 export const saveBtn = document.querySelector(".save-btn");
 export const cancelBtn = document.querySelector(".cancel-btn");
 
-// 팔레트
-export const initPalette = wplacePalette
-  .filter(({ locked }) => !locked)
-  .map(({ rgb }) => rgb);
-
-export const wholePalette = wplacePalette.map(({ rgb }) => rgb);
-
 // 드래그 임계값
 export const DRAG_THRESHOLD = 3;
