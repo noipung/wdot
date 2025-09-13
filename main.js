@@ -5,7 +5,6 @@ const state = {
   aspectRatio: 1,
   width: null,
   height: null,
-  lastEdited: null,
   zoom: null,
   palette: null,
   fileName: null,
@@ -370,16 +369,8 @@ const handleImageLoad = (image) => {
   state.image = image;
   state.aspectRatio = image.width / image.height;
 
-  if (
-    state.lastEdited === "width" ||
-    (!state.lastEdited && state.aspectRatio < 1)
-  ) {
-    state.width = form.width.value = state.lastEdited ? state.width : 100;
-    state.height = form.height.value = ~~(state.width / state.aspectRatio);
-  } else {
-    state.height = form.height.value = state.lastEdited ? state.height : 100;
-    state.width = form.width.value = ~~(state.height * state.aspectRatio);
-  }
+  state.width = form.width.value = image.width;
+  state.height = form.height.value = image.height;
 
   zoomInput.value = state.zoom = getZoom();
 
@@ -486,7 +477,6 @@ form.addEventListener("submit", preventDefaults);
 
       if (pairInput) pairInput.value = numberValue;
     } else {
-      state.lastEdited = key;
       if (key === "width") {
         state.width = numberValue;
         form.height.value = state.height = ~~(state.width / state.aspectRatio);
@@ -507,8 +497,6 @@ form.addEventListener("submit", preventDefaults);
 
   handleInput();
 });
-
-state.lastEdited = null;
 
 // 다운로드
 
