@@ -332,7 +332,7 @@ const getResized = () => {
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
-  const resizedCtx = resized.getContext("2d");
+  const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
   const processedCtx = dithered.getContext("2d");
 
   state.adjusted = getAdjusted(
