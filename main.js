@@ -447,21 +447,27 @@ const handleDrop = (e) => {
 
 uploadBtn.addEventListener("change", handleUpload, false);
 
+const zoom = (deltaY) => {
+  const isZoomIn = deltaY < 0;
+
+  state.zoom = zoomInput.value = Math.max(
+    ~~(+zoomInput.value * (1 + (isZoomIn ? 0.1 : -0.1))),
+    10
+  );
+
+  if (!validate()) return;
+
+  draw();
+};
+
+const zoomInBtn = document.querySelector(".zoom-in");
+const zoomOutBtn = document.querySelector(".zoom-out");
+
+zoomInBtn.addEventListener("click", () => zoom(-1), false);
+zoomOutBtn.addEventListener("click", () => zoom(1), false);
+
 canvasOverlay.addEventListener("drop", handleDrop, false);
-canvasOverlay.addEventListener(
-  "wheel",
-  (e) => {
-    state.zoom = zoomInput.value = Math.max(
-      ~~(+zoomInput.value * (1 - e.deltaY / 1000)),
-      10
-    );
-
-    if (!validate()) return;
-
-    draw();
-  },
-  false
-);
+canvasOverlay.addEventListener("wheel", (e) => zoom(e.deltaY), false);
 
 // 세팅 값 동기화
 
