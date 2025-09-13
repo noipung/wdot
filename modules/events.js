@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import {
+  canvas,
   canvasOverlay,
   canvasControlLayer,
   form,
@@ -171,7 +172,7 @@ export const handlePinchZoom = (e) => {
     state.position = [newOffsetX, newOffsetY];
     state.currentPosition = [newOffsetX, newOffsetY];
 
-    draw();
+    requestAnimationFrame(draw);
   }
 };
 
