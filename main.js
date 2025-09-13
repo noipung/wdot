@@ -487,52 +487,56 @@ handleZoomInput();
 
 form.addEventListener("submit", preventDefaults);
 
-[
-  "brightness",
-  "brightness-range",
-  "contrast",
-  "contrast-range",
-  "saturation",
-  "saturation-range",
-  "dither",
-  "dither-range",
-  "width",
-  "height",
-].forEach((key) => {
-  const input = form[key];
-
-  const handleInput = () => {
-    const numberValue = +input.value;
-
-    if (!["width", "height"].includes(key)) {
-      const isRange = key.endsWith("range");
-      const pairKey = isRange ? key.replace("-range", "") : `${key}-range`;
-
-      state[isRange ? pairKey : key] = numberValue;
-
-      const pairInput = form[pairKey];
-
-      if (pairInput) pairInput.value = numberValue;
-    } else {
-      if (key === "width") {
-        state.width = numberValue;
-        form.height.value = state.height = ~~(state.width / state.aspectRatio);
-      } else {
-        state.height = numberValue;
-        form.width.value = state.width = ~~(state.height * state.aspectRatio);
-      }
+const links = [
+  { link: ["brightness", "brightness-range"] },
+  { link: ["contrast", "contrast-range"] },
+  { link: ["saturation", "saturation-range"] },
+  { link: ["dither", "dither-range"] },
+  {
+    link: ["width", "height"],
+    logic: (value, name) =>
+      ~~(
+        value * (name === "width" ? 1 / state.aspectRatio : state.aspectRatio)
+      ),
+    cb: () => {
       zoomInput.value = state.zoom = getZoom();
-    }
+    },
+  },
+];
 
-    if (!validate()) return;
+links.forEach(({ link, logic, cb }) => {
+  const inputs = link.map((key) => form[key]);
 
-    updateImageProcessing();
-    draw();
-  };
+  inputs.forEach((input) => {
+    const handleInput = () => {
+      const numberValue = +input.value;
 
-  input.addEventListener("input", handleInput);
+      state[input.name] = numberValue;
 
-  handleInput();
+      const restInputs = inputs.filter(
+        (currentInput) => currentInput !== input
+      );
+
+      if (restInputs.length === 0) return;
+
+      restInputs.forEach((restInput) => {
+        restInput.value = state[restInput.name] = logic
+          ? logic(numberValue, input.name)
+          : numberValue;
+      });
+
+      if (cb) cb();
+
+      if (!validate()) return;
+
+      updateImageProcessing();
+      draw();
+    };
+
+    input.addEventListener("input", handleInput);
+
+    handleInput();
+  });
 });
 
 // 다운로드

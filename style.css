@@ -188,6 +188,7 @@ body button {
 label[for="upload-btn"] {
   cursor: pointer;
   border: 1px solid #ddd;
+  border-radius: 4px;
 
   &:hover {
     background: #f8f8f8;
