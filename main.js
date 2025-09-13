@@ -24,6 +24,8 @@ const state = {
 
 const downloadBtn = document.querySelector(".download-btn");
 const total = document.querySelector(".total");
+const totalTime = document.querySelector(".total-time");
+const totalTimeWithFlag = document.querySelector(".total-time-with-flag");
 
 const form = document.querySelector("form");
 
@@ -345,6 +347,26 @@ const countOpaquePixels = (imageData) => {
   return count;
 };
 
+const calculateTime = (pixels) => ({
+  time: pixels * 30,
+  timeWithFlag: pixels * 27,
+});
+
+const formatTime = (seconds) => {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  let result = [];
+  if (days > 0) result.push(`${days}일`);
+  if (hours > 0) result.push(`${hours}시간`);
+  if (minutes > 0) result.push(`${minutes}분`);
+  if (secs > 0 || seconds === 0) result.push(`${secs}초`);
+
+  return result.join(" ");
+};
+
 const updateImageProcessing = () => {
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
@@ -373,7 +395,12 @@ const updateImageProcessing = () => {
 
   const imageData = dither(resizedCtx, pw, ph);
 
-  total.textContent = countOpaquePixels(imageData);
+  const pixels = countOpaquePixels(imageData);
+  const { time, timeWithFlag } = calculateTime(pixels);
+
+  total.textContent = `${pixels} 픽셀`;
+  totalTime.textContent = formatTime(time);
+  totalTimeWithFlag.textContent = formatTime(timeWithFlag);
 
   ditheredCtx.putImageData(imageData, 0, 0);
 

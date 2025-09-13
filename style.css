@@ -349,10 +349,66 @@ h3.size::before {
   grid-column: span 2;
 }
 
-.input-item p {
+.input-item h3 + div {
   padding: 6px 0 4px;
   flex: 1;
+}
+
+.total-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.3em;
+  position: relative;
+}
+
+.total-time-icon {
+  width: 1em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/schedule/wght600/48px.svg")
+    no-repeat center / 100%;
+}
+
+.total-time-tooltip {
+  position: absolute;
+  background: #000;
+  color: #fff;
+  padding: 0.3em 0.4em 0.4em;
+  border-radius: 4px;
+  font-size: 0.8em;
+  white-space: nowrap;
+  bottom: 100%;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
   text-align: right;
+  display: flex;
+  gap: 0.3em;
+  flex-direction: column;
+}
+
+.total-time-icon:hover + .total-time-tooltip {
+  opacity: 1;
+}
+
+.total-time-with-flag {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.3em;
+  color: #ccc;
+}
+
+.total-time-with-flag::before {
+  content: "";
+  display: block;
+  width: 1em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/flag/wght600/48px.svg")
+    no-repeat center / 100%;
 }
 
 .palette {
