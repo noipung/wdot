@@ -108,7 +108,7 @@ const createColorListItem = (rgb, name, locked) => {
 
     if (!validate()) return;
 
-    getResized();
+    updateImageProcessing();
     draw();
   });
 
@@ -129,7 +129,7 @@ const handleClickInitBtn = (e) => {
 
   if (!validate()) return;
 
-  getResized();
+  updateImageProcessing();
   draw();
 };
 
@@ -153,7 +153,7 @@ const handleClickSelectAllBtn = (e) => {
 
   if (!validate()) return;
 
-  getResized();
+  updateImageProcessing();
   draw();
 };
 
@@ -168,7 +168,7 @@ const handleClickUnselectAllBtn = (e) => {
 
   if (!validate()) return;
 
-  getResized();
+  updateImageProcessing();
   draw();
 };
 
@@ -332,12 +332,12 @@ const countOpaquePixels = (imageData) => {
   return count;
 };
 
-const getResized = () => {
+const updateImageProcessing = () => {
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
   const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
-  const processedCtx = dithered.getContext("2d");
+  const ditheredCtx = dithered.getContext("2d");
 
   state.adjusted = getAdjusted(
     state.image,
@@ -362,7 +362,7 @@ const getResized = () => {
 
   total.textContent = countOpaquePixels(imageData);
 
-  processedCtx.putImageData(imageData, 0, 0);
+  ditheredCtx.putImageData(imageData, 0, 0);
 
   state.resized = resized;
   state.dithered = dithered;
@@ -405,7 +405,7 @@ const handleImageLoad = (image) => {
   canvasOverlay.classList.add("image-loaded");
   downloadBtn.disabled = false;
 
-  getResized();
+  updateImageProcessing();
   draw();
 };
 
@@ -520,7 +520,7 @@ form.addEventListener("submit", preventDefaults);
 
     if (!validate()) return;
 
-    getResized();
+    updateImageProcessing();
     draw();
   };
 
