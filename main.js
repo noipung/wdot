@@ -393,6 +393,10 @@ const getZoom = (size = 3 / 4) =>
     100
   );
 
+const updateZoom = () => {
+  zoomInput.value = state.zoom = getZoom();
+};
+
 const handleImageLoad = (image) => {
   state.image = image;
   state.aspectRatio = image.width / image.height;
@@ -400,7 +404,7 @@ const handleImageLoad = (image) => {
   state.width = form.width.value = image.width;
   state.height = form.height.value = image.height;
 
-  zoomInput.value = state.zoom = getZoom();
+  updateZoom();
 
   canvasOverlay.classList.add("image-loaded");
   downloadBtn.disabled = false;
@@ -496,9 +500,7 @@ const links = [
     link: ["width", "height"],
     logic: (value, name) =>
       ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
-    cb: () => {
-      zoomInput.value = state.zoom = getZoom();
-    },
+    cb: updateZoom,
   },
 ];
 
@@ -577,8 +579,6 @@ const resizeCanvas = () => {
   canvas.height = height;
 
   if (!validate()) return;
-
-  // zoomInput.value = state.zoom = getZoom();
 
   draw();
 };
