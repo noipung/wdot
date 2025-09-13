@@ -266,8 +266,6 @@ function getAdjusted(image, brightness, contrast, saturation) {
   canvas.width = image.width;
   canvas.height = image.height;
 
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(image, 0, 0);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -306,6 +304,46 @@ function getAdjusted(image, brightness, contrast, saturation) {
   return canvas;
 }
 
+const flattenTransparentPixels = (canvas) => {
+  const ctx = canvas.getContext("2d");
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const alpha = data[i + 3];
+
+    if (alpha > 0 && alpha < 255) {
+      const red = data[i];
+      const green = data[i + 1];
+      const blue = data[i + 2];
+
+      const newRed = Math.round(red * (alpha / 255) + 255 * (1 - alpha / 255));
+      const newGreen = Math.round(
+        green * (alpha / 255) + 255 * (1 - alpha / 255)
+      );
+      const newBlue = Math.round(
+        blue * (alpha / 255) + 255 * (1 - alpha / 255)
+      );
+
+      data[i] = newRed;
+      data[i + 1] = newGreen;
+      data[i + 2] = newBlue;
+      data[i + 3] = 255;
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+};
+
+const countOpaquePixels = (imageData) => {
+  let count = 0;
+  const data = imageData.data;
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] === 255) count++;
+  }
+  return count;
+};
+
 const getResized = () => {
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
@@ -330,9 +368,11 @@ const getResized = () => {
 
   resizedCtx.drawImage(state.adjusted, 0, 0, pw, ph);
 
+  flattenTransparentPixels(resized);
+
   const imageData = dither(resizedCtx, pw, ph);
 
-  total.textContent = pw * ph;
+  total.textContent = countOpaquePixels(imageData);
 
   processedCtx.putImageData(imageData, 0, 0);
 
