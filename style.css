@@ -38,6 +38,7 @@ input {
 
 body {
   margin: 0;
+  overscroll-behavior: none;
 }
 
 html,
@@ -84,6 +85,11 @@ body button {
 .canvas-overlay {
   position: absolute;
   inset: 0;
+  touch-action: none;
+}
+
+.canvas-overlay.dragging {
+  cursor: grabbing;
 }
 
 .canvas-overlay .drag-here {
@@ -128,6 +134,11 @@ body button {
 
 .canvas-overlay.active .dim {
   background: #0003;
+}
+
+.canvas-overlay .canvas-control-layer {
+  position: absolute;
+  inset: 0;
 }
 
 .zoom-input-wrapper {
@@ -503,7 +514,7 @@ h3.size::before {
   }
 
   .canvas-wrapper canvas {
-    aspect-ratio: 3/2;
+    aspect-ratio: 1;
   }
 
   .canvas-overlay .drag-here {

@@ -1,14 +1,18 @@
 const state = {
   brightness: null,
   contrast: null,
+  saturation: null,
   dither: null,
   aspectRatio: 1,
   width: null,
   height: null,
   zoom: null,
+  startPosition: [0, 0],
+  position: [0, 0],
   palette: null,
   fileName: null,
   image: null,
+  adjusted: null,
   resized: null,
   dithered: null,
 };
@@ -19,6 +23,7 @@ const total = document.querySelector(".total");
 const form = document.querySelector("form");
 
 const canvasOverlay = document.querySelector(".canvas-overlay");
+const canvasControlLayer = document.querySelector(".canvas-control-layer");
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -40,14 +45,20 @@ const validate = () =>
   state.width >= 1 &&
   state.height >= 1;
 
+const disableImageSmoothing = () => {
+  ctx.imageSmoothingEnabled = false;
+};
+
+disableImageSmoothing();
+
 // 이미지 드롭
 
 ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-  canvasOverlay.addEventListener(eventName, preventDefaults, false);
+  canvasControlLayer.addEventListener(eventName, preventDefaults, false);
 });
 
 ["dragenter", "dragover"].forEach((eventName) => {
-  canvasOverlay.addEventListener(
+  canvasControlLayer.addEventListener(
     eventName,
     () => canvasOverlay.classList.add("active"),
     false
@@ -55,7 +66,7 @@ const validate = () =>
 });
 
 ["dragleave", "drop"].forEach((eventName) => {
-  canvasOverlay.addEventListener(
+  canvasControlLayer.addEventListener(
     eventName,
     () => canvasOverlay.classList.remove("active"),
     false
@@ -312,7 +323,6 @@ function makeOpaque(canvas) {
   const data = imageData.data;
 
   for (let i = 3; i < data.length; i += 4) {
-    // 알파값이 1 이상이면 255로 변경
     if (data[i] >= 1) {
       data[i] = 255;
     }
@@ -377,8 +387,11 @@ const draw = () => {
   const zh = rh * zoom;
 
   const center = [(cw - zw) / 2, (ch - zh) / 2];
+  const [px, py] = state.position;
 
-  ctx.imageSmoothingEnabled = false;
+  center[0] += px;
+  center[1] += py;
+
   ctx.drawImage(state.dithered, ...center, zw, zh);
 };
 
@@ -401,10 +414,13 @@ const handleImageLoad = (image) => {
 
   state.width = form.width.value = image.width;
   state.height = form.height.value = image.height;
+  state.position = state.currentPosition = [0, 0];
 
   updateZoom();
 
   canvasOverlay.classList.add("image-loaded");
+  zoomInBtn.disabled = false;
+  zoomOutBtn.disabled = false;
   downloadBtn.disabled = false;
 
   updateImageProcessing();
@@ -450,6 +466,8 @@ const handleDrop = (e) => {
 uploadBtn.addEventListener("change", handleUpload, false);
 
 const zoom = (deltaY) => {
+  console.log(deltaY);
+
   const isZoomIn = deltaY < 0;
 
   state.zoom = zoomInput.value = Math.max(
@@ -468,8 +486,105 @@ const zoomOutBtn = document.querySelector(".zoom-out");
 zoomInBtn.addEventListener("click", () => zoom(-1), false);
 zoomOutBtn.addEventListener("click", () => zoom(1), false);
 
-canvasOverlay.addEventListener("drop", handleDrop, false);
-canvasOverlay.addEventListener("wheel", (e) => zoom(e.deltaY), false);
+canvasControlLayer.addEventListener("drop", handleDrop, false);
+canvasControlLayer.addEventListener("wheel", (e) => zoom(e.deltaY), false);
+
+// 상태 유효성 검사 및 초기화 함수 추가
+function initState() {
+  if (!state.currentPosition) {
+    state.currentPosition = [...state.position];
+  }
+}
+
+// 드래그 임계값 설정 (의도하지 않은 작은 움직임 무시)
+const DRAG_THRESHOLD = 3;
+
+// PointerDown 이벤트 리스너
+canvasControlLayer.addEventListener(
+  "pointerdown",
+  (e) => {
+    if (e.button === 0 || e.pointerType === "touch") {
+      // 상태 초기화 확인
+      initState();
+
+      // 시작 위치 저장 및 드래그 상태 설정
+      state.startPosition = [e.clientX, e.clientY];
+      state.isDragging = false; // 아직 드래그 시작 안 함
+
+      canvasControlLayer.setPointerCapture(e.pointerId);
+      canvasOverlay.classList.add("dragging");
+    }
+  },
+  false
+);
+
+// PointerMove 이벤트 리스너
+canvasControlLayer.addEventListener(
+  "pointermove",
+  (e) => {
+    if (canvasControlLayer.hasPointerCapture(e.pointerId)) {
+      e.preventDefault();
+
+      // 드래그 임계값 체크
+      const movedX = e.clientX - state.startPosition[0];
+      const movedY = e.clientY - state.startPosition[1];
+
+      // 작은 움직임은 무시 (의도치 않은 클릭/터치 방지)
+      if (
+        !state.isDragging &&
+        Math.abs(movedX) < DRAG_THRESHOLD &&
+        Math.abs(movedY) < DRAG_THRESHOLD
+      ) {
+        return;
+      }
+
+      // 드래그 시작으로 표시
+      if (!state.isDragging) {
+        state.isDragging = true;
+      }
+
+      // 위치 계산
+      state.position = [
+        state.currentPosition[0] + movedX,
+        state.currentPosition[1] + movedY,
+      ];
+
+      if (!validate()) return;
+
+      // 부드러운 애니메이션을 위한 requestAnimationFrame 사용
+      requestAnimationFrame(draw);
+    }
+  },
+  false
+);
+
+// PointerUp 이벤트 리스너
+canvasControlLayer.addEventListener(
+  "pointerup",
+  (e) => {
+    // 드래그가 실제로 발생한 경우에만 위치 업데이트
+    if (state.isDragging) {
+      state.currentPosition = [...state.position];
+    }
+
+    // 상태 초기화
+    state.isDragging = false;
+    canvasControlLayer.releasePointerCapture(e.pointerId);
+    canvasOverlay.classList.remove("dragging");
+  },
+  false
+);
+
+// PointerCancel 이벤트 리스너 추가 (터치 장치에서 중요)
+canvasControlLayer.addEventListener(
+  "pointercancel",
+  (e) => {
+    state.isDragging = false;
+    canvasControlLayer.releasePointerCapture(e.pointerId);
+    canvasOverlay.classList.remove("dragging");
+  },
+  false
+);
 
 // 세팅 값 동기화
 
@@ -575,6 +690,8 @@ const resizeCanvas = () => {
 
   canvas.width = width;
   canvas.height = height;
+
+  disableImageSmoothing();
 
   if (!validate()) return;
 
