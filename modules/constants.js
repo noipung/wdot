@@ -2,10 +2,14 @@
 export const downloadBtn = document.querySelector(".download-btn");
 export const total = document.querySelector(".total");
 export const totalTime = document.querySelector(".total-time");
-export const totalTimeWithFlag = document.querySelector(".total-time-with-flag");
+export const totalTimeWithFlag = document.querySelector(
+  ".total-time-with-flag"
+);
 export const form = document.querySelector("form");
 export const canvasOverlay = document.querySelector(".canvas-overlay");
-export const canvasControlLayer = document.querySelector(".canvas-control-layer");
+export const canvasControlLayer = document.querySelector(
+  ".canvas-control-layer"
+);
 export const canvas = document.querySelector("canvas");
 export const ctx = canvas.getContext("2d");
 export const basicPaletteList = document.querySelector(".palette.basic");

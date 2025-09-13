@@ -1,6 +1,6 @@
-import { state } from './state.js';
-import { canvas, ctx } from './constants.js';
-import { disableImageSmoothing } from './utils.js';
+import { state } from "./state.js";
+import { canvas, ctx } from "./constants.js";
+import { disableImageSmoothing } from "./utils.js";
 
 export const draw = () => {
   const { width: cw, height: ch } = canvas;
