@@ -628,7 +628,7 @@ canvasControlLayer.addEventListener("touchmove", (e) => {
     ];
 
     if (!validate()) return;
-    draw();
+    requestAnimationFrame(draw);
   }
 });
 
