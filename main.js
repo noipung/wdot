@@ -447,7 +447,10 @@ canvasOverlay.addEventListener("drop", handleDrop, false);
 canvasOverlay.addEventListener(
   "wheel",
   (e) => {
-    state.zoom = zoomInput.value = ~~(+zoomInput.value * (1 - e.deltaY / 1000));
+    state.zoom = zoomInput.value = Math.max(
+      ~~(+zoomInput.value * (1 - e.deltaY / 1000)),
+      10
+    );
 
     if (!validate()) return;
 
