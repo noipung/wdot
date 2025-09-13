@@ -72,7 +72,8 @@ const wholePalette = wplacePalette.map(({ rgb }) => rgb);
 
 state.palette = initPalette;
 
-const paletteList = document.querySelector(".palette");
+const basicPaletteList = document.querySelector(".palette.basic");
+const lockedPaletteList = document.querySelector(".palette.locked");
 
 const getContentColor = ([r, g, b]) =>
   (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.5 ? "#000" : "#fff";
@@ -116,10 +117,11 @@ const createColorListItem = (rgb, name, locked) => {
 
 wplacePalette.forEach(({ rgb, name, locked }) => {
   const colorListItem = createColorListItem(rgb, name, locked);
-  paletteList.append(colorListItem);
+  (locked ? lockedPaletteList : basicPaletteList).append(colorListItem);
 });
 
-const handleClickInitBtn = () => {
+const handleClickInitBtn = (e) => {
+  e.preventDefault();
   state.palette = initPalette;
   checks.forEach((check) => {
     check.checked = check.isBasicColor;
@@ -137,12 +139,13 @@ initBtn.addEventListener("click", handleClickInitBtn);
 initBtn.classList.add("init-btn");
 
 li.append(initBtn);
-paletteList.append(li);
+basicPaletteList.append(li);
 
 const selectAllBtn = document.querySelector(".select-all-btn");
 const unselectAllBtn = document.querySelector(".unselect-all-btn");
 
-const handleClickSelectAllBtn = () => {
+const handleClickSelectAllBtn = (e) => {
+  e.preventDefault();
   state.palette = wholePalette;
   checks.forEach((check) => {
     check.checked = true;
@@ -156,7 +159,8 @@ const handleClickSelectAllBtn = () => {
 
 selectAllBtn.addEventListener("click", handleClickSelectAllBtn);
 
-const handleClickUnselectAllBtn = () => {
+const handleClickUnselectAllBtn = (e) => {
+  e.preventDefault();
   state.palette = [];
   checks.forEach((check) => {
     check.checked = false;
