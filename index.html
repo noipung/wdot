@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Wdot</title>
+  </head>
+  <body>
+    <main>
+      <div class="canvas-wrapper">
+        <canvas></canvas>
+        <div class="canvas-overlay">
+          <div class="drag-here">여기에 이미지 끌어오기</div>
+          <div class="dim"></div>
+          <div class="zoom-input-wrapper">
+            <input type="number" name="zoom" id="zoom" value="300" min="0" />
+            <span class="percent">%</span>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <form class="settings">
+          <div class="form-group">
+            <h2>팔레트</h2>
+            <ul class="palette"></ul>
+            <div class="palette-btn-wrapper">
+              <button class="select-all-btn">
+                <i class="select-all-icon"></i
+                ><span class="btn-text">모두 선택</span>
+              </button>
+              <button class="unselect-all-btn">
+                <i class="unselect-all-icon"></i
+                ><span class="btn-text">모두 취소</span>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <h2>설정</h2>
+            <div class="input-wrapper">
+              <div class="input-item">
+                <label for="brightness">밝기</label>
+                <input
+                  type="number"
+                  name="brightness"
+                  id="brightness"
+                  value="50"
+                  min="0"
+                  max="100"
+                />
+                <input
+                  type="range"
+                  name="brightness-range"
+                  id="brightness-range"
+                  value="50"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="input-item">
+                <label for="contrast">대비</label>
+                <input
+                  type="number"
+                  name="contrast"
+                  id="contrast"
+                  value="50"
+                  min="0"
+                  max="100"
+                />
+                <input
+                  type="range"
+                  name="contrast-range"
+                  id="contrast-range"
+                  value="50"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="input-item">
+                <label for="saturation">채도</label>
+                <input
+                  type="number"
+                  name="saturation"
+                  id="saturation"
+                  value="50"
+                  min="0"
+                  max="100"
+                />
+                <input
+                  type="range"
+                  name="saturation-range"
+                  id="saturation-range"
+                  value="50"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="input-item">
+                <label for="dither">디더</label>
+                <input
+                  type="number"
+                  name="dither"
+                  id="dither"
+                  value="0"
+                  min="0"
+                  max="100"
+                />
+                <input
+                  type="range"
+                  name="dither-range"
+                  id="dither-range"
+                  value="0"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="input-item">
+                <label for="width">너비</label>
+                <input
+                  type="number"
+                  name="width"
+                  id="width"
+                  value="100"
+                  min="1"
+                />
+              </div>
+              <div class="input-item">
+                <label for="height">높이</label>
+                <input
+                  type="number"
+                  name="height"
+                  id="height"
+                  value="100"
+                  min="1"
+                />
+              </div>
+              <div class="input-item">
+                <h3 class="size">크기</h3>
+                <p><span class="total">10000</span> 픽셀</p>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="btn-wrapper">
+          <label for="upload-btn">이미지 업로드</label>
+          <input type="file" id="upload-btn" accept="image/*" />
+          <button class="download-btn" disabled>도트 이미지 저장</button>
+        </div>
+      </aside>
+    </main>
+    <dialog class="dialog">
+      <div class="dialog-inner">
+        <p>저장하시겠습니까?</p>
+        <div class="dialog-btn-wrapper">
+          <button class="save-btn">저장</button>
+          <button class="cancel-btn">취소</button>
+        </div>
+      </div>
+    </dialog>
+    <script src="palettes.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,530 @@
+::selection {
+  background: #000;
+  color: #fff;
+}
+
+input[type="number"] {
+  text-align: right;
+  font-size: 1em;
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+h2,
+h3 {
+  margin: 0;
+  font-size: 1em;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+input {
+  outline: none;
+}
+
+body {
+  margin: 0;
+}
+
+html,
+body,
+main {
+  height: 100%;
+}
+
+main {
+  display: flex;
+  word-break: keep-all;
+}
+
+body button {
+  background: #eee;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  line-height: 1.5;
+
+  &:not(:disabled):hover {
+    background: #ccc;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.canvas-wrapper {
+  flex: 1;
+  position: relative;
+  background: repeating-conic-gradient(#fff 0 25%, #ddd 0 50%) center / 20px
+    20px;
+}
+
+.canvas-wrapper canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.canvas-overlay .drag-here {
+  position: absolute;
+  inset: 0;
+  margin: 2em;
+  padding: 2em;
+  word-break: keep-all;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+  gap: 0.5em;
+  font-size: 2em;
+  line-height: 1.5;
+  border-radius: 1rem;
+  color: #888;
+  border: 4px dashed currentColor;
+  user-select: none;
+  pointer-events: none;
+
+  &::before {
+    content: "";
+    display: block;
+    width: 3em;
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/image_arrow_up/default/48px.svg")
+      no-repeat center / 100%;
+  }
+}
+
+.canvas-overlay.image-loaded .drag-here {
+  display: none;
+}
+
+.canvas-overlay .dim {
+  height: 100%;
+  transition: background-color 0.2s;
+}
+
+.canvas-overlay.active .dim {
+  background: #0003;
+}
+
+.zoom-input-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0.5em;
+  border: none;
+  background: #fff;
+  padding: 0.5em;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 0.9em;
+}
+
+.zoom-input-wrapper input {
+  border: none;
+  width: 50px;
+}
+
+.btn-wrapper {
+  display: flex;
+  flex-flow: column;
+  gap: 1em;
+}
+
+#upload-btn {
+  display: none;
+}
+
+label[for="upload-btn"] {
+  cursor: pointer;
+  border: 1px solid #ddd;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.download-btn:not(:disabled) {
+  background: #3172e7;
+  color: #fff;
+
+  &:hover {
+    background: #124ebe;
+  }
+}
+
+label[for="upload-btn"],
+.download-btn {
+  font-size: 1em;
+  padding: 1em;
+  font-weight: bold;
+  display: flex;
+  gap: 0.3em;
+  justify-content: center;
+}
+
+label[for="upload-btn"]::before,
+.download-btn::before {
+  content: "";
+  display: block;
+  width: 1.5em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: no-repeat center / 100%;
+}
+
+label[for="upload-btn"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/image_arrow_up/wght600/48px.svg");
+}
+
+.download-btn::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/download/wght600/48px.svg");
+}
+
+main aside {
+  background: #fff;
+  padding: 2em;
+  width: 320px;
+  border-left: 1px solid #eee;
+  display: flex;
+  flex-flow: column;
+  gap: 1em;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+main aside h2 {
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.settings {
+  display: flex;
+  flex-flow: column;
+  gap: 2em;
+}
+
+.form-group {
+  display: flex;
+  flex-flow: column;
+  gap: 1em;
+}
+
+.input-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+}
+
+.input-item {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em;
+}
+
+.input-item input[type="number"] {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  padding: 6px 0 4px;
+
+  &:focus {
+    border-color: #ccc;
+  }
+}
+
+.input-item input[type="range"] {
+  grid-column: span 2;
+  margin: 0;
+}
+
+.input-item :is(label, h3) {
+  font-weight: bold;
+  font-size: 0.9em;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.input-item :is(label, h3)::before {
+  content: "";
+  display: block;
+  width: 1.5em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: no-repeat center / 100%;
+}
+
+label[for="brightness"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/brightness_6/wght600/48px.svg");
+}
+
+label[for="contrast"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/contrast/wght600/48px.svg");
+}
+
+label[for="saturation"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/colors/wght600/48px.svg");
+}
+
+label[for="dither"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/gradient/wght600/48px.svg");
+}
+
+label[for="width"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/width/wght600/48px.svg");
+}
+
+label[for="height"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/height/wght600/48px.svg");
+}
+
+h3.size::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/open_with/wght600/48px.svg");
+}
+
+.input-item:last-child {
+  grid-column: span 2;
+}
+
+.input-item p {
+  padding: 6px 0 4px;
+  flex: 1;
+  text-align: right;
+}
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.palette li {
+  position: relative;
+}
+
+.palette li input {
+  display: none;
+}
+
+.palette li label {
+  display: block;
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+}
+
+.palette li label:hover + .tooltip {
+  opacity: 1;
+}
+
+.palette li .tooltip {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  font-size: 0.8em;
+  background: #000;
+  color: #fff;
+  padding: 0.3em 0.4em 0.4em;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.palette
+  li:is(
+    :nth-child(8n + 1),
+    :nth-child(8n + 2),
+    :nth-child(8n + 3),
+    :nth-child(8n + 4)
+  )
+  .tooltip {
+  right: inherit;
+}
+
+.palette li input:checked + label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght600/48px.svg")
+    no-repeat center / 75%;
+}
+
+.palette-btn-wrapper {
+  display: flex;
+  gap: 1em;
+}
+
+.palette-btn-wrapper button {
+  flex: 1;
+  padding: 0.8em;
+  font-size: 0.9em;
+  display: flex;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.palette-btn-wrapper button i {
+  display: block;
+  width: 1.2em;
+  aspect-ratio: 1;
+  background: currentColor;
+}
+
+.select-all-icon {
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check_box/wght600/48px.svg")
+    no-repeat center / 100%;
+}
+
+.unselect-all-icon {
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check_box_outline_blank/wght600/48px.svg")
+    no-repeat center / 100%;
+}
+
+.init-btn {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.init-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg")
+    no-repeat center / 75%;
+}
+
+.dialog {
+  border: none;
+  border-radius: 1em;
+  padding: 1.5em;
+}
+
+.dialog-inner {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  width: 300px;
+  height: 100px;
+}
+
+.dialog-btn-wrapper {
+  display: flex;
+  gap: 0.5em;
+}
+
+.dialog-btn-wrapper button {
+  flex: 1;
+  padding: 0.5em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.dialog-btn-wrapper .save-btn {
+  background: #3172e7;
+  color: #fff;
+
+  &:hover {
+    background: #124ebe;
+  }
+}
+
+@media (max-width: 720px) {
+  main {
+    flex-flow: column;
+  }
+
+  main aside {
+    width: 100%;
+    box-sizing: border-box;
+    border-left: none;
+    border-top: 1px solid #eee;
+  }
+
+  .canvas-wrapper canvas {
+    aspect-ratio: 3/2;
+  }
+
+  .canvas-overlay .drag-here {
+    display: none;
+  }
+
+  @media (min-width: 480px) {
+    .palette {
+      grid-template-columns: repeat(16, 1fr);
+    }
+
+    .palette
+      li:is(
+        :nth-child(8n + 1),
+        :nth-child(8n + 2),
+        :nth-child(8n + 3),
+        :nth-child(8n + 4)
+      )
+      .tooltip {
+      right: 0;
+    }
+
+    .palette
+      li:is(
+        :nth-child(16n + 1),
+        :nth-child(16n + 2),
+        :nth-child(16n + 3),
+        :nth-child(16n + 4),
+        :nth-child(16n + 5),
+        :nth-child(16n + 6),
+        :nth-child(16n + 7),
+        :nth-child(16n + 8)
+      )
+      .tooltip {
+      right: inherit;
+    }
+  }
+}
+
+@media (max-width: 320px) {
+  main aside {
+    padding: 1em;
+  }
+
+  .palette-btn-wrapper button i {
+    width: 1.5em;
+  }
+
+  .btn-text {
+    display: none;
+  }
+}
