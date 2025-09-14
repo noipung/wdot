@@ -429,7 +429,7 @@ export const resetLinks = () => {
     const firstInput = form[link[0]];
 
     firstInput.value = init();
-    firstInput.dispatchEvent(new Event("input"));
+    firstInput.dispatchEvent(new Event("change"));
   });
 };
 
