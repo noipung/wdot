@@ -519,6 +519,17 @@ h3.size::before {
   cursor: pointer;
   overflow: hidden;
   background: var(--background-color);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      var(--background-color) 10%,
+      #0000 30%
+    );
+  }
 }
 
 .palette li label:hover + .tooltip {
@@ -549,6 +560,7 @@ h3.size::before {
   background: currentColor;
   mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght700/48px.svg")
     no-repeat center / 75%;
+  z-index: 1;
 }
 
 .palette li label .color-count {
@@ -566,18 +578,6 @@ h3.size::before {
   &.zero {
     display: none;
   }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      var(--background-color) 10%,
-      #0000 20%
-    );
-    margin-left: 2px;
-  }
 }
 
 .palette li.disabled label .color-count {
@@ -586,6 +586,10 @@ h3.size::before {
 
 .palette li label:hover {
   overflow: visible;
+
+  &::after {
+    display: none;
+  }
 }
 
 .palette li label:hover .color-count {
