@@ -3,8 +3,6 @@ import { canvas, ctx } from "./constants.js";
 import { disableImageSmoothing } from "./utils.js";
 
 export const draw = () => {
-  console.log("draw 호출됨");
-
   const { width: cw, height: ch } = canvas;
 
   ctx.clearRect(0, 0, cw, ch);
