@@ -51,7 +51,7 @@ class Palette {
   setAllColorCounts(imageData) {
     const data = imageData.data;
     const counts = new Map();
-    this.allCount = 0;
+    let total = 0;
 
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
@@ -63,13 +63,15 @@ class Palette {
 
       const key = `${r},${g},${b}`;
       counts.set(key, (counts.get(key) || 0) + 1);
-      this.allCount++;
+      total++;
     }
 
     this.colors.forEach((color) => {
       const key = color.rgb.join(",");
       color.setCount(counts.get(key) || 0);
     });
+
+    this.allCount = total;
   }
 }
 
