@@ -147,12 +147,3 @@ export function makeOpaque(canvas) {
 
   ctx.putImageData(imageData, 0, 0);
 }
-
-export const countOpaquePixels = (imageData) => {
-  let count = 0;
-  const data = imageData.data;
-  for (let i = 3; i < data.length; i += 4) {
-    if (data[i] === 255) count++;
-  }
-  return count;
-};

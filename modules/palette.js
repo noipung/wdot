@@ -16,6 +16,7 @@ class Palette {
     this.colors = colors;
     this.changed = true;
     this.enabledColors = [];
+    this.allCount = 0;
   }
 
   setColors(colors) {
@@ -67,6 +68,8 @@ class Palette {
       const key = color.rgb.join(",");
       color.setCount(counts.get(key) || 0);
     });
+
+    this.allCount = Array.from(counts.values()).reduce((a, b) => a + b, 0);
   }
 }
 

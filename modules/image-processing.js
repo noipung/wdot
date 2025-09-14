@@ -11,12 +11,7 @@ import {
   downloadBtn,
 } from "./constants.js";
 import { calculateTime, formatTime, getZoom } from "./utils.js";
-import {
-  getAdjusted,
-  makeOpaque,
-  dither,
-  countOpaquePixels,
-} from "./dithering.js";
+import { getAdjusted, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 
 export const updateImageProcessing = () => {
@@ -45,8 +40,8 @@ export const updateImageProcessing = () => {
 
   const imageData = dither(resizedCtx, pw, ph);
 
-  const pixels = countOpaquePixels(imageData);
   state.palette.setAllColorCounts(imageData);
+  const pixels = state.palette.allCount;
 
   const { time, timeWithFlag } = calculateTime(pixels);
 
