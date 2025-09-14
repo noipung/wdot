@@ -418,7 +418,7 @@ sizeBtns.forEach((button) => {
     const input = form[dimension];
     const value = Math.max(1, +input.value + +delta);
     input.value = value;
-    input.dispatchEvent(new Event("input"));
+    input.dispatchEvent(new Event("change"));
   });
 });
 
