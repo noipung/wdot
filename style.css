@@ -245,7 +245,7 @@ label[for="upload-btn"]::before {
 
 main aside {
   background: #fff;
-  padding: 2em;
+  padding: 1.5em;
   width: 320px;
   border-left: 1px solid #eee;
   display: flex;
@@ -263,7 +263,7 @@ main aside h2 {
 .settings {
   display: flex;
   flex-flow: column;
-  gap: 2em;
+  gap: 1.5em;
 }
 
 .form-group {
@@ -436,6 +436,8 @@ h3.size::before {
   border-radius: 4px;
   position: relative;
   cursor: pointer;
+  overflow: hidden;
+  background: var(--background-color);
 }
 
 .palette li label:hover + .tooltip {
@@ -457,13 +459,60 @@ h3.size::before {
   right: inherit;
 }
 
-.palette li input:checked + label::after {
+.palette li input:checked + label i {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  width: 60%;
+  aspect-ratio: 1;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght600/48px.svg")
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght700/48px.svg")
     no-repeat center / 75%;
+}
+
+.palette li label .color-count {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 0.5em;
+  font-weight: bold;
+  padding: 3px 4px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  text-align: right;
+  min-width: 100%;
+
+  &.zero {
+    display: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      var(--background-color) 10%,
+      #0000 20%
+    );
+    margin-left: 2px;
+  }
+}
+
+.palette li.disabled label .color-count {
+  display: none;
+}
+
+.palette li label:hover {
+  overflow: visible;
+}
+
+.palette li label:hover .color-count {
+  background: var(--background-color);
+
+  &::after {
+    display: none;
+  }
 }
 
 .palette-btn-wrapper {

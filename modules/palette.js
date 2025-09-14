@@ -46,6 +46,28 @@ class Palette {
   unselectAllColors() {
     this.colors.forEach((color) => color.toggle(false));
   }
+
+  setAllColorCounts(imageData) {
+    const data = imageData.data;
+    const counts = new Map();
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const a = data[i + 3];
+
+      if (a === 0) continue;
+
+      const key = `${r},${g},${b}`;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+
+    this.colors.forEach((color) => {
+      const key = color.rgb.join(",");
+      color.setCount(counts.get(key) || 0);
+    });
+  }
 }
 
 class PaletteColor {
@@ -60,6 +82,8 @@ class PaletteColor {
     const li = document.createElement("li");
     const check = document.createElement("input");
     const label = document.createElement("label");
+    const i = document.createElement("i");
+    const colorCount = document.createElement("span");
     const tooltip = document.createElement("div");
 
     const id = name.toLowerCase().replaceAll(" ", "-");
@@ -67,13 +91,17 @@ class PaletteColor {
     check.type = "checkbox";
     check.id = label.htmlFor = id;
     check.checked = !locked;
-    label.style.background = `rgb(${rgb})`;
+    label.style.setProperty("--background-color", `rgb(${rgb})`);
     label.style.color = getContentColor(rgb);
-    tooltip.classList.add(...["tooltip"].concat(locked ? ["locked"] : []));
+    colorCount.classList.add("color-count", "zero");
+    colorCount.textContent = "0";
+    tooltip.classList.add("tooltip", ...(locked ? ["locked"] : []));
     tooltip.textContent = `${name} ${locked ? "🔒︎" : ""}`;
+    li.classList.toggle("disabled", !this.enabled);
 
     check.addEventListener("change", () => {
       this.enabled = check.checked;
+      this.colorListItem.classList.toggle("disabled", !check.checked);
       this.palette.changed = true;
 
       if (!validate()) return;
@@ -82,11 +110,12 @@ class PaletteColor {
       draw();
     });
 
+    label.append(i, colorCount);
     li.append(check, label, tooltip);
-    li.checkBox = check;
 
     this.colorListItem = li;
     this.check = check;
+    this.colorCount = colorCount;
     this.check.checked = this.enabled;
     (this.locked ? lockedPaletteList : basicPaletteList).append(
       this.colorListItem
@@ -96,7 +125,18 @@ class PaletteColor {
   toggle(enabled) {
     this.enabled = enabled !== undefined ? enabled : !this.enabled;
     this.check.checked = this.enabled;
+    this.colorListItem.classList.toggle("disabled", !this.enabled);
     if (!this.palette.changed) this.palette.changed = true;
+  }
+
+  setCount(count) {
+    this.count = count;
+    this.colorCount.textContent = count;
+    if (count === 0) {
+      this.colorCount.classList.add("zero");
+    } else {
+      this.colorCount.classList.remove("zero");
+    }
   }
 }
 

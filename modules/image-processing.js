@@ -36,10 +36,8 @@ export const updateImageProcessing = () => {
   const pw = state.width;
   const ph = state.height;
 
-  resized.width = pw;
-  resized.height = ph;
-  dithered.width = pw;
-  dithered.height = ph;
+  resized.width = dithered.width = pw;
+  resized.height = dithered.height = ph;
 
   resizedCtx.drawImage(state.adjusted, 0, 0, pw, ph);
 
@@ -48,6 +46,8 @@ export const updateImageProcessing = () => {
   const imageData = dither(resizedCtx, pw, ph);
 
   const pixels = countOpaquePixels(imageData);
+  state.palette.setAllColorCounts(imageData);
+
   const { time, timeWithFlag } = calculateTime(pixels);
 
   total.textContent = `${pixels} 픽셀`;
