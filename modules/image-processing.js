@@ -10,6 +10,7 @@ import {
   zoomOutBtn,
   downloadBtn,
   sizeBtns,
+  resetBtn,
 } from "./constants.js";
 import { calculateTime, formatTime, getZoom } from "./utils.js";
 import { getAdjusted, makeOpaque, dither } from "./dithering.js";
@@ -62,6 +63,7 @@ const enableInputs = () => {
   zoomInput.disabled = false;
 
   downloadBtn.disabled = false;
+  resetBtn.disabled = false;
 
   form.brightness.disabled = false;
   form.contrast.disabled = false;

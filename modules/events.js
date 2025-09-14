@@ -13,6 +13,7 @@ import {
   cancelBtn,
   dialog,
   DRAG_THRESHOLD,
+  resetBtn,
   sizeBtns,
 } from "./constants.js";
 import {
@@ -333,12 +334,13 @@ canvasControlLayer.addEventListener(
 
 // 입력 동기화
 const links = [
-  { link: ["brightness", "brightness-range"] },
-  { link: ["contrast", "contrast-range"] },
-  { link: ["saturation", "saturation-range"] },
-  { link: ["dither", "dither-range"] },
+  { link: ["brightness", "brightness-range"], init: () => 50 },
+  { link: ["contrast", "contrast-range"], init: () => 50 },
+  { link: ["saturation", "saturation-range"], init: () => 50 },
+  { link: ["dither", "dither-range"], init: () => 0 },
   {
     link: ["width", "height"],
+    init: () => (state.image ? state.image.width : 1),
     logic: (value, name) =>
       ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
     cb: updateZoom,
@@ -389,6 +391,19 @@ sizeBtns.forEach((button) => {
     input.dispatchEvent(new Event("input"));
   });
 });
+
+export const resetLinks = () => {
+  links.forEach(({ link, init }) => {
+    if (!init) return;
+
+    const firstInput = form[link[0]];
+
+    firstInput.value = init();
+    firstInput.dispatchEvent(new Event("input"));
+  });
+};
+
+resetBtn.addEventListener("click", resetLinks);
 
 // 다운로드 이벤트
 downloadBtn.addEventListener("click", (e) => {

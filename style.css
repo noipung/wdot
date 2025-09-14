@@ -264,6 +264,23 @@ main aside {
 main aside h2 {
   font-size: 1.2em;
   text-align: center;
+  position: relative;
+}
+
+.reset-btn {
+  position: absolute;
+  right: 0;
+  padding: 0.2em;
+}
+
+.reset-btn i {
+  content: "";
+  display: block;
+  width: 1.2em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg")
+    no-repeat center / 100%;
 }
 
 .settings {
