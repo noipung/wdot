@@ -105,6 +105,15 @@ export const zoom = (deltaY) => {
 zoomInBtn.addEventListener("click", () => zoom(-1), false);
 zoomOutBtn.addEventListener("click", () => zoom(1), false);
 
+zoomInput.addEventListener("change", (e) => {
+  let value = Math.max(10, ~~e.target.value);
+  e.target.value = state.zoom = value;
+
+  if (!validate()) return;
+
+  draw();
+});
+
 canvasControlLayer.addEventListener("drop", handleDrop, false);
 canvasControlLayer.addEventListener("wheel", (e) => zoom(e.deltaY), false);
 
@@ -360,8 +369,20 @@ links.forEach(({ link, logic, cb }) => {
   const inputs = link.map((key) => form[key]);
 
   inputs.forEach((input) => {
-    const handleInput = () => {
-      const numberValue = +input.value;
+    const eventType = input.type === "range" ? "input" : "change";
+
+    const syncInputs = () => {
+      let numberValue = +input.value;
+
+      if (input.type === "number" && eventType === "change") {
+        const min = input.min !== "" ? +input.min : -Infinity;
+        const max = input.max !== "" ? +input.max : Infinity;
+        if (numberValue < min) numberValue = min;
+        if (numberValue > max) numberValue = max;
+        if (numberValue !== +input.value) {
+          input.value = numberValue;
+        }
+      }
 
       state[input.name] = numberValue;
 
@@ -385,9 +406,9 @@ links.forEach(({ link, logic, cb }) => {
       draw();
     };
 
-    input.addEventListener("input", handleInput);
+    input.addEventListener(eventType, syncInputs);
 
-    handleInput();
+    syncInputs();
   });
 });
 
