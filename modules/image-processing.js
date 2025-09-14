@@ -9,6 +9,7 @@ import {
   zoomInBtn,
   zoomOutBtn,
   downloadBtn,
+  sizeBtns,
 } from "./constants.js";
 import { calculateTime, formatTime, getZoom } from "./utils.js";
 import { getAdjusted, makeOpaque, dither } from "./dithering.js";
@@ -55,6 +56,28 @@ export const updateImageProcessing = () => {
   state.dithered = dithered;
 };
 
+const enableInputs = () => {
+  zoomInBtn.disabled = false;
+  zoomOutBtn.disabled = false;
+  zoomInput.disabled = false;
+
+  downloadBtn.disabled = false;
+
+  form.brightness.disabled = false;
+  form.contrast.disabled = false;
+  form.saturation.disabled = false;
+  form.dither.disabled = false;
+  form.width.disabled = false;
+  form.height.disabled = false;
+
+  form["brightness-range"].disabled = false;
+  form["contrast-range"].disabled = false;
+  form["saturation-range"].disabled = false;
+  form["dither-range"].disabled = false;
+
+  sizeBtns.forEach((btn) => (btn.disabled = false));
+};
+
 export const handleImageLoad = (image) => {
   state.image = image;
   state.aspectRatio = image.width / image.height;
@@ -66,9 +89,7 @@ export const handleImageLoad = (image) => {
   updateZoom();
 
   canvasOverlay.classList.add("image-loaded");
-  zoomInBtn.disabled = false;
-  zoomOutBtn.disabled = false;
-  downloadBtn.disabled = false;
+  enableInputs();
 
   updateImageProcessing();
   draw();

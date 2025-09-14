@@ -13,6 +13,7 @@ import {
   cancelBtn,
   dialog,
   DRAG_THRESHOLD,
+  sizeBtns,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -376,6 +377,16 @@ links.forEach(({ link, logic, cb }) => {
     input.addEventListener("input", handleInput);
 
     handleInput();
+  });
+});
+
+sizeBtns.forEach((button) => {
+  button.addEventListener("click", () => {
+    const { dimension, delta } = button.dataset;
+    const input = form[dimension];
+    const value = Math.max(1, +input.value + +delta);
+    input.value = value;
+    input.dispatchEvent(new Event("input"));
   });
 });
 

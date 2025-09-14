@@ -9,6 +9,11 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 
+  &:disabled {
+    background: none;
+    color: #ccc;
+  }
+
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -59,6 +64,7 @@ body button {
   outline: none;
   cursor: pointer;
   line-height: 1.5;
+  font-family: inherit;
 
   &:not(:disabled):hover {
     background: #ccc;
@@ -298,6 +304,20 @@ main aside h2 {
 .input-item input[type="range"] {
   grid-column: span 2;
   margin: 0;
+}
+
+.size-btn-wrapper {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.2em;
+}
+
+.size-btn {
+  flex: 1;
+  padding: 0.5em 0;
+  font-weight: bold;
+  font-size: 0.8em;
 }
 
 .input-item :is(label, h3) {

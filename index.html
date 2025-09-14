@@ -21,7 +21,14 @@
           <div class="zoom-input-wrapper">
             <button class="zoom-btn zoom-in" disabled></button>
             <button class="zoom-btn zoom-out" disabled></button>
-            <input type="number" name="zoom" id="zoom" value="100" min="10" />
+            <input
+              type="number"
+              name="zoom"
+              id="zoom"
+              value="100"
+              min="10"
+              disabled
+            />
             <span class="percent">%</span>
           </div>
         </div>
@@ -55,6 +62,7 @@
                   value="50"
                   min="0"
                   max="100"
+                  disabled
                 />
                 <input
                   type="range"
@@ -63,6 +71,7 @@
                   value="50"
                   min="0"
                   max="100"
+                  disabled
                 />
               </div>
               <div class="input-item">
@@ -74,6 +83,7 @@
                   value="50"
                   min="0"
                   max="100"
+                  disabled
                 />
                 <input
                   type="range"
@@ -82,6 +92,7 @@
                   value="50"
                   min="0"
                   max="100"
+                  disabled
                 />
               </div>
               <div class="input-item">
@@ -93,6 +104,7 @@
                   value="50"
                   min="0"
                   max="100"
+                  disabled
                 />
                 <input
                   type="range"
@@ -101,6 +113,7 @@
                   value="50"
                   min="0"
                   max="100"
+                  disabled
                 />
               </div>
               <div class="input-item">
@@ -112,6 +125,7 @@
                   value="0"
                   min="0"
                   max="100"
+                  disabled
                 />
                 <input
                   type="range"
@@ -120,6 +134,7 @@
                   value="0"
                   min="0"
                   max="100"
+                  disabled
                 />
               </div>
               <div class="input-item">
@@ -130,7 +145,46 @@
                   id="width"
                   value="0"
                   min="1"
+                  disabled
                 />
+                <div class="size-btn-wrapper">
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="width"
+                    data-delta="-10"
+                    disabled
+                  >
+                    -10
+                  </button>
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="width"
+                    data-delta="-1"
+                    disabled
+                  >
+                    -1
+                  </button>
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="width"
+                    data-delta="1"
+                    disabled
+                  >
+                    +1
+                  </button>
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="width"
+                    data-delta="10"
+                    disabled
+                  >
+                    +10
+                  </button>
+                </div>
               </div>
               <div class="input-item">
                 <label for="height">높이</label>
@@ -140,7 +194,46 @@
                   id="height"
                   value="0"
                   min="1"
+                  disabled
                 />
+                <div class="size-btn-wrapper">
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="height"
+                    data-delta="-10"
+                    disabled
+                  >
+                    -10
+                  </button>
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="height"
+                    data-delta="-1"
+                    disabled
+                  >
+                    -1
+                  </button>
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="height"
+                    data-delta="1"
+                    disabled
+                  >
+                    +1
+                  </button>
+                  <button
+                    type="button"
+                    class="size-btn"
+                    data-dimension="height"
+                    data-delta="10"
+                    disabled
+                  >
+                    +10
+                  </button>
+                </div>
               </div>
               <div class="input-item">
                 <h3 class="size">크기</h3>
