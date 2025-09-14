@@ -370,26 +370,14 @@ h3.size::before {
     no-repeat center / 100%;
 }
 
-.total-time-tooltip {
-  position: absolute;
-  background: #000;
-  color: #fff;
-  padding: 0.3em 0.4em 0.4em;
-  border-radius: 4px;
-  font-size: 0.8em;
-  white-space: nowrap;
-  bottom: 100%;
-  right: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
+.total-wrapper .tooltip {
   text-align: right;
   display: flex;
   gap: 0.3em;
   flex-direction: column;
 }
 
-.total-time-icon:hover + .total-time-tooltip {
+.total-wrapper .total-time-icon:hover + .tooltip {
   opacity: 1;
 }
 
@@ -409,6 +397,22 @@ h3.size::before {
   background: currentColor;
   mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/flag/wght600/48px.svg")
     no-repeat center / 100%;
+}
+
+.tooltip {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  background: #000;
+  color: #fff;
+  padding: 0.3em 0.4em 0.4em;
+  border-radius: 4px;
+  font-size: 0.8em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  margin-bottom: 4px;
 }
 
 .palette {
@@ -439,19 +443,7 @@ h3.size::before {
 }
 
 .palette li .tooltip {
-  position: absolute;
-  right: 0;
-  bottom: 100%;
-  font-size: 0.8em;
-  background: #000;
-  color: #fff;
-  padding: 0.3em 0.4em 0.4em;
   margin-bottom: 4px;
-  white-space: nowrap;
-  border-radius: 4px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
 }
 
 .palette
