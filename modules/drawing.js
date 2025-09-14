@@ -18,7 +18,9 @@ export const draw = () => {
   center[0] += px;
   center[1] += py;
 
-  ctx.drawImage(state.dithered, ...center, zw, zh);
+  const resultImage = state.showOriginal ? state.adjusted : state.dithered;
+
+  ctx.drawImage(resultImage, ...center, zw, zh);
 };
 
 // 이미지 스무딩 비활성화

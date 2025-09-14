@@ -147,6 +147,50 @@ body button {
   inset: 0;
 }
 
+.show-original-input-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0.5em;
+  border: none;
+}
+
+.show-original-input-wrapper input {
+  display: none;
+}
+
+.show-original-input-wrapper label {
+  display: flex;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.show-original-input-wrapper input:checked + label {
+  background: #555;
+  color: #fff;
+  border-color: #333;
+
+  &:hover {
+    background: #444;
+  }
+}
+
+.show-original-input-wrapper label i {
+  display: block;
+  width: 1.5em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility/wght600/48px.svg")
+    no-repeat center / 100%;
+}
+
 .zoom-input-wrapper {
   position: absolute;
   display: flex;

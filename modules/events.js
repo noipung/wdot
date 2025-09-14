@@ -15,6 +15,7 @@ import {
   DRAG_THRESHOLD,
   resetBtn,
   sizeBtns,
+  showOriginalInput,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -331,6 +332,14 @@ canvasControlLayer.addEventListener(
   },
   false
 );
+
+showOriginalInput.addEventListener("change", (e) => {
+  state.showOriginal = e.target.checked;
+
+  if (!validate()) return;
+
+  draw();
+});
 
 // 입력 동기화
 const links = [

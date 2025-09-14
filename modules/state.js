@@ -20,4 +20,5 @@ export const state = {
   adjusted: null,
   resized: null,
   dithered: null,
+  showOriginal: false,
 };
