@@ -23,8 +23,16 @@
             <label for="show-original"><i></i></label>
           </div>
           <div class="zoom-input-wrapper">
-            <button class="zoom-btn zoom-in" disabled></button>
-            <button class="zoom-btn zoom-out" disabled></button>
+            <button
+              class="zoom-btn zoom-in"
+              disabled
+              autocomplete="off"
+            ></button>
+            <button
+              class="zoom-btn zoom-out"
+              disabled
+              autocomplete="off"
+            ></button>
             <input
               type="number"
               name="zoom"
@@ -32,6 +40,7 @@
               value="100"
               min="10"
               disabled
+              autocomplete="off"
             />
             <span class="percent">%</span>
           </div>
@@ -57,7 +66,14 @@
           <div class="form-group">
             <h2>
               설정
-              <button type="button" class="reset-btn" disabled><i></i></button>
+              <button
+                type="button"
+                class="reset-btn"
+                disabled
+                autocomplete="off"
+              >
+                <i></i>
+              </button>
             </h2>
             <div class="input-wrapper">
               <div class="input-item">
@@ -70,6 +86,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
                 <input
                   type="range"
@@ -79,6 +96,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
               </div>
               <div class="input-item">
@@ -91,6 +109,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
                 <input
                   type="range"
@@ -100,6 +119,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
               </div>
               <div class="input-item">
@@ -112,6 +132,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
                 <input
                   type="range"
@@ -121,6 +142,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
               </div>
               <div class="input-item">
@@ -133,6 +155,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
                 <input
                   type="range"
@@ -142,6 +165,7 @@
                   min="0"
                   max="100"
                   disabled
+                  autocomplete="off"
                 />
               </div>
               <div class="input-item">
@@ -153,6 +177,7 @@
                   value="0"
                   min="1"
                   disabled
+                  autocomplete="off"
                 />
                 <div class="size-btn-wrapper">
                   <button
@@ -161,6 +186,7 @@
                     data-dimension="width"
                     data-delta="-10"
                     disabled
+                    autocomplete="off"
                   >
                     -10
                   </button>
@@ -170,6 +196,7 @@
                     data-dimension="width"
                     data-delta="-1"
                     disabled
+                    autocomplete="off"
                   >
                     -1
                   </button>
@@ -179,6 +206,7 @@
                     data-dimension="width"
                     data-delta="1"
                     disabled
+                    autocomplete="off"
                   >
                     +1
                   </button>
@@ -188,6 +216,7 @@
                     data-dimension="width"
                     data-delta="10"
                     disabled
+                    autocomplete="off"
                   >
                     +10
                   </button>
@@ -202,6 +231,7 @@
                   value="0"
                   min="1"
                   disabled
+                  autocomplete="off"
                 />
                 <div class="size-btn-wrapper">
                   <button
@@ -210,6 +240,7 @@
                     data-dimension="height"
                     data-delta="-10"
                     disabled
+                    autocomplete="off"
                   >
                     -10
                   </button>
@@ -219,6 +250,7 @@
                     data-dimension="height"
                     data-delta="-1"
                     disabled
+                    autocomplete="off"
                   >
                     -1
                   </button>
@@ -228,6 +260,7 @@
                     data-dimension="height"
                     data-delta="1"
                     disabled
+                    autocomplete="off"
                   >
                     +1
                   </button>
@@ -237,6 +270,7 @@
                     data-dimension="height"
                     data-delta="10"
                     disabled
+                    autocomplete="off"
                   >
                     +10
                   </button>
@@ -259,7 +293,9 @@
         <div class="btn-wrapper">
           <label for="upload-btn">이미지 업로드</label>
           <input type="file" id="upload-btn" accept="image/*" />
-          <button class="download-btn" disabled>도트 이미지 저장</button>
+          <button class="download-btn" disabled autocomplete="off">
+            도트 이미지 저장
+          </button>
         </div>
       </aside>
     </main>
