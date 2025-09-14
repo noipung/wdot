@@ -9,36 +9,113 @@ import { getContentColor } from "./utils.js";
 import { updateImageProcessing } from "./image-processing.js";
 import { draw } from "./drawing.js";
 import { loadPaletteData } from "./palette-loader.js";
+import { validate } from "./utils.js";
 
-const checks = [];
-let wplacePalette = [];
+class Palette {
+  constructor(colors) {
+    this.colors = colors;
+    this.changed = true;
+    this.enabledColors = [];
+  }
+
+  setColors(colors) {
+    this.colors = colors;
+    this.changed = true;
+  }
+
+  getEnabledColors() {
+    if (this.changed) {
+      this.enabledColors = this.colors.filter((color) => color.enabled);
+      this.changed = false;
+    }
+    return this.enabledColors;
+  }
+
+  getColorByName(name) {
+    return this.colors.find((color) => color.name === name);
+  }
+
+  selectInitColors() {
+    this.colors.forEach((color) => color.toggle(!color.locked));
+  }
+
+  selectAllColors() {
+    this.colors.forEach((color) => color.toggle(true));
+  }
+
+  unselectAllColors() {
+    this.colors.forEach((color) => color.toggle(false));
+  }
+}
+
+class PaletteColor {
+  constructor(rgb, name, locked, palette) {
+    this.rgb = rgb;
+    this.name = name;
+    this.locked = locked;
+    this.enabled = !locked;
+    this.count = 0;
+    this.palette = palette;
+
+    const li = document.createElement("li");
+    const check = document.createElement("input");
+    const label = document.createElement("label");
+    const tooltip = document.createElement("div");
+
+    const id = name.toLowerCase().replaceAll(" ", "-");
+
+    check.type = "checkbox";
+    check.id = label.htmlFor = id;
+    check.checked = !locked;
+    label.style.background = `rgb(${rgb})`;
+    label.style.color = getContentColor(rgb);
+    tooltip.classList.add(...["tooltip"].concat(locked ? ["locked"] : []));
+    tooltip.textContent = `${name} ${locked ? "🔒︎" : ""}`;
+
+    check.addEventListener("change", () => {
+      this.enabled = check.checked;
+      this.palette.changed = true;
+
+      if (!validate()) return;
+
+      updateImageProcessing();
+      draw();
+    });
+
+    li.append(check, label, tooltip);
+    li.checkBox = check;
+
+    this.colorListItem = li;
+    this.check = check;
+    this.check.checked = this.enabled;
+    (this.locked ? lockedPaletteList : basicPaletteList).append(
+      this.colorListItem
+    );
+  }
+
+  toggle(enabled) {
+    this.enabled = enabled !== undefined ? enabled : !this.enabled;
+    this.check.checked = this.enabled;
+    if (!this.palette.changed) this.palette.changed = true;
+  }
+}
 
 export const initPaletteUI = async () => {
-  // 팔레트 데이터 로드
-  wplacePalette = await loadPaletteData();
+  state.palette = new Palette();
 
-  // 기존 코드에서 wplacePalette를 직접 참조하는 부분을 이제 로드된 데이터로 대체
-  const initPalette = wplacePalette
-    .filter(({ locked }) => !locked)
-    .map(({ rgb }) => rgb);
+  const paletteData = await loadPaletteData();
 
-  const wholePalette = wplacePalette.map(({ rgb }) => rgb);
+  const colors = paletteData.map(
+    ({ rgb, name, locked }) =>
+      new PaletteColor(rgb, name, locked, state.palette)
+  );
 
-  // 상태 초기화
-  state.palette = initPalette;
+  state.palette.setColors(colors);
 
-  // 팔레트 UI 생성
-  wplacePalette.forEach(({ rgb, name, locked }) => {
-    const colorListItem = createColorListItem(rgb, name, locked);
-    (locked ? lockedPaletteList : basicPaletteList).append(colorListItem);
-  });
-
-  // 나머지 코드는 동일하게 유지...
   const handleClickInitBtn = () => {
-    state.palette = initPalette;
-    checks.forEach((check) => {
-      check.checked = check.isBasicColor;
-    });
+    state.palette.selectInitColors();
+
+    if (!validate()) return;
 
     updateImageProcessing();
     draw();
@@ -54,10 +131,9 @@ export const initPaletteUI = async () => {
   basicPaletteList.append(li);
 
   const handleClickSelectAllBtn = () => {
-    state.palette = wholePalette;
-    checks.forEach((check) => {
-      check.checked = true;
-    });
+    state.palette.selectAllColors();
+
+    if (!validate()) return;
 
     updateImageProcessing();
     draw();
@@ -66,47 +142,13 @@ export const initPaletteUI = async () => {
   selectAllBtn.addEventListener("click", handleClickSelectAllBtn);
 
   const handleClickUnselectAllBtn = () => {
-    state.palette = [];
-    checks.forEach((check) => {
-      check.checked = false;
-    });
+    state.palette.unselectAllColors();
+
+    if (!validate()) return;
 
     updateImageProcessing();
     draw();
   };
 
   unselectAllBtn.addEventListener("click", handleClickUnselectAllBtn);
-};
-
-export const createColorListItem = (rgb, name, locked) => {
-  const li = document.createElement("li");
-  const check = document.createElement("input");
-  const label = document.createElement("label");
-  const tooltip = document.createElement("div");
-
-  const id = name.toLowerCase().replaceAll(" ", "-");
-
-  check.type = "checkbox";
-  check.id = label.htmlFor = id;
-  check.checked = check.isBasicColor = !locked;
-  label.style.background = `rgb(${rgb})`;
-  label.style.color = getContentColor(rgb);
-  tooltip.classList.add(...["tooltip"].concat(locked ? ["locked"] : []));
-  tooltip.textContent = `${name} ${locked ? "🔒︎" : ""}`;
-
-  li.append(check, label, tooltip);
-  checks.push(check);
-
-  check.addEventListener("change", () => {
-    state.palette = check.checked
-      ? state.palette.concat([rgb])
-      : state.palette.filter(
-          (item) => JSON.stringify(item) !== JSON.stringify(rgb)
-        );
-
-    updateImageProcessing();
-    draw();
-  });
-
-  return li;
 };

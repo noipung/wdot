@@ -44,8 +44,11 @@ export function dither(ctx, width, height) {
       const oldG = data[idx + 1];
       const oldB = data[idx + 2];
 
-      const palette = state.palette.length ? state.palette : [[0, 0, 0]];
-      const newColor = getClosestColor([oldR, oldG, oldB], palette);
+      const colors = state.palette.getEnabledColors().map(({ rgb }) => rgb);
+      const newColor = getClosestColor(
+        [oldR, oldG, oldB],
+        colors.length ? colors : [[0, 0, 0]]
+      );
       data[idx] = newColor[0];
       data[idx + 1] = newColor[1];
       data[idx + 2] = newColor[2];
