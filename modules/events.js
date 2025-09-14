@@ -352,26 +352,30 @@ showOriginalInput.addEventListener("change", (e) => {
 
 // 입력 동기화
 const links = [
-  { link: ["brightness", "brightness-range"], init: () => 50 },
-  { link: ["contrast", "contrast-range"], init: () => 50 },
-  { link: ["saturation", "saturation-range"], init: () => 50 },
-  { link: ["dither", "dither-range"], init: () => 0 },
+  { link: ["#brightness", "#brightness-range"], init: () => 50 },
+  { link: ["#contrast", "#contrast-range"], init: () => 50 },
+  { link: ["#saturation", "#saturation-range"], init: () => 50 },
+  { link: ["#dither", "#dither-range"], init: () => 0 },
   {
-    link: ["width", "height"],
+    link: ["#width", "#height"],
     init: () => (state.image ? state.image.width : 1),
     logic: (value, name) =>
       ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
-    cb: updateZoom,
+    cb: () => {
+      if (!validate()) return;
+
+      updateZoom();
+    },
   },
 ];
 
 links.forEach(({ link, logic, cb }) => {
-  const inputs = link.map((key) => form[key]);
+  const inputs = link.map((selector) => document.querySelector(selector));
 
   inputs.forEach((input) => {
     const eventType = input.type === "range" ? "input" : "change";
 
-    const syncInputs = () => {
+    input.syncInputs = () => {
       let numberValue = +input.value;
 
       if (input.type === "number" && eventType === "change") {
@@ -399,16 +403,18 @@ links.forEach(({ link, logic, cb }) => {
       });
 
       if (cb) cb();
+    };
+
+    input.addEventListener(eventType, () => {
+      input.syncInputs();
 
       if (!validate()) return;
 
       updateImageProcessing();
       draw();
-    };
+    });
 
-    input.addEventListener(eventType, syncInputs);
-
-    syncInputs();
+    input.syncInputs();
   });
 });
 
@@ -418,7 +424,7 @@ sizeBtns.forEach((button) => {
     const input = form[dimension];
     const value = Math.max(1, +input.value + +delta);
     input.value = value;
-    input.dispatchEvent(new Event("change"));
+    input.dispatchEvent(new InputEvent("change"));
   });
 });
 
@@ -426,11 +432,16 @@ export const resetLinks = () => {
   links.forEach(({ link, init }) => {
     if (!init) return;
 
-    const firstInput = form[link[0]];
+    const firstInput = document.querySelector(link[0]);
 
     firstInput.value = init();
-    firstInput.dispatchEvent(new Event("change"));
+    firstInput.syncInputs();
   });
+
+  if (!validate()) return;
+
+  updateImageProcessing();
+  draw();
 };
 
 resetBtn.addEventListener("click", resetLinks);
