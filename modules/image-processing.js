@@ -13,8 +13,9 @@ import {
   resetBtn,
 } from "./constants.js";
 import { calculateTime, formatTime, getZoom, validate } from "./utils.js";
-import { getAdjusted, adjust, makeOpaque, dither } from "./dithering.js";
+import { adjust, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
+import { resetAllWorkers } from "./worker.js";
 
 export const updateImageProcessing = async () => {
   const adjusted = document.createElement("canvas");
@@ -62,6 +63,7 @@ export const updateImageProcessing = async () => {
 };
 
 export const drawUpdatedImage = async () => {
+  resetAllWorkers();
   canvasOverlay.classList.add("processing");
 
   try {

@@ -1,15 +1,32 @@
 import { state } from "./state.js";
-import { DITHER_WORKER_URL, ADJUST_WORKER_URL } from "./constants.js";
 
 const getWorker = (url) =>
   new Worker(new URL(url, import.meta.url), {
     type: "module",
   });
 
-export const initWorkers = () => {
-  state.worker.dither = getWorker(DITHER_WORKER_URL);
-  state.worker.adjust = getWorker(ADJUST_WORKER_URL);
+const resetWorker = (key) => {
+  const currentWorker = state.workers[key];
+
+  if (!currentWorker.instance) {
+    state.workers[key] = {
+      instance: getWorker(`../workers/${key}.worker.js`),
+      isProcessing: false,
+    };
+    return;
+  }
+
+  if (!currentWorker.isProcessing) return;
+
+  currentWorker.instance.terminate();
+  state.workers[key] = {
+    instance: getWorker(`../workers/${key}.worker.js`),
+    isProcessing: false,
+  };
 };
+
+export const resetAllWorkers = () =>
+  Object.keys(state.workers).forEach(resetWorker);
 
 export function createWorkerTask(worker, dataToSend, transferableObjects) {
   return new Promise((resolve, reject) => {

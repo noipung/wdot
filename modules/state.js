@@ -21,8 +21,8 @@ export const state = {
   resized: null,
   dithered: null,
   showOriginal: false,
-  worker: {
-    adjust: null,
-    dither: null,
+  workers: {
+    adjust: { instance: null, isProcessing: false },
+    dither: { instance: null, isProcessing: false },
   },
 };
