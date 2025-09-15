@@ -1,11 +1,26 @@
+function rgbToOklab(rgb) {
+  const [r, g, b] = rgb.map((c) => c / 255);
+
+  const L = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
+  const a = 0.2119034982 * r - 0.531241887 * g + 0.3193383888 * b;
+  const b_ = 0.0933188204 * r + 0.1633534244 * g - 0.2566722448 * b;
+
+  return [L, a, b_];
+}
+
 const dist = (a, b) =>
   (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
 
 const getClosestColor = (color, palette) => {
+  const oklabColor = rgbToOklab(color);
+
+  const oklabPalette = palette.map(rgbToOklab);
+
   let closest = palette[0];
-  let minDist = dist(color, closest);
-  for (let i = 1; i < palette.length; i++) {
-    const d = dist(color, palette[i]);
+  let minDist = dist(oklabColor, oklabPalette[0]);
+
+  for (let i = 1; i < oklabPalette.length; i++) {
+    const d = dist(oklabColor, oklabPalette[i]);
     if (d < minDist) {
       minDist = d;
       closest = palette[i];
