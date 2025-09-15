@@ -20,7 +20,12 @@
           <div class="spinner"></div>
           <div class="canvas-control-layer"></div>
           <div class="show-original-input-wrapper">
-            <input type="checkbox" name="show-original" id="show-original" />
+            <input
+              type="checkbox"
+              name="show-original"
+              id="show-original"
+              autocomplete="off"
+            />
             <label for="show-original"><i></i></label>
           </div>
           <div class="zoom-input-wrapper">
@@ -50,7 +55,7 @@
               <span class="dropdown-current-option">빠름</span>
               <i></i>
             </label>
-            <input type="checkbox" id="dropdown-open" />
+            <input type="checkbox" id="dropdown-open" autocomplete="off" />
             <div class="dropdown-options-container">
               <div class="option-item">
                 <input
@@ -59,6 +64,7 @@
                   name="quality"
                   value="rgb"
                   data-label="빠름"
+                  autocomplete="off"
                   checked
                 />
                 <label for="quality-fast">
@@ -74,6 +80,7 @@
                   name="quality"
                   value="oklab"
                   data-label="균형"
+                  autocomplete="off"
                 />
                 <label for="quality-balanced">
                   <i></i>
@@ -88,6 +95,7 @@
                   name="quality"
                   value="ciede2000"
                   data-label="가장 정확"
+                  autocomplete="off"
                 />
                 <label for="quality-best">
                   <i></i>
