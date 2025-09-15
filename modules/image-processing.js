@@ -11,12 +11,13 @@ import {
   downloadBtn,
   sizeBtns,
   resetBtn,
+  canvas,
 } from "./constants.js";
-import { calculateTime, formatTime, getZoom } from "./utils.js";
+import { calculateTime, formatTime, getZoom, validate } from "./utils.js";
 import { getAdjusted, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 
-export const updateImageProcessing = () => {
+export const updateImageProcessing = async () => {
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
@@ -40,7 +41,7 @@ export const updateImageProcessing = () => {
 
   makeOpaque(resized);
 
-  const imageData = dither(resizedCtx, pw, ph);
+  const imageData = await dither(resizedCtx, pw, ph);
 
   state.palette.setAllColorCounts(imageData);
   const pixels = state.palette.allCount;
@@ -55,6 +56,19 @@ export const updateImageProcessing = () => {
 
   state.resized = resized;
   state.dithered = dithered;
+};
+
+export const drawUpdatedImage = async () => {
+  canvasOverlay.classList.add("processing");
+
+  try {
+    if (!validate()) return;
+
+    await updateImageProcessing();
+    draw();
+  } finally {
+    canvasOverlay.classList.remove("processing");
+  }
 };
 
 const enableInputs = () => {
@@ -80,7 +94,7 @@ const enableInputs = () => {
   sizeBtns.forEach((btn) => (btn.disabled = false));
 };
 
-export const handleImageLoad = (image) => {
+export const handleImageLoad = async (image) => {
   state.image = image;
   state.aspectRatio = image.width / image.height;
 
@@ -93,8 +107,7 @@ export const handleImageLoad = (image) => {
   canvasOverlay.classList.add("image-loaded");
   enableInputs();
 
-  updateImageProcessing();
-  draw();
+  drawUpdatedImage();
 };
 
 export const updateZoom = () => {

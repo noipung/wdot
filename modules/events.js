@@ -25,7 +25,7 @@ import {
 } from "./utils.js";
 import {
   handleImageLoad,
-  updateImageProcessing,
+  drawUpdatedImage,
   updateZoom,
 } from "./image-processing.js";
 import { draw } from "./drawing.js";
@@ -408,10 +408,7 @@ links.forEach(({ link, logic, cb }) => {
     input.addEventListener(eventType, () => {
       input.syncInputs();
 
-      if (!validate()) return;
-
-      updateImageProcessing();
-      draw();
+      drawUpdatedImage();
     });
 
     input.syncInputs();
@@ -438,10 +435,7 @@ export const resetLinks = () => {
     firstInput.syncInputs();
   });
 
-  if (!validate()) return;
-
-  updateImageProcessing();
-  draw();
+  drawUpdatedImage();
 };
 
 resetBtn.addEventListener("click", resetLinks);

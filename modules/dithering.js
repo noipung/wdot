@@ -32,62 +32,54 @@ const createColorMatcher = () => {
 
 export const getClosestColor = createColorMatcher();
 
+// dither 함수만 워커를 사용할 수 있도록 수정
+
+let ditherWorker = null;
+function getDitherWorker() {
+  if (!ditherWorker) {
+    ditherWorker = new Worker(new URL("./dither.worker.js", import.meta.url), {
+      type: "module",
+    });
+  }
+  return ditherWorker;
+}
+
+/**
+ * 워커를 사용한 비동기 디더링 함수
+ * @returns {Promise<ImageData>}
+ */
 export function dither(ctx, width, height) {
   const imageData = ctx.getImageData(0, 0, width, height);
-  const data = imageData.data;
   const ditherIntensity = state.dither / 100;
+  const palette = state.palette.getEnabledColors().map(({ rgb }) => rgb);
 
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const idx = (y * width + x) * 4;
-      const oldR = data[idx];
-      const oldG = data[idx + 1];
-      const oldB = data[idx + 2];
+  return new Promise((resolve, reject) => {
+    const worker = getDitherWorker();
 
-      const colors = state.palette.getEnabledColors().map(({ rgb }) => rgb);
-      const newColor = getClosestColor(
-        [oldR, oldG, oldB],
-        colors.length ? colors : [[0, 0, 0]]
-      );
-      data[idx] = newColor[0];
-      data[idx + 1] = newColor[1];
-      data[idx + 2] = newColor[2];
+    const handleMessage = (e) => {
+      worker.removeEventListener("message", handleMessage);
+      resolve(e.data.imageData);
+    };
+    const handleError = (err) => {
+      worker.removeEventListener("error", handleError);
+      reject(err);
+    };
 
-      const errR = oldR - newColor[0];
-      const errG = oldG - newColor[1];
-      const errB = oldB - newColor[2];
+    worker.addEventListener("message", handleMessage);
+    worker.addEventListener("error", handleError);
 
-      if (x + 1 < width) {
-        const rightIdx = idx + 4;
-        data[rightIdx] += ((errR * 7) / 16) * ditherIntensity;
-        data[rightIdx + 1] += ((errG * 7) / 16) * ditherIntensity;
-        data[rightIdx + 2] += ((errB * 7) / 16) * ditherIntensity;
-      }
-
-      if (y + 1 < height) {
-        const downIdx = idx + width * 4;
-        data[downIdx] += ((errR * 5) / 16) * ditherIntensity;
-        data[downIdx + 1] += ((errG * 5) / 16) * ditherIntensity;
-        data[downIdx + 2] += ((errB * 5) / 16) * ditherIntensity;
-
-        if (x - 1 >= 0) {
-          const downLeftIdx = downIdx - 4;
-          data[downLeftIdx] += ((errR * 3) / 16) * ditherIntensity;
-          data[downLeftIdx + 1] += ((errG * 3) / 16) * ditherIntensity;
-          data[downLeftIdx + 2] += ((errB * 3) / 16) * ditherIntensity;
-        }
-
-        if (x + 1 < width) {
-          const downRightIdx = downIdx + 4;
-          data[downRightIdx] += ((errR * 1) / 16) * ditherIntensity;
-          data[downRightIdx + 1] += ((errG * 1) / 16) * ditherIntensity;
-          data[downRightIdx + 2] += ((errB * 1) / 16) * ditherIntensity;
-        }
-      }
-    }
-  }
-
-  return imageData;
+    // imageData는 transferable로 전달
+    worker.postMessage(
+      {
+        imageData,
+        width,
+        height,
+        palette,
+        ditherIntensity,
+      },
+      [imageData.data.buffer]
+    );
+  });
 }
 
 export function getAdjusted(image, brightness, contrast, saturation) {

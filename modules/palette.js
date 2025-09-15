@@ -6,10 +6,8 @@ import {
   unselectAllBtn,
 } from "./constants.js";
 import { getContentColor } from "./utils.js";
-import { updateImageProcessing } from "./image-processing.js";
-import { draw } from "./drawing.js";
+import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
-import { validate } from "./utils.js";
 
 class Palette {
   constructor(colors) {
@@ -109,10 +107,7 @@ class PaletteColor {
       this.colorListItem.classList.toggle("disabled", !check.checked);
       this.palette.changed = true;
 
-      if (!validate()) return;
-
-      updateImageProcessing();
-      draw();
+      drawUpdatedImage();
     });
 
     label.append(i, colorCount);
@@ -160,10 +155,7 @@ export const initPaletteUI = async () => {
   const handleClickInitBtn = () => {
     state.palette.selectInitColors();
 
-    if (!validate()) return;
-
-    updateImageProcessing();
-    draw();
+    drawUpdatedImage();
   };
 
   const li = document.createElement("li");
@@ -178,10 +170,7 @@ export const initPaletteUI = async () => {
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();
 
-    if (!validate()) return;
-
-    updateImageProcessing();
-    draw();
+    drawUpdatedImage();
   };
 
   selectAllBtn.addEventListener("click", handleClickSelectAllBtn);
@@ -189,10 +178,7 @@ export const initPaletteUI = async () => {
   const handleClickUnselectAllBtn = () => {
     state.palette.unselectAllColors();
 
-    if (!validate()) return;
-
-    updateImageProcessing();
-    draw();
+    drawUpdatedImage();
   };
 
   unselectAllBtn.addEventListener("click", handleClickUnselectAllBtn);
