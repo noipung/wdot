@@ -1,8 +1,11 @@
 import "./modules/events.js";
 import { initPaletteUI } from "./modules/palette.js";
+import { initWorkers } from "./modules/worker.js";
 import "./modules/ui.js";
 
 const initializeApp = async () => {
+  initWorkers();
+
   try {
     await initPaletteUI();
   } catch (error) {

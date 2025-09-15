@@ -1,85 +1,49 @@
 import { state } from "./state.js";
-import { dist } from "./utils.js";
+import { createWorkerTask } from "./worker.js";
 
-const createColorMatcher = () => {
-  let cache = new Map();
-  let cachedPalette = null;
-
-  return (color, palette) => {
-    if (cachedPalette !== palette) {
-      cache.clear();
-      cachedPalette = palette;
-    }
-
-    const key = color.join(",");
-
-    if (cache.has(key)) {
-      return cache.get(key);
-    }
-
-    const result = palette.reduce(
-      (closest, current) =>
-        !closest || dist(color, current) < dist(color, closest)
-          ? current
-          : closest,
-      null
-    );
-
-    cache.set(key, result);
-    return result;
-  };
-};
-
-export const getClosestColor = createColorMatcher();
-
-// dither 함수만 워커를 사용할 수 있도록 수정
-
-let ditherWorker = null;
-function getDitherWorker() {
-  if (!ditherWorker) {
-    ditherWorker = new Worker(new URL("./dither.worker.js", import.meta.url), {
-      type: "module",
-    });
-  }
-  return ditherWorker;
-}
-
-/**
- * 워커를 사용한 비동기 디더링 함수
- * @returns {Promise<ImageData>}
- */
-export function dither(ctx, width, height) {
+export async function dither(canvas) {
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const { width, height } = canvas;
   const imageData = ctx.getImageData(0, 0, width, height);
   const ditherIntensity = state.dither / 100;
   const palette = state.palette.getEnabledColors().map(({ rgb }) => rgb);
 
-  return new Promise((resolve, reject) => {
-    const worker = getDitherWorker();
+  const dataToSend = {
+    imageData,
+    width,
+    height,
+    palette,
+    ditherIntensity,
+  };
 
-    const handleMessage = (e) => {
-      worker.removeEventListener("message", handleMessage);
-      resolve(e.data.imageData);
-    };
-    const handleError = (err) => {
-      worker.removeEventListener("error", handleError);
-      reject(err);
-    };
+  const transferableObjects = [imageData.data.buffer];
 
-    worker.addEventListener("message", handleMessage);
-    worker.addEventListener("error", handleError);
+  const result = await createWorkerTask(
+    state.worker.dither,
+    dataToSend,
+    transferableObjects
+  );
 
-    // imageData는 transferable로 전달
-    worker.postMessage(
-      {
-        imageData,
-        width,
-        height,
-        palette,
-        ditherIntensity,
-      },
-      [imageData.data.buffer]
-    );
-  });
+  return result.imageData;
+}
+
+export async function adjust(canvas) {
+  const ctx = canvas.getContext("2d");
+  const { width, height } = canvas;
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const { brightness, contrast, saturation } = state;
+
+  const dataToSend = { imageData, brightness, contrast, saturation };
+
+  const transferableObjects = [imageData.data.buffer];
+
+  const result = await createWorkerTask(
+    state.worker.adjust,
+    dataToSend,
+    transferableObjects
+  );
+
+  return result.imageData;
 }
 
 export function getAdjusted(image, brightness, contrast, saturation) {

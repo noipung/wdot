@@ -1,11 +1,7 @@
-// 워커: 디더링 연산만 담당. state, DOM 접근 불가
+const dist = (a, b) =>
+  (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
 
-// 팔레트에서 가장 가까운 색 찾기
-function dist(a, b) {
-  return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
-}
-
-function getClosestColor(color, palette) {
+const getClosestColor = (color, palette) => {
   let closest = palette[0];
   let minDist = dist(color, closest);
   for (let i = 1; i < palette.length; i++) {
@@ -16,10 +12,15 @@ function getClosestColor(color, palette) {
     }
   }
   return closest;
-}
+};
 
-self.onmessage = function (e) {
-  const { imageData, width, height, palette, ditherIntensity } = e.data;
+const getDitherdImageData = (
+  imageData,
+  width,
+  height,
+  palette,
+  ditherIntensity
+) => {
   const data = imageData.data;
 
   for (let y = 0; y < height; y++) {
@@ -71,6 +72,21 @@ self.onmessage = function (e) {
     }
   }
 
-  // Transfer imageData back
-  self.postMessage({ imageData }, [imageData.data.buffer]);
+  return imageData;
+};
+
+self.onmessage = (e) => {
+  const { imageData, width, height, palette, ditherIntensity } = e.data;
+
+  const resultImageData = getDitherdImageData(
+    imageData,
+    width,
+    height,
+    palette,
+    ditherIntensity
+  );
+
+  self.postMessage({ imageData: resultImageData }, [
+    resultImageData.data.buffer,
+  ]);
 };

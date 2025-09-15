@@ -29,3 +29,6 @@ export const cancelBtn = document.querySelector(".cancel-btn");
 
 // 드래그 임계값
 export const DRAG_THRESHOLD = 3;
+
+export const DITHER_WORKER_URL = "../workers/dither.worker.js";
+export const ADJUST_WORKER_URL = "../workers/adjust.worker.js";

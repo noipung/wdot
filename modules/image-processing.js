@@ -11,25 +11,28 @@ import {
   downloadBtn,
   sizeBtns,
   resetBtn,
-  canvas,
 } from "./constants.js";
 import { calculateTime, formatTime, getZoom, validate } from "./utils.js";
-import { getAdjusted, makeOpaque, dither } from "./dithering.js";
+import { getAdjusted, adjust, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 
 export const updateImageProcessing = async () => {
+  const adjusted = document.createElement("canvas");
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
+  const adjustedCtx = adjusted.getContext("2d");
   const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
   const ditheredCtx = dithered.getContext("2d");
 
-  state.adjusted = getAdjusted(
-    state.image,
-    state.brightness,
-    state.contrast,
-    state.saturation
-  );
+  adjusted.width = state.image.width;
+  adjusted.height = state.image.height;
+  adjustedCtx.drawImage(state.image, 0, 0);
+
+  const adjustedImageData = await adjust(adjusted);
+
+  adjustedCtx.putImageData(adjustedImageData, 0, 0);
+  state.adjusted = adjusted;
 
   const pw = state.width;
   const ph = state.height;
@@ -41,11 +44,11 @@ export const updateImageProcessing = async () => {
 
   makeOpaque(resized);
 
-  const imageData = await dither(resizedCtx, pw, ph);
+  const imageData = await dither(resized);
 
   state.palette.setAllColorCounts(imageData);
-  const pixels = state.palette.allCount;
 
+  const pixels = state.palette.allCount;
   const { time, timeWithFlag } = calculateTime(pixels);
 
   total.textContent = `${pixels} 픽셀`;

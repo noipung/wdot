@@ -21,4 +21,8 @@ export const state = {
   resized: null,
   dithered: null,
   showOriginal: false,
+  worker: {
+    adjust: null,
+    dither: null,
+  },
 };
