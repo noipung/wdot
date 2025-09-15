@@ -30,6 +30,7 @@ export async function dither(canvas) {
   const imageData = ctx.getImageData(0, 0, width, height);
   const ditherIntensity = state.dither / 100;
   const palette = state.palette.getEnabledColors().map(({ rgb }) => rgb);
+  const { method } = state;
 
   const dataToSend = {
     imageData,
@@ -37,6 +38,7 @@ export async function dither(canvas) {
     height,
     palette,
     ditherIntensity,
+    method,
   };
 
   const transferableObjects = [imageData.data.buffer];

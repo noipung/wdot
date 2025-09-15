@@ -268,6 +268,104 @@ body button {
   width: 50px;
 }
 
+.dropdown-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0.5em;
+}
+
+#dropdown-open {
+  display: none;
+}
+
+label[for="dropdown-open"] {
+  background: #fff;
+  padding: 0.5em;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+label[for="dropdown-open"] i {
+  display: block;
+  width: 1em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: no-repeat center / 100%;
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/arrow_drop_up/wght600/48px.svg");
+}
+
+label[for="dropdown-open"]:has(+ :checked) i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/arrow_drop_down/wght600/48px.svg");
+}
+
+.dropdown-options-container {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  white-space: nowrap;
+  margin-bottom: 0.5em;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  font-size: 0.9em;
+}
+
+#dropdown-open:checked + .dropdown-options-container {
+  display: flex;
+}
+
+.option-item input {
+  display: none;
+}
+
+.option-item label {
+  display: flex;
+  align-items: center;
+  padding: 0.5em;
+  cursor: pointer;
+  color: #888;
+  gap: 0.5em;
+  transition: color 0.2s;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.option-item input:checked + label {
+  color: #000;
+}
+
+.option-item label i {
+  display: block;
+  width: 1em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght600/48px.svg")
+    no-repeat center / 100%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.option-item input:checked + label i {
+  opacity: 1;
+}
+
+.option-method {
+  font-weight: bold;
+}
+
 .btn-wrapper {
   display: flex;
   flex-flow: column;

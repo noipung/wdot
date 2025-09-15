@@ -8,6 +8,8 @@ import {
   zoomInBtn,
   zoomOutBtn,
   zoomInput,
+  dropdownCurrentOption,
+  optionRadios,
   downloadBtn,
   saveBtn,
   cancelBtn,
@@ -112,6 +114,17 @@ zoomInput.addEventListener("change", (e) => {
   if (!validate()) return;
 
   draw();
+});
+
+// 메서드 드롭다운 선택
+
+optionRadios.forEach((optionRadio) => {
+  optionRadio.addEventListener("change", (e) => {
+    dropdownCurrentOption.textContent = e.target.dataset.label;
+    state.method = e.target.value;
+
+    drawUpdatedImage();
+  });
 });
 
 canvasControlLayer.addEventListener("drop", handleDrop, false);

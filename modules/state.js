@@ -21,6 +21,7 @@ export const state = {
   resized: null,
   dithered: null,
   showOriginal: false,
+  method: "rgb",
   workers: {
     adjust: { instance: null, isProcessing: false },
     dither: { instance: null, isProcessing: false },

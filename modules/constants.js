@@ -21,6 +21,10 @@ export const uploadBtn = document.querySelector("#upload-btn");
 export const zoomInBtn = document.querySelector(".zoom-in");
 export const zoomOutBtn = document.querySelector(".zoom-out");
 export const zoomInput = document.querySelector("#zoom");
+export const dropdownCurrentOption = document.querySelector(
+  ".dropdown-current-option"
+);
+export const optionRadios = document.querySelectorAll(".option-item input");
 export const resetBtn = document.querySelector(".reset-btn");
 export const sizeBtns = document.querySelectorAll(".size-btn");
 export const dialog = document.querySelector(".dialog");

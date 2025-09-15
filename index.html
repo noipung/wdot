@@ -45,6 +45,58 @@
             />
             <span class="percent">%</span>
           </div>
+          <div class="dropdown-wrapper">
+            <label for="dropdown-open">
+              <span class="dropdown-current-option">빠름</span>
+              <i></i>
+            </label>
+            <input type="checkbox" id="dropdown-open" />
+            <div class="dropdown-options-container">
+              <div class="option-item">
+                <input
+                  type="radio"
+                  id="quality-fast"
+                  name="quality"
+                  value="rgb"
+                  data-label="빠름"
+                  checked
+                />
+                <label for="quality-fast">
+                  <i></i>
+                  <span class="option-label">빠름</span>
+                  <span class="option-method">RGB</span>
+                </label>
+              </div>
+              <div class="option-item">
+                <input
+                  type="radio"
+                  id="quality-balanced"
+                  name="quality"
+                  value="oklab"
+                  data-label="보통"
+                />
+                <label for="quality-balanced">
+                  <i></i>
+                  <span class="option-label">보통</span>
+                  <span class="option-method">Oklab</span>
+                </label>
+              </div>
+              <div class="option-item">
+                <input
+                  type="radio"
+                  id="quality-best"
+                  name="quality"
+                  value="ciede2000"
+                  data-label="최고 품질"
+                />
+                <label for="quality-best">
+                  <i></i>
+                  <span class="option-label">최고 품질</span>
+                  <span class="option-method">CIEDE2000</span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <aside>
