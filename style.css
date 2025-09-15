@@ -526,6 +526,7 @@ h3.size::before {
   pointer-events: none;
   transition: opacity 0.2s;
   margin-bottom: 4px;
+  z-index: 20;
 }
 
 .palette {
@@ -592,7 +593,7 @@ h3.size::before {
   background: currentColor;
   mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght700/48px.svg")
     no-repeat center / 75%;
-  z-index: 1;
+  z-index: 10;
 }
 
 .palette li label .color-count {
