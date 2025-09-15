@@ -337,10 +337,15 @@ label[for="dropdown-open"]:has(+ :checked) i {
   color: #888;
   gap: 0.5em;
   transition: color 0.2s;
+  border-bottom: 1px solid #ddd;
 
   &:hover {
     background: #f8f8f8;
   }
+}
+
+.option-item:last-child label {
+  border: none;
 }
 
 .option-item input:checked + label {
