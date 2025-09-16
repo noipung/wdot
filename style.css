@@ -386,7 +386,7 @@ label[for="dropdown-open"]:has(+ :checked) i {
   display: none;
 }
 
-#pixel-mode-toggle {
+#pixelated-mode-toggle {
   display: none;
 }
 
@@ -444,12 +444,12 @@ label[for="dropdown-open"]:has(+ :checked) i {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/download/wght600/48px.svg");
 }
 
-.pixel-mode-toggle-wrapper {
+.pixelated-mode-toggle-wrapper {
   display: flex;
   position: relative;
 }
 
-.pixel-mode-toggle-wrapper label {
+.pixelated-mode-toggle-wrapper label {
   display: flex;
   flex-direction: column;
   gap: 0.3em;
@@ -467,11 +467,11 @@ label[for="dropdown-open"]:has(+ :checked) i {
   }
 }
 
-.pixel-mode-toggle-wrapper p {
+.pixelated-mode-toggle-wrapper p {
   font-size: 0.7em;
 }
 
-.pixel-mode-toggle-wrapper i {
+.pixelated-mode-toggle-wrapper i {
   content: "";
   display: block;
   width: 1.2em;
@@ -481,7 +481,7 @@ label[for="dropdown-open"]:has(+ :checked) i {
     no-repeat center / 100%;
 }
 
-.pixel-mode-toggle-wrapper :checked + label {
+.pixelated-mode-toggle-wrapper :checked + label {
   border-radius: 0 3px 3px 0;
   color: #3172e7;
   background: #e8effc;
@@ -492,16 +492,16 @@ label[for="dropdown-open"]:has(+ :checked) i {
   }
 }
 
-.pixel-mode-toggle-wrapper :checked + label i {
+.pixelated-mode-toggle-wrapper :checked + label i {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_on/wght600/48px.svg");
 }
 
-.pixel-mode-toggle-wrapper .tooltip {
+.pixelated-mode-toggle-wrapper .tooltip {
   font-weight: normal;
   text-align: right;
 }
 
-.pixel-mode-toggle-wrapper:hover .tooltip {
+.pixelated-mode-toggle-wrapper:hover .tooltip {
   opacity: 1;
 }
 

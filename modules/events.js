@@ -18,7 +18,7 @@ import {
   resetBtn,
   sizeBtns,
   showOriginalInput,
-  pixelModeToggle,
+  pixelatedModeToggle,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -364,7 +364,7 @@ showOriginalInput.addEventListener("change", (e) => {
   draw();
 });
 
-pixelModeToggle.addEventListener("change", (e) => {
+pixelatedModeToggle.addEventListener("change", (e) => {
   state.isPixelMode = e.target.checked;
 
   drawUpdatedImage();
