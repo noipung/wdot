@@ -457,7 +457,7 @@ label[for="dropdown-open"]:has(+ :checked) i {
   align-items: center;
   color: #aaa;
   font-weight: bold;
-  padding: 1em;
+  padding: 0.6em;
   cursor: pointer;
   transition: color 0.2s, background-color 0.2s;
   border-left: 1px solid #eee;
