@@ -11,9 +11,9 @@ import {
   dropdownCurrentOption,
   optionRadios,
   downloadBtn,
-  saveBtn,
-  cancelBtn,
-  dialog,
+  downloadConfirmBtn,
+  downloadCancelBtn,
+  downloadDialog,
   DRAG_THRESHOLD,
   resetBtn,
   sizeBtns,
@@ -401,14 +401,10 @@ links.forEach(({ link, logic, cb }) => {
       if (input.type === "number" && eventType === "change") {
         const min = input.min !== "" ? +input.min : -Infinity;
         const max = input.max !== "" ? +input.max : Infinity;
-        if (numberValue < min) numberValue = min;
-        if (numberValue > max) numberValue = max;
-        if (numberValue !== +input.value) {
-          input.value = numberValue;
-        }
+        numberValue = Math.max(min, Math.min(max, numberValue));
       }
 
-      state[input.name] = numberValue;
+      input.value = state[input.name] = numberValue;
 
       const restInputs = inputs.filter(
         (currentInput) => currentInput !== input
@@ -427,7 +423,6 @@ links.forEach(({ link, logic, cb }) => {
 
     input.addEventListener(eventType, () => {
       input.syncInputs();
-
       drawUpdatedImage();
     });
 
@@ -464,14 +459,14 @@ resetBtn.addEventListener("click", resetLinks);
 downloadBtn.addEventListener("click", (e) => {
   if (!state.dithered) return;
 
-  dialog.showModal();
+  downloadDialog.showModal();
 });
 
-cancelBtn.addEventListener("click", (e) => {
-  dialog.close();
+downloadCancelBtn.addEventListener("click", (e) => {
+  downloadDialog.close();
 });
 
-saveBtn.addEventListener("click", (e) => {
+downloadConfirmBtn.addEventListener("click", (e) => {
   const imageURL = state.dithered.toDataURL("image/png");
   const link = document.createElement("a");
 
@@ -482,7 +477,7 @@ saveBtn.addEventListener("click", (e) => {
   link.click();
   document.body.removeChild(link);
 
-  dialog.close();
+  downloadDialog.close();
 });
 
 // 폼 제출 방지

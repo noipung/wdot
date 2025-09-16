@@ -887,7 +887,7 @@ h3.size::before {
   font-size: 1em;
 }
 
-.dialog-btn-wrapper .save-btn {
+.dialog-btn-wrapper .confirm-btn {
   background: #3172e7;
   color: #fff;
 

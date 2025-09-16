@@ -28,9 +28,13 @@ export const dropdownCurrentOption = document.querySelector(
 export const optionRadios = document.querySelectorAll(".option-item input");
 export const resetBtn = document.querySelector(".reset-btn");
 export const sizeBtns = document.querySelectorAll(".size-btn");
-export const dialog = document.querySelector(".dialog");
-export const saveBtn = document.querySelector(".save-btn");
-export const cancelBtn = document.querySelector(".cancel-btn");
+export const downloadDialog = document.querySelector(".download-dialog");
+export const downloadConfirmBtn = document.querySelector(
+  ".download-dialog .confirm-btn"
+);
+export const downloadCancelBtn = document.querySelector(
+  ".download-dialog .cancel-btn"
+);
 
 // 드래그 임계값
 export const DRAG_THRESHOLD = 3;
