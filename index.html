@@ -352,8 +352,26 @@
           </div>
         </form>
         <div class="btn-wrapper">
-          <label for="upload-btn">이미지 업로드</label>
-          <input type="file" id="upload-btn" accept="image/*" />
+          <div class="upload-btn-wrapper">
+            <label for="upload-btn">이미지 업로드</label>
+            <input type="file" id="upload-btn" accept="image/*" />
+            <div class="pixel-mode-toggle-wrapper">
+              <input
+                type="checkbox"
+                name="pixel-mode-toggle"
+                id="pixel-mode-toggle"
+                autocomplete="off"
+              />
+              <label for="pixel-mode-toggle"
+                ><i></i>
+                <p>픽셀 모드</p>
+                <div class="tooltip">
+                  원본이 픽셀 아트일 경우, 원본 크기와 다르게 설정할 때<br />도트를
+                  뭉개지 않게 확대·축소하도록 설정합니다.
+                </div>
+              </label>
+            </div>
+          </div>
           <button class="download-btn" disabled autocomplete="off">
             도트 이미지 저장
           </button>

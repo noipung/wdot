@@ -17,6 +17,7 @@ export const basicPaletteList = document.querySelector(".palette.basic");
 export const lockedPaletteList = document.querySelector(".palette.locked");
 export const selectAllBtn = document.querySelector(".select-all-btn");
 export const unselectAllBtn = document.querySelector(".unselect-all-btn");
+export const pixelModeToggle = document.querySelector("#pixel-mode-toggle");
 export const uploadBtn = document.querySelector("#upload-btn");
 export const zoomInBtn = document.querySelector(".zoom-in");
 export const zoomOutBtn = document.querySelector(".zoom-out");

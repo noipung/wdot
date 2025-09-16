@@ -1,6 +1,5 @@
 import { state } from "./state.js";
 import { canvas, ctx } from "./constants.js";
-import { disableImageSmoothing } from "./utils.js";
 
 export const draw = () => {
   const { width: cw, height: ch } = canvas;
@@ -22,6 +21,3 @@ export const draw = () => {
 
   ctx.drawImage(resultImage, ...center, zw, zh);
 };
-
-// 이미지 스무딩 비활성화
-disableImageSmoothing();

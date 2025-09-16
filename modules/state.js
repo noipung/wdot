@@ -26,4 +26,5 @@ export const state = {
     adjust: { instance: null, isProcessing: false },
     dither: { instance: null, isProcessing: false },
   },
+  isPixelMode: false,
 };

@@ -1,5 +1,5 @@
-import { canvas } from "./constants.js";
-import { disableImageSmoothing, validate } from "./utils.js";
+import { canvas, ctx } from "./constants.js";
+import { validate } from "./utils.js";
 import { draw } from "./drawing.js";
 
 export const resizeCanvas = () => {
@@ -8,7 +8,7 @@ export const resizeCanvas = () => {
   canvas.width = width;
   canvas.height = height;
 
-  disableImageSmoothing();
+  ctx.imageSmoothingEnabled = false;
 
   if (!validate()) return;
 

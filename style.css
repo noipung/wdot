@@ -194,6 +194,7 @@ body button {
 .show-original-input-wrapper label {
   display: flex;
   background: #fff;
+  color: #aaa;
   border: 1px solid #ccc;
   padding: 0.5em;
   border-radius: 4px;
@@ -205,12 +206,12 @@ body button {
 }
 
 .show-original-input-wrapper input:checked + label {
-  background: #555;
-  color: #fff;
-  border-color: #333;
+  color: #3172e7;
+  background: #e8effc;
+  border: 1px solid #a5c2f3;
 
   &:hover {
-    background: #444;
+    background: #e0eafb;
   }
 }
 
@@ -219,8 +220,12 @@ body button {
   width: 1.5em;
   aspect-ratio: 1;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility/wght600/48px.svg")
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility_off/wght600/48px.svg")
     no-repeat center / 100%;
+}
+
+.show-original-input-wrapper input:checked + label i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility/wght600/48px.svg");
 }
 
 .zoom-input-wrapper {
@@ -381,10 +386,20 @@ label[for="dropdown-open"]:has(+ :checked) i {
   display: none;
 }
 
-label[for="upload-btn"] {
-  cursor: pointer;
+#pixel-mode-toggle {
+  display: none;
+}
+
+.upload-btn-wrapper {
+  display: flex;
+  align-items: stretch;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+.upload-btn-wrapper label[for="upload-btn"] {
+  cursor: pointer;
+  flex: 1;
 
   &:hover {
     background: #f8f8f8;
@@ -400,7 +415,7 @@ label[for="upload-btn"] {
   }
 }
 
-label[for="upload-btn"],
+.upload-btn-wrapper label[for="upload-btn"],
 .download-btn {
   font-size: 1em;
   padding: 1em;
@@ -408,9 +423,10 @@ label[for="upload-btn"],
   display: flex;
   gap: 0.3em;
   justify-content: center;
+  align-items: center;
 }
 
-label[for="upload-btn"]::before,
+.upload-btn-wrapper label[for="upload-btn"]::before,
 .download-btn::before {
   content: "";
   display: block;
@@ -420,12 +436,73 @@ label[for="upload-btn"]::before,
   mask: no-repeat center / 100%;
 }
 
-label[for="upload-btn"]::before {
+.upload-btn-wrapper label[for="upload-btn"]::before {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/image_arrow_up/wght600/48px.svg");
 }
 
 .download-btn::before {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/download/wght600/48px.svg");
+}
+
+.pixel-mode-toggle-wrapper {
+  display: flex;
+  position: relative;
+}
+
+.pixel-mode-toggle-wrapper label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  justify-content: center;
+  align-items: center;
+  color: #aaa;
+  font-weight: bold;
+  padding: 1em;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+  border-left: 1px solid #eee;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.pixel-mode-toggle-wrapper p {
+  font-size: 0.7em;
+}
+
+.pixel-mode-toggle-wrapper i {
+  content: "";
+  display: block;
+  width: 1.2em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_off/wght600/48px.svg")
+    no-repeat center / 100%;
+}
+
+.pixel-mode-toggle-wrapper :checked + label {
+  border-radius: 0 3px 3px 0;
+  color: #3172e7;
+  background: #e8effc;
+  border-left: 1px solid #d2e0f9;
+
+  &:hover {
+    background: #e0eafb;
+  }
+}
+
+.pixel-mode-toggle-wrapper :checked + label i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_on/wght600/48px.svg");
+}
+
+.pixel-mode-toggle-wrapper .tooltip {
+  font-weight: normal;
+  text-align: right;
+}
+
+.pixel-mode-toggle-wrapper:hover .tooltip {
+  opacity: 1;
 }
 
 main aside {

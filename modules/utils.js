@@ -1,5 +1,5 @@
 import { state } from "./state.js";
-import { canvas, ctx } from "./constants.js";
+import { canvas } from "./constants.js";
 
 export const preventDefaults = (e) => {
   e.preventDefault();
@@ -18,10 +18,6 @@ export const validate = () =>
   state.dither <= 100 &&
   state.width >= 1 &&
   state.height >= 1;
-
-export const disableImageSmoothing = () => {
-  ctx.imageSmoothingEnabled = false;
-};
 
 export const getContentColor = ([r, g, b]) =>
   (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.5 ? "#000" : "#fff";

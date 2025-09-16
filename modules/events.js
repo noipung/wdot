@@ -18,6 +18,7 @@ import {
   resetBtn,
   sizeBtns,
   showOriginalInput,
+  pixelModeToggle,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -361,6 +362,12 @@ showOriginalInput.addEventListener("change", (e) => {
   if (!validate()) return;
 
   draw();
+});
+
+pixelModeToggle.addEventListener("change", (e) => {
+  state.isPixelMode = e.target.checked;
+
+  drawUpdatedImage();
 });
 
 // 입력 동기화

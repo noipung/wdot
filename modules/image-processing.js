@@ -41,6 +41,7 @@ export const updateImageProcessing = async () => {
   resized.width = dithered.width = pw;
   resized.height = dithered.height = ph;
 
+  resizedCtx.imageSmoothingEnabled = !state.isPixelMode;
   resizedCtx.drawImage(state.adjusted, 0, 0, pw, ph);
 
   makeOpaque(resized);
