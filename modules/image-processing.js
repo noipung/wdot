@@ -106,7 +106,7 @@ export const handleImageLoad = async (image) => {
 
   state.width = form.width.value = image.width;
   state.height = form.height.value = image.height;
-  state.position = state.currentPosition = [0, 0];
+  state.movedPosition = state.position = [0, 0];
 
   updateZoom();
 

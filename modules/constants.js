@@ -11,7 +11,7 @@ export const canvasControlLayer = document.querySelector(
   ".canvas-control-layer"
 );
 export const canvas = document.querySelector("canvas");
-export const ctx = canvas.getContext("2d");
+export const ctx = canvas.getContext("2d", { willReadFrequently: true });
 export const showOriginalInput = document.querySelector("#show-original");
 export const basicPaletteList = document.querySelector(".palette.basic");
 export const lockedPaletteList = document.querySelector(".palette.locked");

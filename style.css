@@ -193,6 +193,7 @@ body button {
 }
 
 .show-original-input-wrapper label {
+  user-select: none;
   display: flex;
   background: #fff;
   color: #aaa;
@@ -399,6 +400,7 @@ label[for="dropdown-open"]:has(+ :checked) i {
 }
 
 .upload-btn-wrapper label[for="upload-btn"] {
+  user-select: none;
   cursor: pointer;
   flex: 1;
 
@@ -451,6 +453,7 @@ label[for="dropdown-open"]:has(+ :checked) i {
 }
 
 .pixelated-mode-toggle-wrapper label {
+  user-select: none;
   display: flex;
   flex-direction: column;
   gap: 0.3em;
@@ -733,6 +736,8 @@ h3.size::before {
   cursor: pointer;
   overflow: hidden;
   background: var(--background-color);
+  outline: 2px solid #0000;
+  transition: outline-color 0.2s;
 
   &::after {
     content: "";
@@ -746,8 +751,13 @@ h3.size::before {
   }
 }
 
-.palette li label:hover + .tooltip {
+.palette li label:hover + .tooltip,
+.palette li label.highlighted + .tooltip {
   opacity: 1;
+}
+
+.palette li label.highlighted {
+  outline-color: #000;
 }
 
 .palette li .tooltip {

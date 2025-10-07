@@ -8,16 +8,17 @@ export const draw = () => {
 
   const { width: rw, height: rh } = state.resized;
   const zoom = state.zoom / 100;
-  const zw = rw * zoom;
-  const zh = rh * zoom;
+  const zw = Math.round(rw * zoom);
+  const zh = Math.round(rh * zoom);
 
-  const center = [(cw - zw) / 2, (ch - zh) / 2];
-  const [px, py] = state.position;
+  const center = [Math.round((cw - zw) / 2), Math.round((ch - zh) / 2)];
+  const [px, py] = state.movedPosition;
 
   center[0] += px;
   center[1] += py;
 
   const resultImage = state.showOriginal ? state.adjusted : state.dithered;
 
+  state.zoomRect = [...center, zw, zh];
   ctx.drawImage(resultImage, ...center, zw, zh);
 };

@@ -11,15 +11,22 @@ import { loadPaletteData } from "./palette-loader.js";
 
 class Palette {
   constructor(colors) {
-    this.colors = colors;
-    this.changed = true;
+    this.setColors(colors);
     this.enabledColors = [];
     this.allCount = 0;
   }
 
   setColors(colors) {
+    if (!colors) return;
+
     this.colors = colors;
     this.changed = true;
+    this.rgbMap = new Map();
+
+    colors.forEach((color) => {
+      const key = color.rgb.join(",");
+      this.rgbMap.set(key, color);
+    });
   }
 
   getEnabledColors() {
@@ -32,6 +39,19 @@ class Palette {
 
   getColorByName(name) {
     return this.colors.find((color) => color.name === name);
+  }
+
+  getColorByRgb(r, g, b) {
+    return this.rgbMap.get(`${r},${g},${b}`);
+  }
+
+  unhighlightAll() {
+    this.colors.forEach((color) => color.label.classList.remove("highlighted"));
+  }
+
+  highlight(color) {
+    this.unhighlightAll();
+    color.label.classList.add("highlighted");
   }
 
   selectInitColors() {
@@ -115,6 +135,7 @@ class PaletteColor {
 
     this.colorListItem = li;
     this.check = check;
+    this.label = label;
     this.colorCount = colorCount;
     this.check.checked = this.enabled;
     (this.locked ? lockedPaletteList : basicPaletteList).append(
