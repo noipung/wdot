@@ -1,14 +1,14 @@
 import { state } from "./state.js";
 import {
   basicPaletteList,
-  form,
   lockedPaletteList,
   selectAllBtn,
   unselectAllBtn,
 } from "./constants.js";
-import { getContentColor } from "./utils.js";
+import { getContentColor, validate } from "./utils.js";
 import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
+import { draw } from "./drawing.js";
 
 class Palette {
   constructor(colors) {
@@ -49,6 +49,8 @@ class Palette {
   unhighlightAll() {
     this.colors.forEach((color) => color.label.classList.remove("highlighted"));
     state.mark = null;
+    if (!validate()) return;
+    draw();
   }
 
   highlight(color) {
