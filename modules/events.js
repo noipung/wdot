@@ -1,7 +1,6 @@
 import { state } from "./state.js";
 import {
   canvas,
-  ctx,
   canvasOverlay,
   canvasControlLayer,
   form,
@@ -20,6 +19,8 @@ import {
   sizeBtns,
   showOriginalInput,
   pixelatedModeToggle,
+  aside,
+  DPR,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -177,7 +178,13 @@ const handlePinchZoom = (e) => {
     const deltaX = midpoint[0] - state.startPosition[0];
     const deltaY = midpoint[1] - state.startPosition[1];
 
-    moveTempPosition(deltaX, deltaY);
+    const imageCenterX = canvas.width / DPR / 2 + state.position[0];
+    const imageCenterY = canvas.height / DPR / 2 + state.position[1];
+
+    const offsetX = (midpoint[0] - imageCenterX) * (1 - zoomFactor);
+    const offsetY = (midpoint[1] - imageCenterY) * (1 - zoomFactor);
+
+    moveTempPosition(offsetX + deltaX, offsetY + deltaY);
 
     requestAnimationFrame(draw);
   }
@@ -185,7 +192,6 @@ const handlePinchZoom = (e) => {
 
 const startDragging = () => {
   state.dragging = true;
-  state.palette.unhighlightAll();
   canvasOverlay.classList.add("dragging");
 };
 
@@ -233,19 +239,26 @@ canvasControlLayer.addEventListener("touchmove", (e) => {
 
 canvasControlLayer.addEventListener("touchend", (e) => {
   preventDefaults(e);
-
   state.currentTouches = Array.from(e.touches);
-
   if (e.touches.length < 2) {
     state.position = [...state.movedPosition];
-    state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
+    if (e.touches[0])
+      state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
     state.startTouchDistance = 0;
   }
 
   if (e.touches.length === 0) {
+    if (!state.dragging) {
+      highlightColorAt(
+        e.changedTouches[0].clientX,
+        e.changedTouches[0].clientY
+      );
+    }
     state.dragging = false;
     state.position = [...state.movedPosition];
     canvasOverlay.classList.remove("dragging");
+    if (!validate()) return;
+    draw();
   }
 });
 
@@ -268,24 +281,22 @@ canvasControlLayer.addEventListener(
 const highlightColorAt = (x, y) => {
   if (!state.dithered) return;
 
-  const canvasRect = canvas.getBoundingClientRect();
-  const canvasX = x - canvasRect.left;
-  const canvasY = y - canvasRect.top;
   const [zx, zy, zw, zh] = state.zoomRect;
 
-  if (
-    canvasX < zx ||
-    canvasX >= zx + zw ||
-    canvasY < zy ||
-    canvasY >= zy + zh
-  ) {
+  const rx = (x - zx) / zw;
+  const ry = (y - zy) / zh;
+  const ix = ~~(rx * state.width);
+  const iy = ~~(ry * state.height);
+
+  if (ix < 0 || ix >= state.width || iy < 0 || iy >= state.height) {
     state.palette.unhighlightAll();
     return;
   }
 
-  const imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
+  const ditheredCtx = state.dithered.getContext("2d");
+  const imageData = ditheredCtx.getImageData(ix - 1, iy - 1, 3, 3);
   const { data } = imageData;
-  const [r, g, b, a] = data;
+  const [r, g, b, a] = data.slice(16, 20);
 
   if (a === 0) {
     state.palette.unhighlightAll();
@@ -293,6 +304,11 @@ const highlightColorAt = (x, y) => {
   }
 
   state.palette.highlight(state.palette.getColorByRgb(r, g, b));
+
+  state.mark = {
+    r: [rx, ry],
+    imageData,
+  };
 };
 
 canvasControlLayer.addEventListener(
@@ -321,6 +337,8 @@ canvasControlLayer.addEventListener(
 canvasControlLayer.addEventListener(
   "pointerup",
   (e) => {
+    if (e.pointerType === "touch") return;
+
     if (state.dragging) {
       state.position = [...state.movedPosition];
     }
@@ -332,6 +350,10 @@ canvasControlLayer.addEventListener(
     state.dragging = false;
     canvasControlLayer.releasePointerCapture(e.pointerId);
     canvasOverlay.classList.remove("dragging");
+
+    if (!validate()) return;
+
+    draw();
   },
   false
 );
@@ -468,6 +490,10 @@ downloadConfirmBtn.addEventListener("click", (e) => {
   document.body.removeChild(link);
 
   downloadDialog.close();
+});
+
+aside.addEventListener("pointerdown", () => {
+  state.palette.unhighlightAll();
 });
 
 // 폼 제출 방지

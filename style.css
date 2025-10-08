@@ -708,7 +708,7 @@ h3.size::before {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, background-color 0.2s;
   margin-bottom: 4px;
   z-index: 20;
 }
@@ -758,6 +758,10 @@ h3.size::before {
 
 .palette li label.highlighted {
   outline-color: #000;
+}
+
+.palette li label.highlighted + .tooltip {
+  background-color: #000;
 }
 
 .palette li .tooltip {

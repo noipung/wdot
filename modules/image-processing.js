@@ -24,7 +24,7 @@ export const updateImageProcessing = async () => {
 
   const adjustedCtx = adjusted.getContext("2d");
   const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
-  const ditheredCtx = dithered.getContext("2d");
+  const ditheredCtx = dithered.getContext("2d", { willReadFrequently: true });
 
   adjusted.width = state.image.width;
   adjusted.height = state.image.height;

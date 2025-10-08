@@ -13,6 +13,7 @@ export const canvasControlLayer = document.querySelector(
 export const canvas = document.querySelector("canvas");
 export const ctx = canvas.getContext("2d", { willReadFrequently: true });
 export const showOriginalInput = document.querySelector("#show-original");
+export const aside = document.querySelector("aside");
 export const basicPaletteList = document.querySelector(".palette.basic");
 export const lockedPaletteList = document.querySelector(".palette.locked");
 export const selectAllBtn = document.querySelector(".select-all-btn");
@@ -40,3 +41,4 @@ export const downloadCancelBtn = document.querySelector(
 
 // 드래그 임계값
 export const DRAG_THRESHOLD = 3;
+export const DPR = window.devicePixelRatio || 1;

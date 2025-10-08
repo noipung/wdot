@@ -1,6 +1,7 @@
 import { state } from "./state.js";
 import {
   basicPaletteList,
+  form,
   lockedPaletteList,
   selectAllBtn,
   unselectAllBtn,
@@ -47,10 +48,12 @@ class Palette {
 
   unhighlightAll() {
     this.colors.forEach((color) => color.label.classList.remove("highlighted"));
+    state.mark = null;
   }
 
   highlight(color) {
     this.unhighlightAll();
+    color.label.tooltip.scrollIntoView({ behavior: "smooth" });
     color.label.classList.add("highlighted");
   }
 
@@ -131,6 +134,7 @@ class PaletteColor {
     });
 
     label.append(i, colorCount);
+    label.tooltip = tooltip;
     li.append(check, label, tooltip);
 
     this.colorListItem = li;

@@ -1,5 +1,5 @@
 import { state } from "./state.js";
-import { canvas } from "./constants.js";
+import { canvas, DPR } from "./constants.js";
 
 export const preventDefaults = (e) => {
   e.preventDefault();
@@ -45,7 +45,9 @@ export const formatTime = (seconds) => {
   return result.join(" ");
 };
 
-export const getZoom = (size = 3 / 4) =>
+export const toPhysicalCoords = (x, y) => [x * DPR, y * DPR];
+
+export const getZoom = (size = 3 / 4 / DPR) =>
   ~~(
     (state.aspectRatio > canvas.width / canvas.height
       ? canvas.width / state.width
@@ -57,7 +59,7 @@ export const getZoom = (size = 3 / 4) =>
 export const getTouchDistance = (touch1, touch2) => {
   const dx = touch2.clientX - touch1.clientX;
   const dy = touch2.clientY - touch1.clientY;
-  return Math.sqrt(dx * dx + dy * dy);
+  return Math.hypot(dx, dy);
 };
 
 export const getMidpoint = (touch1, touch2) => {

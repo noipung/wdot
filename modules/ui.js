@@ -1,12 +1,14 @@
-import { canvas, ctx } from "./constants.js";
+import { canvas, ctx, DPR } from "./constants.js";
 import { validate } from "./utils.js";
 import { draw } from "./drawing.js";
 
 export const resizeCanvas = () => {
   const { width, height } = canvas.getBoundingClientRect();
 
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = width * DPR;
+  canvas.height = height * DPR;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(DPR, DPR);
 
   ctx.imageSmoothingEnabled = false;
 

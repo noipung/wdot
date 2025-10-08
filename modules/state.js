@@ -10,6 +10,7 @@ export const state = {
   startPosition: [0, 0],
   movedPosition: [0, 0],
   position: [0, 0],
+  mark: null,
   dragging: false,
   startTouchDistance: 0,
   startZoom: 0,
