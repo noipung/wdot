@@ -1,6 +1,9 @@
 import { state } from "./state.js";
 import {
+  addColorDialog,
   basicPaletteList,
+  customPaletteList,
+  inputHex,
   lockedPaletteList,
   selectAllBtn,
   unselectAllBtn,
@@ -11,16 +14,63 @@ import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
 
 class Palette {
-  constructor(colors) {
-    this.setColors(colors);
+  constructor(paletteName) {
+    this.setPalette(paletteName);
     this.enabledColors = [];
     this.allCount = 0;
+  }
+
+  setPalette(paletteName) {
+    if (!state.paletteData[paletteName]) return;
+
+    state.paletteName = paletteName;
+
+    basicPaletteList.innerHTML = "";
+    lockedPaletteList.innerHTML = "";
+    customPaletteList.innerHTML = "";
+
+    const paletteData = state.paletteData[paletteName];
+
+    const colors = paletteData.colors.map(
+      ({ rgb, name, locked }) => new PaletteColor(rgb, name, locked, this)
+    );
+
+    this.setColors(colors);
+
+    this.hasLockedColor = colors.some(({ locked }) => locked);
+    this.hasCustomColor = paletteData.customColor;
+
+    lockedPaletteList.classList.toggle("hidden", !this.hasLockedColor);
+    customPaletteList.classList.toggle("hidden", !this.hasCustomColor);
+
+    if (!this.hasCustomColor) return;
+
+    const handleClickAddColorBtn = () => {
+      addColorDialog.showModal();
+      inputHex.dispatchEvent(
+        new Event("change", {
+          bubbles: true,
+          cancelable: false,
+        })
+      );
+    };
+
+    const li = document.createElement("li");
+    const addColorBtn = document.createElement("button");
+    addColorBtn.addEventListener("click", handleClickAddColorBtn);
+    addColorBtn.classList.add("add-color-btn");
+    addColorBtn.type = "button";
+
+    li.append(addColorBtn);
+    customPaletteList.append(li);
+
+    this.addColorBtn = addColorBtn;
   }
 
   setColors(colors) {
     if (!colors) return;
 
-    this.colors = colors;
+    this.colors = this.initColors = colors;
     this.changed = true;
     this.rgbMap = new Map();
 
@@ -28,6 +78,16 @@ class Palette {
       const key = color.rgb.join(",");
       this.rgbMap.set(key, color);
     });
+  }
+
+  addColor(rgb, name, locked = false) {
+    const color = new PaletteColor(rgb, name, locked, this, true);
+
+    this.colors.push(color);
+    this.changed = true;
+
+    const key = rgb.join(",");
+    this.rgbMap.set(key, color);
   }
 
   getEnabledColors() {
@@ -59,7 +119,7 @@ class Palette {
     color.label.classList.add("highlighted");
   }
 
-  selectInitColors() {
+  selectBasicColors() {
     this.colors.forEach((color) => color.toggle(!color.locked));
   }
 
@@ -99,7 +159,7 @@ class Palette {
 }
 
 class PaletteColor {
-  constructor(rgb, name, locked, palette) {
+  constructor(rgb, name, locked, palette, added = false) {
     this.rgb = rgb;
     this.name = name;
     this.locked = locked;
@@ -114,7 +174,10 @@ class PaletteColor {
     const colorCount = document.createElement("span");
     const tooltip = document.createElement("div");
 
-    const id = name.toLowerCase().replaceAll(" ", "-");
+    const id = name
+      .replace(/[^a-z0-9]/gi, "")
+      .toLowerCase()
+      .replaceAll(" ", "-");
 
     check.type = "checkbox";
     check.id = label.htmlFor = id;
@@ -144,9 +207,16 @@ class PaletteColor {
     this.label = label;
     this.colorCount = colorCount;
     this.check.checked = this.enabled;
-    (this.locked ? lockedPaletteList : basicPaletteList).append(
-      this.colorListItem
-    );
+    if (!added) {
+      (this.locked ? lockedPaletteList : basicPaletteList).append(
+        this.colorListItem
+      );
+    } else {
+      customPaletteList.insertBefore(
+        this.colorListItem,
+        palette.addColorBtn.parentNode
+      );
+    }
   }
 
   toggle(enabled) {
@@ -168,31 +238,8 @@ class PaletteColor {
 }
 
 export const initPaletteUI = async () => {
-  state.palette = new Palette();
-
-  const paletteData = await loadPaletteData();
-
-  const colors = paletteData.map(
-    ({ rgb, name, locked }) =>
-      new PaletteColor(rgb, name, locked, state.palette)
-  );
-
-  state.palette.setColors(colors);
-
-  const handleClickInitBtn = () => {
-    state.palette.selectInitColors();
-
-    drawUpdatedImage();
-  };
-
-  const li = document.createElement("li");
-  const initBtn = document.createElement("button");
-  initBtn.addEventListener("click", handleClickInitBtn);
-  initBtn.classList.add("init-btn");
-  initBtn.type = "button";
-
-  li.append(initBtn);
-  basicPaletteList.append(li);
+  state.paletteData = await loadPaletteData();
+  state.palette = new Palette(state.paletteName);
 
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();

@@ -15,6 +15,8 @@ export const state = {
   startTouchDistance: 0,
   startZoom: 0,
   currentTouches: [],
+  paletteData: {},
+  paletteName: "WPlace",
   palette: null,
   fileName: null,
   image: null,

@@ -8,25 +8,38 @@ import {
   zoomInBtn,
   zoomOutBtn,
   zoomInput,
-  dropdownCurrentOption,
-  optionRadios,
   downloadBtn,
   downloadConfirmBtn,
   downloadCancelBtn,
   downloadDialog,
   DRAG_THRESHOLD,
-  resetBtn,
+  paletteResetBtn,
+  settingsResetBtn,
   sizeBtns,
   showOriginalInput,
   pixelatedModeToggle,
   aside,
   DPR,
+  paletteDropdown,
+  methodDropdown,
+  addColorAlert,
+  addColorCancelBtn,
+  addColorDialog,
+  addColorConfirmBtn,
+  addColorPreview,
+  inputR,
+  inputG,
+  inputB,
+  inputHex,
 } from "./constants.js";
 import {
   preventDefaults,
   validate,
   getTouchDistance,
   getMidpoint,
+  rgb2Hex,
+  isValidHex,
+  hex2Rgb,
 } from "./utils.js";
 import {
   handleImageLoad,
@@ -121,12 +134,34 @@ zoomInput.addEventListener("change", (e) => {
 
 // 메서드 드롭다운 선택
 
-optionRadios.forEach((optionRadio) => {
-  optionRadio.addEventListener("change", (e) => {
-    dropdownCurrentOption.textContent = e.target.dataset.label;
-    state.method = e.target.value;
+[
+  {
+    dropdown: paletteDropdown,
+    cb: (value) => {
+      state.paletteName = value;
+      state.palette.setPalette(value);
+    },
+  },
+  {
+    dropdown: methodDropdown,
+    cb: (value) => {
+      state.method = value;
+    },
+  },
+].forEach(({ dropdown, cb }) => {
+  const optionRadios = dropdown.querySelectorAll(".option-item input");
+  const dropdownOpen = dropdown.querySelector(".dropdown-open");
+  const dropdownCurrentOption = dropdown.querySelector(
+    ".dropdown-current-option"
+  );
 
-    drawUpdatedImage();
+  optionRadios.forEach((optionRadio) => {
+    optionRadio.addEventListener("change", (e) => {
+      dropdownCurrentOption.textContent = e.target.dataset.label;
+      dropdownOpen.checked = false;
+      cb(e.target.value);
+      drawUpdatedImage();
+    });
   });
 });
 
@@ -382,6 +417,16 @@ pixelatedModeToggle.addEventListener("change", (e) => {
   drawUpdatedImage();
 });
 
+paletteResetBtn.addEventListener("click", () => {
+  if (state.palette.hasCustomColor) {
+    state.palette.setPalette(state.paletteName);
+  } else {
+    state.palette.selectBasicColors();
+  }
+
+  drawUpdatedImage();
+});
+
 // 입력 동기화
 const links = [
   { link: ["#brightness", "#brightness-range"], init: () => 50 },
@@ -465,17 +510,13 @@ export const resetLinks = () => {
   drawUpdatedImage();
 };
 
-resetBtn.addEventListener("click", resetLinks);
+settingsResetBtn.addEventListener("click", resetLinks);
 
 // 다운로드 이벤트
 downloadBtn.addEventListener("click", (e) => {
   if (!state.dithered) return;
 
   downloadDialog.showModal();
-});
-
-downloadCancelBtn.addEventListener("click", (e) => {
-  downloadDialog.close();
 });
 
 downloadConfirmBtn.addEventListener("click", (e) => {
@@ -490,6 +531,81 @@ downloadConfirmBtn.addEventListener("click", (e) => {
   document.body.removeChild(link);
 
   downloadDialog.close();
+});
+
+downloadCancelBtn.addEventListener("click", (e) => {
+  downloadDialog.close();
+});
+
+[inputR, inputG, inputB].forEach((input) =>
+  input.addEventListener("change", (e) => {
+    const value = +e.target.value;
+    const newValue = Math.max(0, Math.min(255, value));
+    e.target.value = newValue;
+
+    const r = +inputR.value;
+    const g = +inputG.value;
+    const b = +inputB.value;
+
+    inputHex.value = rgb2Hex(r, g, b);
+
+    state.contained = state.palette.getColorByRgb(r, g, b);
+    addColorAlert.classList.toggle("hidden", !state.contained);
+
+    addColorPreview.style.background = inputHex.value;
+  })
+);
+
+inputHex.addEventListener("change", (e) => {
+  const value = e.target.value;
+
+  if (!isValidHex(value)) {
+    addColorAlert.classList.remove("hidden");
+    addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+    return;
+  }
+
+  addColorAlert.textContent = "이미 팔레트에 있는 색입니다.";
+
+  const newValue = value.replace(/^#?/, "#");
+  e.target.value = newValue;
+
+  const [r, g, b] = hex2Rgb(newValue);
+
+  inputR.value = r;
+  inputG.value = g;
+  inputB.value = b;
+
+  state.contained = state.palette.getColorByRgb(r, g, b);
+  addColorAlert.classList.toggle("hidden", !state.contained);
+
+  addColorPreview.style.background = newValue;
+});
+
+addColorConfirmBtn.addEventListener("click", (e) => {
+  if (!isValidHex(inputHex.value)) {
+    addColorAlert.classList.remove("hidden");
+    addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+    return;
+  }
+
+  addColorAlert.classList.toggle("hidden", !state.contained);
+
+  if (state.contained) return;
+
+  const r = +inputR.value;
+  const g = +inputG.value;
+  const b = +inputB.value;
+
+  state.palette.addColor([r, g, b], inputHex.value.toUpperCase());
+
+  drawUpdatedImage();
+
+  addColorDialog.close();
+});
+
+addColorCancelBtn.addEventListener("click", (e) => {
+  addColorDialog.close();
 });
 
 aside.addEventListener("pointerdown", () => {

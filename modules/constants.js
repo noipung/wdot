@@ -16,6 +16,7 @@ export const showOriginalInput = document.querySelector("#show-original");
 export const aside = document.querySelector("aside");
 export const basicPaletteList = document.querySelector(".palette.basic");
 export const lockedPaletteList = document.querySelector(".palette.locked");
+export const customPaletteList = document.querySelector(".palette.custom");
 export const selectAllBtn = document.querySelector(".select-all-btn");
 export const unselectAllBtn = document.querySelector(".unselect-all-btn");
 export const pixelatedModeToggle = document.querySelector(
@@ -25,11 +26,14 @@ export const uploadBtn = document.querySelector("#upload-btn");
 export const zoomInBtn = document.querySelector(".zoom-in");
 export const zoomOutBtn = document.querySelector(".zoom-out");
 export const zoomInput = document.querySelector("#zoom");
-export const dropdownCurrentOption = document.querySelector(
-  ".dropdown-current-option"
+export const paletteDropdown = document.querySelector(".palette-dropdown");
+export const methodDropdown = document.querySelector(".method-dropdown");
+export const paletteResetBtn = document.querySelector(
+  ".palette-form-group .reset-btn"
 );
-export const optionRadios = document.querySelectorAll(".option-item input");
-export const resetBtn = document.querySelector(".reset-btn");
+export const settingsResetBtn = document.querySelector(
+  ".settings-form-group .reset-btn"
+);
 export const sizeBtns = document.querySelectorAll(".size-btn");
 export const downloadDialog = document.querySelector(".download-dialog");
 export const downloadConfirmBtn = document.querySelector(
@@ -38,6 +42,19 @@ export const downloadConfirmBtn = document.querySelector(
 export const downloadCancelBtn = document.querySelector(
   ".download-dialog .cancel-btn"
 );
+export const addColorDialog = document.querySelector(".add-color-dialog");
+export const addColorConfirmBtn = document.querySelector(
+  ".add-color-dialog .confirm-btn"
+);
+export const addColorCancelBtn = document.querySelector(
+  ".add-color-dialog .cancel-btn"
+);
+export const addColorPreview = document.querySelector(".add-color-preview");
+export const addColorAlert = document.querySelector(".add-color-alert");
+export const inputR = document.querySelector("#add-color-input-r");
+export const inputG = document.querySelector("#add-color-input-g");
+export const inputB = document.querySelector("#add-color-input-b");
+export const inputHex = document.querySelector("#add-color-input-hex");
 
 // 드래그 임계값
 export const DRAG_THRESHOLD = 3;

@@ -4,20 +4,24 @@
 }
 
 input[type="number"] {
-  text-align: right;
-  font-size: 1em;
   -moz-appearance: textfield;
   appearance: textfield;
-
-  &:disabled {
-    background: none;
-    color: #ccc;
-  }
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+}
+
+input[type="number"],
+input[type="text"] {
+  text-align: right;
+  font-size: 1em;
+
+  &:disabled {
+    background: none;
+    color: #ccc;
   }
 }
 
@@ -275,18 +279,23 @@ body button {
   width: 50px;
 }
 
-.dropdown-wrapper {
+.method-dropdown {
   position: absolute;
   bottom: 0;
   left: 0;
   margin: 0.5em;
 }
 
-#dropdown-open {
+.palette-dropdown {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.dropdown-open {
   display: none;
 }
 
-label[for="dropdown-open"] {
+label[for$="dropdown-open"] {
   background: #fff;
   padding: 0.5em;
   border-radius: 4px;
@@ -294,41 +303,55 @@ label[for="dropdown-open"] {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 1em;
+  gap: 0.5em;
 
   &:hover {
     background: #f8f8f8;
   }
 }
 
-label[for="dropdown-open"] i {
+label[for$="dropdown-open"] i {
   display: block;
   width: 1em;
   aspect-ratio: 1;
   background: currentColor;
   mask: no-repeat center / 100%;
+}
+
+.up-to-open label[for$="dropdown-open"] i,
+.down-to-open label[for$="dropdown-open"]:has(+ :checked) i {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/arrow_drop_up/wght600/48px.svg");
 }
 
-label[for="dropdown-open"]:has(+ :checked) i {
+.down-to-open label[for$="dropdown-open"] i,
+.up-to-open label[for$="dropdown-open"]:has(+ :checked) i {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/arrow_drop_down/wght600/48px.svg");
 }
 
 .dropdown-options-container {
   display: none;
   position: absolute;
-  bottom: 100%;
   white-space: nowrap;
-  margin-bottom: 0.5em;
   flex-direction: column;
   background: #fff;
   border-radius: 4px;
   border: 1px solid #ccc;
   overflow: hidden;
   font-size: 0.9em;
+  z-index: 30;
 }
 
-#dropdown-open:checked + .dropdown-options-container {
+.up-to-open .dropdown-options-container {
+  bottom: 100%;
+  margin-bottom: 0.5em;
+}
+
+.down-to-open .dropdown-options-container {
+  top: 100%;
+  margin-top: 0.5em;
+}
+
+.dropdown-open:checked + .dropdown-options-container {
   display: flex;
 }
 
@@ -522,25 +545,30 @@ main aside {
 }
 
 main aside h2 {
-  font-size: 1.2em;
+  font-size: 1.1em;
   text-align: center;
   position: relative;
 }
 
-.reset-btn {
+main aside h2 button {
   position: absolute;
   right: 0;
+  top: 50%;
+  translate: 0 -50%;
   padding: 0.2em;
 }
 
-.reset-btn i {
+main aside h2 button i {
   content: "";
   display: block;
   width: 1.2em;
   aspect-ratio: 1;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg")
-    no-repeat center / 100%;
+  mask: no-repeat center / 100%;
+}
+
+.reset-btn i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg");
 }
 
 .settings {
@@ -567,7 +595,8 @@ main aside h2 {
   gap: 0.5em;
 }
 
-.input-item input[type="number"] {
+.input-item input[type="number"],
+.input-item input[type="text"] {
   width: 100%;
   border: none;
   border-bottom: 2px solid #ddd;
@@ -719,6 +748,10 @@ h3.size::before {
   gap: 4px;
 }
 
+.palette.hidden {
+  display: none;
+}
+
 .palette li {
   position: relative;
 }
@@ -859,18 +892,18 @@ h3.size::before {
     no-repeat center / 100%;
 }
 
-.init-btn {
+.add-color-btn {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   position: relative;
 }
 
-.init-btn::after {
+.add-color-btn::after {
   content: "";
   position: absolute;
   inset: 0;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg")
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/add/wght600/48px.svg")
     no-repeat center / 75%;
 }
 
@@ -878,6 +911,7 @@ h3.size::before {
   border: none;
   border-radius: 1em;
   padding: 1.5em;
+  overflow: hidden;
 }
 
 .dialog-inner {
@@ -885,7 +919,7 @@ h3.size::before {
   flex-flow: column;
   justify-content: space-between;
   width: 300px;
-  height: 100px;
+  gap: 1em;
 }
 
 .dialog-btn-wrapper {
@@ -909,6 +943,53 @@ h3.size::before {
   &:hover {
     background: #124ebe;
   }
+}
+
+.input-group {
+  display: flex;
+  gap: 1em;
+}
+
+.add-color-preview {
+  width: 40px;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: currentColor;
+}
+
+.add-color-dialog .input-item {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-color-alert {
+  color: #e55;
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.2s;
+  font-size: 0.9em;
+  font-weight: bold;
+
+  &::before {
+    content: "";
+    display: block;
+    width: 1.5em;
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/error/wght700/48px.svg")
+      no-repeat center / 75%;
+  }
+}
+
+.add-color-alert.hidden {
+  opacity: 0;
+}
+
+.add-color-dialog .input-item label::before {
+  display: none;
 }
 
 @media (max-width: 720px) {

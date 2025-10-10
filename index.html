@@ -50,24 +50,29 @@
             />
             <span class="percent">%</span>
           </div>
-          <div class="dropdown-wrapper">
-            <label for="dropdown-open">
+          <div class="dropdown-wrapper up-to-open method-dropdown">
+            <label for="method-dropdown-open">
               <span class="dropdown-current-option">빠름</span>
               <i></i>
             </label>
-            <input type="checkbox" id="dropdown-open" autocomplete="off" />
+            <input
+              type="checkbox"
+              id="method-dropdown-open"
+              class="dropdown-open"
+              autocomplete="off"
+            />
             <div class="dropdown-options-container">
               <div class="option-item">
                 <input
                   type="radio"
-                  id="quality-fast"
-                  name="quality"
+                  id="method-fast"
+                  name="method"
                   value="rgb"
                   data-label="빠름"
                   autocomplete="off"
                   checked
                 />
-                <label for="quality-fast">
+                <label for="method-fast">
                   <i></i>
                   <span class="option-label">빠름</span>
                   <span class="option-method">RGB</span>
@@ -76,13 +81,13 @@
               <div class="option-item">
                 <input
                   type="radio"
-                  id="quality-balanced"
-                  name="quality"
+                  id="method-balanced"
+                  name="method"
                   value="oklab"
                   data-label="균형"
                   autocomplete="off"
                 />
-                <label for="quality-balanced">
+                <label for="method-balanced">
                   <i></i>
                   <span class="option-label">균형</span>
                   <span class="option-method">Oklab</span>
@@ -91,13 +96,13 @@
               <div class="option-item">
                 <input
                   type="radio"
-                  id="quality-best"
-                  name="quality"
+                  id="method-best"
+                  name="method"
                   value="ciede2000"
                   data-label="가장 정확"
                   autocomplete="off"
                 />
-                <label for="quality-best">
+                <label for="method-best">
                   <i></i>
                   <span class="option-label">가장 정확</span>
                   <span class="option-method">CIEDE2000</span>
@@ -109,10 +114,73 @@
       </div>
       <aside>
         <form class="settings">
-          <div class="form-group">
-            <h2>팔레트</h2>
+          <div class="palette-form-group form-group">
+            <h2>
+              <div class="dropdown-wrapper down-to-open palette-dropdown">
+                <label for="palette-dropdown-open">
+                  <span class="dropdown-current-option">WPlace</span>
+                  <i></i>
+                </label>
+                <input
+                  type="checkbox"
+                  id="palette-dropdown-open"
+                  class="dropdown-open"
+                  autocomplete="off"
+                />
+                <div class="dropdown-options-container">
+                  <div class="option-item">
+                    <input
+                      type="radio"
+                      id="palette-wplace"
+                      name="palette"
+                      value="WPlace"
+                      data-label="WPlace"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label for="palette-wplace">
+                      <i></i>
+                      <span class="option-label">WPlace</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input
+                      type="radio"
+                      id="palette-geopixels"
+                      name="palette"
+                      value="GeoPixels"
+                      data-label="GeoPixels"
+                      autocomplete="off"
+                    />
+                    <label for="palette-geopixels">
+                      <i></i>
+                      <span class="option-label">GeoPixels</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input
+                      type="radio"
+                      id="palette-pxls"
+                      name="palette"
+                      value="Pxls"
+                      data-label="Pxls"
+                      autocomplete="off"
+                    />
+                    <label for="palette-pxls">
+                      <i></i>
+                      <span class="option-label">Pxls</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              팔레트
+              <button type="button" class="reset-btn" autocomplete="off">
+                <i></i>
+              </button>
+            </h2>
             <ul class="palette basic"></ul>
             <ul class="palette locked"></ul>
+            <ul class="palette custom hidden"></ul>
             <div class="palette-btn-wrapper">
               <button type="button" class="select-all-btn">
                 <i class="select-all-icon"></i
@@ -124,7 +192,7 @@
               </button>
             </div>
           </div>
-          <div class="form-group">
+          <div class="settings-form-group form-group">
             <h2>
               설정
               <button
@@ -381,6 +449,62 @@
     <dialog class="dialog download-dialog">
       <div class="dialog-inner">
         <p>저장하시겠습니까?</p>
+        <div class="dialog-btn-wrapper">
+          <button class="confirm-btn">저장</button>
+          <button class="cancel-btn">취소</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog class="dialog add-color-dialog">
+      <div class="dialog-inner">
+        <div class="input-item">
+          <div class="add-color-preview"></div>
+          <div class="add-color-alert hidden">이미 팔레트에 있는 색입니다.</div>
+        </div>
+        <div class="input-item">
+          <label for="add-color-input-hex">HEX</label>
+          <input
+            type="text"
+            name="add-color-input-hex"
+            id="add-color-input-hex"
+            value="#000"
+          />
+        </div>
+        <div class="input-group">
+          <div class="input-item">
+            <label for="add-color-input-r">R</label>
+            <input
+              type="number"
+              name="add-color-input-r"
+              id="add-color-input-r"
+              value="0"
+              min="0"
+              max="255"
+            />
+          </div>
+          <div class="input-item">
+            <label for="add-color-input-g">G</label>
+            <input
+              type="number"
+              name="add-color-input-g"
+              id="add-color-input-g"
+              value="0"
+              min="0"
+              max="255"
+            />
+          </div>
+          <div class="input-item">
+            <label for="add-color-input-b">B</label>
+            <input
+              type="number"
+              name="add-color-input-b"
+              id="add-color-input-b"
+              value="0"
+              min="0"
+              max="255"
+            />
+          </div>
+        </div>
         <div class="dialog-btn-wrapper">
           <button class="confirm-btn">저장</button>
           <button class="cancel-btn">취소</button>

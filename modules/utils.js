@@ -68,3 +68,24 @@ export const getMidpoint = (touch1, touch2) => {
     (touch1.clientY + touch2.clientY) / 2,
   ];
 };
+
+export const hex2Rgb = (h) => {
+  h = h.replace("#", "");
+
+  if (h.length === 3) h = h.replace(/([0-9a-f])/gi, "$1$1");
+
+  return h.match(/.{2}/g).map((c) => parseInt(c, 16));
+};
+
+export const rgb2Hex = (r, g, b) => {
+  const toHex = (c) => c.toString(16).padStart(2, "0");
+  let h = toHex(r) + toHex(g) + toHex(b);
+
+  if (/^(.)\1(.)\2(.)\3$/.test(h)) {
+    h = h[0] + h[2] + h[4];
+  }
+
+  return "#" + h.toUpperCase();
+};
+
+export const isValidHex = (h) => /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(h);
