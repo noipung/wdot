@@ -9,10 +9,13 @@ export const loadPaletteData = async () => {
     console.error("팔레트 데이터 로딩 에러:", error);
 
     return {
-      WPlace: [
-        { rgb: [0, 0, 0], name: "Black", locked: false },
-        { rgb: [255, 255, 255], name: "White", locked: true },
-      ],
+      WPlace: {
+        customColor: false,
+        colors: [
+          { rgb: [0, 0, 0], name: "Black", locked: false },
+          { rgb: [255, 255, 255], name: "White", locked: false },
+        ],
+      },
     };
   }
 };
