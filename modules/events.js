@@ -321,6 +321,8 @@ const highlightColorAt = (x, y) => {
 
   const rx = (x - zx) / zw;
   const ry = (y - zy) / zh;
+  const ax = ~~(rx * state.adjusted.width);
+  const ay = ~~(ry * state.adjusted.height);
   const ix = ~~(rx * state.width);
   const iy = ~~(ry * state.height);
 
@@ -329,10 +331,12 @@ const highlightColorAt = (x, y) => {
     return;
   }
 
-  const currentCtx = (
-    state.showOriginal ? state.adjusted : state.dithered
-  ).getContext("2d");
-  const imageData = currentCtx.getImageData(ix - 1, iy - 1, 3, 3);
+  const [currentCanvas, currentX, currentY] = state.showOriginal
+    ? [state.adjusted, ax, ay]
+    : [state.dithered, ix, iy];
+
+  const currentCtx = currentCanvas.getContext("2d");
+  const imageData = currentCtx.getImageData(currentX - 1, currentY - 1, 3, 3);
   const { data } = imageData;
   const [r, g, b, a] = data.slice(16, 20);
 
