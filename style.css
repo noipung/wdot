@@ -1027,7 +1027,7 @@ h3.size::before {
   display: block;
   width: 2em;
   aspect-ratio: 1;
-  background: #888;
+  background: #000;
   mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/info/wght600/48px.svg")
     no-repeat center right / 50%;
 }
