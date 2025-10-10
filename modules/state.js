@@ -24,6 +24,7 @@ export const state = {
   resized: null,
   dithered: null,
   showOriginal: false,
+  pickedColor: null,
   method: "rgb",
   workers: {
     adjust: { instance: null, isProcessing: false },

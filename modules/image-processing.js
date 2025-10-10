@@ -22,7 +22,7 @@ export const updateImageProcessing = async () => {
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
-  const adjustedCtx = adjusted.getContext("2d");
+  const adjustedCtx = adjusted.getContext("2d", { willReadFrequently: true });
   const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
   const ditheredCtx = dithered.getContext("2d", { willReadFrequently: true });
 

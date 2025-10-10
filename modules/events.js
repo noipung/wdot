@@ -40,6 +40,7 @@ import {
   rgb2Hex,
   isValidHex,
   hex2Rgb,
+  getContentColor,
 } from "./utils.js";
 import {
   handleImageLoad,
@@ -328,8 +329,10 @@ const highlightColorAt = (x, y) => {
     return;
   }
 
-  const ditheredCtx = state.dithered.getContext("2d");
-  const imageData = ditheredCtx.getImageData(ix - 1, iy - 1, 3, 3);
+  const currentCtx = (
+    state.showOriginal ? state.adjusted : state.dithered
+  ).getContext("2d");
+  const imageData = currentCtx.getImageData(ix - 1, iy - 1, 3, 3);
   const { data } = imageData;
   const [r, g, b, a] = data.slice(16, 20);
 
@@ -338,7 +341,22 @@ const highlightColorAt = (x, y) => {
     return;
   }
 
-  state.palette.highlight(state.palette.getColorByRgb(r, g, b));
+  const colorOnPalette = state.palette.getColorByRgb(r, g, b);
+
+  if (!colorOnPalette) {
+    state.palette.unhighlightAll();
+    if (state.palette.hasCustomColor) {
+      const { addColorBtn } = state.palette;
+      addColorBtn.style.background = `rgb(${r}, ${g}, ${b})`;
+      addColorBtn.style.color = getContentColor(r, g, b);
+      inputR.value = r;
+      inputG.value = g;
+      inputB.value = b;
+      inputHex.value = rgb2Hex(r, g, b);
+    }
+  } else {
+    state.palette.highlight(colorOnPalette);
+  }
 
   state.mark = {
     r: [rx, ry],
@@ -405,6 +423,7 @@ canvasControlLayer.addEventListener(
 
 showOriginalInput.addEventListener("change", (e) => {
   state.showOriginal = e.target.checked;
+  state.palette.unhighlightAll();
 
   if (!validate()) return;
 

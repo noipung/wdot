@@ -193,7 +193,7 @@ class PaletteColor {
     check.id = label.htmlFor = id;
     check.checked = !locked;
     label.style.setProperty("--background-color", `rgb(${rgb})`);
-    label.style.color = getContentColor(rgb);
+    label.style.color = getContentColor(...rgb);
     colorCount.classList.add("color-count", "zero");
     colorCount.textContent = "0";
     tooltip.classList.add("tooltip", ...(locked ? ["locked"] : []));

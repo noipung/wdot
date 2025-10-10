@@ -19,7 +19,7 @@ export const validate = () =>
   state.width >= 1 &&
   state.height >= 1;
 
-export const getContentColor = ([r, g, b]) =>
+export const getContentColor = (r, g, b) =>
   (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.5 ? "#000" : "#fff";
 
 export const dist = (a, b) =>
