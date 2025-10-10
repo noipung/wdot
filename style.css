@@ -1171,6 +1171,10 @@ h3.size::before {
     display: none;
   }
 
+  .dialog {
+    margin: 2.5em auto;
+  }
+
   @media (min-width: 480px) {
     .palette {
       grid-template-columns: repeat(16, 1fr);
