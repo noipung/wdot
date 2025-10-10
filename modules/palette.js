@@ -13,6 +13,29 @@ import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
 
+const createAddColorBtn = () => {
+  const handleClickAddColorBtn = () => {
+    addColorDialog.showModal();
+    inputHex.dispatchEvent(
+      new Event("change", {
+        bubbles: true,
+        cancelable: false,
+      })
+    );
+  };
+
+  const li = document.createElement("li");
+  const addColorBtn = document.createElement("button");
+  addColorBtn.addEventListener("click", handleClickAddColorBtn);
+  addColorBtn.classList.add("add-color-btn");
+  addColorBtn.type = "button";
+
+  li.append(addColorBtn);
+  customPaletteList.append(li);
+
+  return addColorBtn;
+};
+
 class Palette {
   constructor(paletteName) {
     this.setPalette(paletteName);
@@ -43,28 +66,7 @@ class Palette {
     lockedPaletteList.classList.toggle("hidden", !this.hasLockedColor);
     customPaletteList.classList.toggle("hidden", !this.hasCustomColor);
 
-    if (!this.hasCustomColor) return;
-
-    const handleClickAddColorBtn = () => {
-      addColorDialog.showModal();
-      inputHex.dispatchEvent(
-        new Event("change", {
-          bubbles: true,
-          cancelable: false,
-        })
-      );
-    };
-
-    const li = document.createElement("li");
-    const addColorBtn = document.createElement("button");
-    addColorBtn.addEventListener("click", handleClickAddColorBtn);
-    addColorBtn.classList.add("add-color-btn");
-    addColorBtn.type = "button";
-
-    li.append(addColorBtn);
-    customPaletteList.append(li);
-
-    this.addColorBtn = addColorBtn;
+    if (this.hasCustomColor) this.addColorBtn = createAddColorBtn();
   }
 
   setColors(colors) {
@@ -88,6 +90,13 @@ class Palette {
 
     const key = rgb.join(",");
     this.rgbMap.set(key, color);
+  }
+
+  removeAddedColors() {
+    customPaletteList.innerHTML = "";
+
+    this.addColorBtn = createAddColorBtn();
+    this.colors = this.colors.filter(({ added }) => !added);
   }
 
   getEnabledColors() {
@@ -166,6 +175,7 @@ class PaletteColor {
     this.enabled = !locked;
     this.count = 0;
     this.palette = palette;
+    this.added = added;
 
     const li = document.createElement("li");
     const check = document.createElement("input");

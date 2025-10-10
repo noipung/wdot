@@ -418,11 +418,8 @@ pixelatedModeToggle.addEventListener("change", (e) => {
 });
 
 paletteResetBtn.addEventListener("click", () => {
-  if (state.palette.hasCustomColor) {
-    state.palette.setPalette(state.paletteName);
-  } else {
-    state.palette.selectBasicColors();
-  }
+  if (state.palette.hasCustomColor) state.palette.removeAddedColors();
+  state.palette.selectBasicColors();
 
   drawUpdatedImage();
 });
