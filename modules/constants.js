@@ -42,6 +42,19 @@ export const downloadConfirmBtn = document.querySelector(
 export const downloadCancelBtn = document.querySelector(
   ".download-dialog .cancel-btn"
 );
+export const terrainColorDialog = document.querySelector(
+  ".terrain-color-dialog"
+);
+export const showTerrainBgCheckbox = document.querySelector("#show-terrain-bg");
+export const terrainColorInputs = document.querySelectorAll(
+  ".terrain-color-options-container input"
+);
+export const terrainColorConfirmBtn = document.querySelector(
+  ".terrain-color-dialog .confirm-btn"
+);
+export const terrainColorCancelBtn = document.querySelector(
+  ".terrain-color-dialog .cancel-btn"
+);
 export const addColorDialog = document.querySelector(".add-color-dialog");
 export const addColorConfirmBtn = document.querySelector(
   ".add-color-dialog .confirm-btn"

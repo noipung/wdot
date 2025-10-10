@@ -455,6 +455,86 @@
         </div>
       </div>
     </dialog>
+    <dialog class="dialog terrain-color-dialog">
+      <div class="dialog-inner">
+        <div class="show-terrain-bg-wrapper">
+          <input
+            type="checkbox"
+            name="show-terrain-bg"
+            id="show-terrain-bg"
+            checked
+          />
+          <label for="show-terrain-bg">배경 미리보기</label>
+          <i class="terrain-color-info-icon"></i>
+          <div class="tooltip">
+            단색 지형에 그릴 때<br />배경을 하나의 색으로 간주하고 투명으로
+            만듭니다.
+          </div>
+        </div>
+        <div class="terrain-color-options-container">
+          <input
+            type="radio"
+            id="terrain-none"
+            name="terrain-color"
+            value="none"
+            autocomplete="off"
+            checked
+          />
+          <label for="terrain-none"><i></i></label>
+          <input
+            type="radio"
+            id="terrain-mountain"
+            name="terrain-color"
+            value="#d3eac0"
+            autocomplete="off"
+          />
+          <label for="terrain-mountain"><i></i></label>
+          <input
+            type="radio"
+            id="terrain-grass"
+            name="terrain-color"
+            value="#e3f0d4"
+            autocomplete="off"
+          />
+          <label for="terrain-grass"><i></i></label>
+          <input
+            type="radio"
+            id="terrain-land"
+            name="terrain-color"
+            value="#f8f4f0"
+            autocomplete="off"
+          />
+          <label for="terrain-land"><i></i></label>
+          <input
+            type="radio"
+            id="terrain-ocean"
+            name="terrain-color"
+            value="#9ebdff"
+            autocomplete="off"
+          />
+          <label for="terrain-ocean"><i></i></label>
+          <input
+            type="radio"
+            id="terrain-ice"
+            name="terrain-color"
+            value="#e5eeed"
+            autocomplete="off"
+          />
+          <label for="terrain-ice"><i></i></label>
+          <input
+            type="radio"
+            id="terrain-ice-mountain"
+            name="terrain-color"
+            value="#e2ecd4"
+            autocomplete="off"
+          />
+          <label for="terrain-ice-mountain"><i></i></label>
+        </div>
+        <div class="dialog-btn-wrapper">
+          <button class="cancel-btn">닫기</button>
+        </div>
+      </div>
+    </dialog>
     <dialog class="dialog add-color-dialog">
       <div class="dialog-inner">
         <div class="input-item">

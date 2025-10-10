@@ -24,6 +24,7 @@ export const state = {
   resized: null,
   dithered: null,
   showOriginal: false,
+  showTerrainBg: true,
   pickedColor: null,
   method: "rgb",
   workers: {

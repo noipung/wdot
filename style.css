@@ -91,6 +91,8 @@ body button {
   display: block;
   width: 100%;
   height: 100%;
+  background: #0000;
+  transition: background-color 0.2s;
 }
 
 .canvas-overlay {
@@ -892,26 +894,183 @@ h3.size::before {
     no-repeat center / 100%;
 }
 
+.terrain-color-options-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.terrain-color-options-container input {
+  display: none;
+}
+
+.terrain-color-options-container label {
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    scale: 105%;
+    border-radius: 4px;
+  }
+}
+
+.terrain-color-options-container #terrain-none + label {
+  background: repeating-conic-gradient(#fff 0 25%, #ddd 0 50%) center / 20px
+    20px;
+}
+
+.terrain-color-options-container input:checked + label i {
+  opacity: 1;
+}
+
+.terrain-color-options-container label i {
+  content: "";
+  display: block;
+  height: 100%;
+  aspect-ratio: 1;
+  opacity: 0;
+  background: currentColor;
+  transition: opacity 0.2s;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght700/48px.svg")
+    no-repeat center / 75%;
+}
+
+.set-terrain-color-btn {
+  background: repeating-conic-gradient(#fff 0 25%, #ddd 0 50%) center / 20px
+    20px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+
+  &.applied {
+    background: var(--background-color);
+  }
+
+  &:not(:disabled):hover {
+    background: repeating-conic-gradient(#fff 0 25%, #ddd 0 50%) center / 20px
+      20px;
+
+    &.applied {
+      background: var(--background-color);
+    }
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: 0;
+      background: #0003;
+    }
+  }
+}
+
+.show-terrain-bg-wrapper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+#show-terrain-bg {
+  display: none;
+}
+
+#show-terrain-bg + label {
+  user-select: none;
+  display: flex;
+  background: #fff;
+  color: #aaa;
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5em;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+
+  &::before {
+    content: "";
+    display: block;
+    width: 1em;
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility_off/wght700/48px.svg")
+      no-repeat center / 100%;
+  }
+}
+
+#show-terrain-bg:checked + label {
+  color: #3172e7;
+  background: #e8effc;
+  border: 1px solid #a5c2f3;
+
+  &:hover {
+    background: #e0eafb;
+  }
+
+  &::before {
+    content: "";
+    display: block;
+    width: 1em;
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility/wght700/48px.svg")
+      no-repeat center / 100%;
+  }
+}
+
+.terrain-color-info-icon {
+  display: block;
+  width: 2em;
+  aspect-ratio: 1;
+  background: #888;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/info/wght600/48px.svg")
+    no-repeat center right / 50%;
+}
+
+.terrain-color-info-icon + .tooltip {
+  text-align: right;
+  margin-bottom: 1em;
+}
+
+.terrain-color-info-icon:hover + .tooltip {
+  opacity: 1;
+}
+
+.set-terrain-color-btn,
 .add-color-btn {
   width: 100%;
   aspect-ratio: 1;
   position: relative;
+  padding: 0;
 }
 
+.set-terrain-color-btn::after,
 .add-color-btn::after {
   content: "";
   position: absolute;
   inset: 0;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/add/wght600/48px.svg")
-    no-repeat center / 75%;
+  mask: no-repeat center / 70%;
+}
+
+.set-terrain-color-btn::after {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/globe/wght600/48px.svg");
+}
+
+.add-color-btn::after {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/add/wght600/48px.svg");
 }
 
 .dialog {
   border: none;
   border-radius: 1em;
   padding: 1.5em;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .dialog-inner {

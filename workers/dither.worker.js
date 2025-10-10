@@ -247,10 +247,35 @@ const getDitherdImageData = (
   return imageData;
 };
 
-self.onmessage = (e) => {
-  const { imageData, width, height, palette, ditherIntensity, method } = e.data;
+const makeTerrainTransparent = (imageData, rgb) => {
+  const { data } = imageData;
+  const [targetR, targetG, targetB] = rgb;
 
-  const resultImageData = getDitherdImageData(
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    if (r === targetR && g === targetG && b === targetB) {
+      data[i] = data[i + 1] = data[i + 2] = data[i + 3] = 0;
+    }
+  }
+
+  return imageData;
+};
+
+self.onmessage = (e) => {
+  const {
+    imageData,
+    width,
+    height,
+    palette,
+    ditherIntensity,
+    method,
+    terrainColor,
+  } = e.data;
+
+  let resultImageData = getDitherdImageData(
     imageData,
     width,
     height,
@@ -258,6 +283,10 @@ self.onmessage = (e) => {
     ditherIntensity,
     method
   );
+
+  if (terrainColor) {
+    resultImageData = makeTerrainTransparent(resultImageData, terrainColor);
+  }
 
   self.postMessage({ imageData: resultImageData }, [
     resultImageData.data.buffer,

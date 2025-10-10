@@ -1,6 +1,7 @@
 {
   "WPlace": {
     "customColor": false,
+    "terrainColor": true,
     "colors": [
       { "rgb": [0, 0, 0], "name": "Black", "locked": false },
       { "rgb": [60, 60, 60], "name": "Dark Gray", "locked": false },
@@ -69,6 +70,7 @@
   },
   "GeoPixels": {
     "customColor": true,
+    "terrainColor": true,
     "colors": [
       { "rgb": [255, 255, 255], "name": "#FFFFFF", "locked": false },
       { "rgb": [244, 245, 159], "name": "#F4F59F", "locked": false },
@@ -102,6 +104,7 @@
   },
   "Pxls": {
     "customColor": true,
+    "terrainColor": false,
     "colors": [
       { "rgb": [255, 255, 255], "name": "White", "locked": false },
       { "rgb": [185, 195, 207], "name": "Light Grey", "locked": false },

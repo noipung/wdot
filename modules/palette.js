@@ -6,15 +6,16 @@ import {
   inputHex,
   lockedPaletteList,
   selectAllBtn,
+  terrainColorDialog,
   unselectAllBtn,
 } from "./constants.js";
-import { getContentColor, validate } from "./utils.js";
+import { getContentColor, hex2Rgb, validate } from "./utils.js";
 import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
 
 const createAddColorBtn = () => {
-  const handleClickAddColorBtn = () => {
+  const handleClick = () => {
     addColorDialog.showModal();
     inputHex.dispatchEvent(
       new Event("change", {
@@ -26,7 +27,7 @@ const createAddColorBtn = () => {
 
   const li = document.createElement("li");
   const addColorBtn = document.createElement("button");
-  addColorBtn.addEventListener("click", handleClickAddColorBtn);
+  addColorBtn.addEventListener("click", handleClick);
   addColorBtn.classList.add("add-color-btn");
   addColorBtn.type = "button";
 
@@ -36,11 +37,29 @@ const createAddColorBtn = () => {
   return addColorBtn;
 };
 
+const createSetTerrainColorBtn = () => {
+  const handleClick = () => {
+    terrainColorDialog.showModal();
+  };
+
+  const li = document.createElement("li");
+  const setTerrainColorBtn = document.createElement("button");
+  setTerrainColorBtn.addEventListener("click", handleClick);
+  setTerrainColorBtn.classList.add("set-terrain-color-btn");
+  setTerrainColorBtn.type = "button";
+
+  li.append(setTerrainColorBtn);
+  basicPaletteList.append(li);
+
+  return setTerrainColorBtn;
+};
+
 class Palette {
   constructor(paletteName) {
     this.setPalette(paletteName);
     this.enabledColors = [];
     this.allCount = 0;
+    this.terrainColor = null;
   }
 
   setPalette(paletteName) {
@@ -62,10 +81,13 @@ class Palette {
 
     this.hasLockedColor = colors.some(({ locked }) => locked);
     this.hasCustomColor = paletteData.customColor;
+    this.hasTerrainColor = paletteData.terrainColor;
 
     lockedPaletteList.classList.toggle("hidden", !this.hasLockedColor);
     customPaletteList.classList.toggle("hidden", !this.hasCustomColor);
 
+    if (this.hasTerrainColor)
+      this.setTerrainColorBtn = createSetTerrainColorBtn();
     if (this.hasCustomColor) this.addColorBtn = createAddColorBtn();
   }
 
@@ -92,6 +114,10 @@ class Palette {
     this.rgbMap.set(key, color);
   }
 
+  setTerrainColor(hex) {
+    this.terrainColor = hex !== "none" ? hex2Rgb(hex) : null;
+  }
+
   removeAddedColors() {
     customPaletteList.innerHTML = "";
 
@@ -99,12 +125,14 @@ class Palette {
     this.colors = this.colors.filter(({ added }) => !added);
   }
 
-  getEnabledColors() {
+  getEnabledColorRgbs() {
     if (this.changed) {
       this.enabledColors = this.colors.filter((color) => color.enabled);
       this.changed = false;
     }
-    return this.enabledColors;
+    return this.enabledColors
+      .map(({ rgb }) => rgb)
+      .concat(this.terrainColor ? [this.terrainColor] : []);
   }
 
   getColorByName(name) {

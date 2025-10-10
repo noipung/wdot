@@ -31,6 +31,10 @@ import {
   inputG,
   inputB,
   inputHex,
+  terrainColorCancelBtn,
+  terrainColorDialog,
+  terrainColorInputs,
+  showTerrainBgCheckbox,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -555,6 +559,43 @@ downloadConfirmBtn.addEventListener("click", (e) => {
 
 downloadCancelBtn.addEventListener("click", (e) => {
   downloadDialog.close();
+});
+
+showTerrainBgCheckbox.addEventListener("change", (e) => {
+  const { checked } = e.target;
+  state.showTerrainBg = checked;
+  canvas.style.background = checked
+    ? `rgb(${state.palette.terrainColor})`
+    : "#0000";
+});
+
+terrainColorInputs.forEach((input) => {
+  input.addEventListener("change", (e) => {
+    const { value } = e.target;
+
+    state.palette.setTerrainColor(value);
+
+    const color = value !== "none" ? value : "#0000";
+    const { setTerrainColorBtn } = state.palette;
+
+    canvas.style.background = state.showTerrainBg ? color : "#0000";
+    setTerrainColorBtn.style.setProperty("--background-color", color);
+    setTerrainColorBtn.classList.toggle("applied", value !== "none");
+
+    drawUpdatedImage();
+  });
+
+  const label = input.nextElementSibling;
+  const color = input.value;
+
+  if (color === "none") return;
+
+  label.style.backgroundColor = color;
+  label.style.color = getContentColor(...hex2Rgb(color));
+});
+
+terrainColorCancelBtn.addEventListener("click", (e) => {
+  terrainColorDialog.close();
 });
 
 [inputR, inputG, inputB].forEach((input) =>
