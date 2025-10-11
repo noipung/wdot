@@ -1,4 +1,3 @@
-// DOM 요소들
 export const downloadBtn = document.querySelector(".download-btn");
 export const total = document.querySelector(".total");
 export const totalTime = document.querySelector(".total-time");
@@ -69,6 +68,5 @@ export const inputG = document.querySelector("#add-color-input-g");
 export const inputB = document.querySelector("#add-color-input-b");
 export const inputHex = document.querySelector("#add-color-input-hex");
 
-// 드래그 임계값
 export const DRAG_THRESHOLD = 3;
 export const DPR = window.devicePixelRatio || 1;

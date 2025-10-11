@@ -452,14 +452,29 @@ paletteResetBtn.addEventListener("click", () => {
 });
 
 // 입력 동기화
-const links = [
-  { link: ["#brightness", "#brightness-range"], init: () => 50 },
-  { link: ["#contrast", "#contrast-range"], init: () => 50 },
-  { link: ["#saturation", "#saturation-range"], init: () => 50 },
-  { link: ["#dither", "#dither-range"], init: () => 0 },
-  {
+const links = {
+  brightness: {
+    link: ["#brightness", "#brightness-range"],
+    init: { label: ["label[for=brightness]"], fn: () => 50 },
+  },
+  contrast: {
+    link: ["#contrast", "#contrast-range"],
+    init: { label: ["label[for=contrast]"], fn: () => 50 },
+  },
+  saturation: {
+    link: ["#saturation", "#saturation-range"],
+    init: { label: ["label[for=saturation]"], fn: () => 50 },
+  },
+  dither: {
+    link: ["#dither", "#dither-range"],
+    init: { label: ["label[for=dither]"], fn: () => 0 },
+  },
+  size: {
     link: ["#width", "#height"],
-    init: () => (state.image ? state.image.width : 1),
+    init: {
+      label: ["label[for=width]", "label[for=height]"],
+      fn: () => (state.image ? state.image.width : 1),
+    },
     logic: (value, name) =>
       ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
     cb: () => {
@@ -468,10 +483,28 @@ const links = [
       updateZoom();
     },
   },
-];
+};
 
-links.forEach(({ link, logic, cb }) => {
-  const inputs = link.map((selector) => document.querySelector(selector));
+const resetLink =
+  (withDraw = true) =>
+  (key) => {
+    const { link, init } = links[key];
+
+    if (!init.fn) return;
+
+    const firstInput = document.querySelector(link[0]);
+
+    firstInput.value = init.fn();
+    firstInput.syncInputs();
+
+    if (withDraw) drawUpdatedImage();
+  };
+
+Object.keys(links).forEach((key) => {
+  const { link, init, logic, cb } = links[key];
+  const $ = (selector) => document.querySelector(selector);
+  const inputs = link.map($);
+  const labels = init.label.map($);
 
   inputs.forEach((input) => {
     const eventType = input.type === "range" ? "input" : "change";
@@ -509,6 +542,15 @@ links.forEach(({ link, logic, cb }) => {
 
     input.syncInputs();
   });
+
+  if (labels.length) {
+    labels.forEach((label) => {
+      label.addEventListener("click", () => {
+        if (!validate()) return;
+        resetLink(true)(key);
+      });
+    });
+  }
 });
 
 sizeBtns.forEach((button) => {
@@ -521,15 +563,8 @@ sizeBtns.forEach((button) => {
   });
 });
 
-export const resetLinks = () => {
-  links.forEach(({ link, init }) => {
-    if (!init) return;
-
-    const firstInput = document.querySelector(link[0]);
-
-    firstInput.value = init();
-    firstInput.syncInputs();
-  });
+const resetLinks = () => {
+  Object.keys(links).forEach(resetLink(false));
 
   drawUpdatedImage();
 };

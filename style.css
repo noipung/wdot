@@ -636,6 +636,10 @@ main aside h2 button i {
   align-items: center;
 }
 
+.ready .input-item label {
+  cursor: pointer;
+}
+
 .input-item :is(label, h3)::before {
   content: "";
   display: block;
@@ -671,6 +675,18 @@ label[for="height"]::before {
 
 h3.size::before {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/open_with/wght600/48px.svg");
+}
+
+.ready
+  label:is(
+    [for="brightness"],
+    [for="contrast"],
+    [for="saturation"],
+    [for="dither"],
+    [for="width"],
+    [for="height"]
+  ):hover::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg");
 }
 
 .input-item:last-child {

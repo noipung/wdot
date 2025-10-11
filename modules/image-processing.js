@@ -61,6 +61,8 @@ export const updateImageProcessing = async () => {
 
   state.resized = resized;
   state.dithered = dithered;
+
+  document.body.classList.add("ready");
 };
 
 export const drawUpdatedImage = async () => {
