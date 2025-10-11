@@ -87,8 +87,6 @@ class Palette {
 
     const paletteData = state.paletteData[paletteName];
 
-    console.log(state.paletteData);
-
     const colors = paletteData.colors.map(
       ({ rgb, name, type }) => new PaletteColor(rgb, name, type, this)
     );
