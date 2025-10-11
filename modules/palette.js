@@ -151,8 +151,9 @@ class Palette {
   removeAddedColors() {
     customPaletteList.innerHTML = "";
 
-    let paletteDataColors = state.paletteData[state.paletteName].colors;
-    paletteDataColors = paletteDataColors.filter(
+    const currentPaletteData = state.paletteData[state.paletteName];
+
+    currentPaletteData.colors = currentPaletteData.colors.filter(
       ({ type }) => type !== "added"
     );
 
