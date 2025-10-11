@@ -493,8 +493,11 @@ const resetLink =
     if (!init.fn) return;
 
     const firstInput = document.querySelector(link[0]);
+    const newValue = init.fn();
 
-    firstInput.value = init.fn();
+    if (firstInput.value == newValue) return;
+
+    firstInput.value = newValue;
     firstInput.syncInputs();
 
     if (withDraw) drawUpdatedImage();
