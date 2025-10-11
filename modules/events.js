@@ -223,6 +223,14 @@ const highlightColorAt = (x, y) => {
   };
 };
 
+export const setBgOfTerrainColorBtn = (hex) => {
+  const color = hex !== "none" ? hex : "#0000";
+  const { setTerrainColorBtn } = state.palette;
+
+  setTerrainColorBtn.style.setProperty("--background-color", color);
+  setTerrainColorBtn.classList.toggle("applied", hex !== "none");
+};
+
 export const updateScrollClass = (container) => {
   const wrapper = container.parentNode;
   const { scrollLeft, clientWidth, scrollWidth } = container;
@@ -750,16 +758,15 @@ export const initEventListeners = () => {
 
   terrainColorInputs.forEach((input) => {
     input.addEventListener("change", (e) => {
-      const { value } = e.target;
+      const hex = e.target.value;
 
-      state.palette.setTerrainColor(value);
+      state.palette.setTerrainColor(hex);
 
-      const color = value !== "none" ? value : "#0000";
-      const { setTerrainColorBtn } = state.palette;
+      setBgOfTerrainColorBtn(hex);
+
+      const color = hex !== "none" ? hex : "#0000";
 
       canvas.style.background = state.showTerrainBg ? color : "#0000";
-      setTerrainColorBtn.style.setProperty("--background-color", color);
-      setTerrainColorBtn.classList.toggle("applied", value !== "none");
 
       drawUpdatedImage();
     });

@@ -14,11 +14,11 @@ import {
   terrainNone,
   unselectAllBtn,
 } from "./constants.js";
-import { getContentColor, hex2Rgb, validate } from "./utils.js";
+import { getContentColor, hex2Rgb, rgb2Hex, validate } from "./utils.js";
 import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
-import { updateScrollClass } from "./events.js";
+import { setBgOfTerrainColorBtn, updateScrollClass } from "./events.js";
 
 const createAddColorBtn = () => {
   const handleClick = () => {
@@ -104,6 +104,9 @@ class Palette {
 
     if (this.hasTerrainColor) {
       this.setTerrainColorBtn = createSetTerrainColorBtn();
+
+      if (this.terrainColor)
+        setBgOfTerrainColorBtn(rgb2Hex(...this.terrainColor));
     } else {
       const changeEvent = new Event("change", {
         bubbles: true,
