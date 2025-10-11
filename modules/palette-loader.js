@@ -11,9 +11,10 @@ export const loadPaletteData = async () => {
     return {
       WPlace: {
         customColor: false,
+        terrainColor: false,
         colors: [
-          { rgb: [0, 0, 0], name: "Black", locked: false },
-          { rgb: [255, 255, 255], name: "White", locked: false },
+          { rgb: [0, 0, 0], name: "Black", type: "locked" },
+          { rgb: [255, 255, 255], name: "White", type: "locked" },
         ],
       },
     };

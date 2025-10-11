@@ -19,7 +19,7 @@ const createAddColorBtn = () => {
   const handleClick = () => {
     addColorDialog.showModal();
     inputHex.dispatchEvent(
-      new Event("change", {
+      new Event("input", {
         bubbles: true,
         cancelable: false,
       })
@@ -76,13 +76,13 @@ class Palette {
     const paletteData = state.paletteData[paletteName];
 
     const colors = paletteData.colors.map(
-      ({ rgb, name, locked }) => new PaletteColor(rgb, name, locked, this)
+      ({ rgb, name, type }) => new PaletteColor(rgb, name, type, this)
     );
 
     this.setColors(colors);
 
-    this.hasBasicColor = colors.some(({ locked }) => !locked);
-    this.hasLockedColor = colors.some(({ locked }) => locked);
+    this.hasBasicColor = colors.some(({ type }) => type === "basic");
+    this.hasLockedColor = colors.some(({ type }) => type === "locked");
     this.hasCustomColor = paletteData.customColor;
     this.hasTerrainColor = paletteData.terrainColor;
 
@@ -170,7 +170,7 @@ class Palette {
   }
 
   selectBasicColors() {
-    this.colors.forEach((color) => color.toggle(!color.locked));
+    this.colors.forEach((color) => color.toggle(color.type === "basic"));
   }
 
   selectAllColors() {
@@ -209,11 +209,11 @@ class Palette {
 }
 
 class PaletteColor {
-  constructor(rgb, name, locked, palette, added = false) {
+  constructor(rgb, name, type, palette, added = false) {
     this.rgb = rgb;
     this.name = name;
-    this.locked = locked;
-    this.enabled = !locked;
+    this.type = type;
+    this.enabled = type === "basic";
     this.count = 0;
     this.palette = palette;
     this.added = added;
@@ -232,13 +232,13 @@ class PaletteColor {
 
     check.type = "checkbox";
     check.id = label.htmlFor = id;
-    check.checked = !locked;
+    check.checked = this.enabled;
     label.style.setProperty("--background-color", `rgb(${rgb})`);
     label.style.color = getContentColor(...rgb);
     colorCount.classList.add("color-count", "zero");
     colorCount.textContent = "0";
-    tooltip.classList.add("tooltip", ...(locked ? ["locked"] : []));
-    tooltip.textContent = `${name} ${locked ? "🔒︎" : ""}`;
+    tooltip.classList.add("tooltip", type);
+    tooltip.textContent = `${name} ${type === "locked" ? "🔒︎" : ""}`;
     li.classList.toggle("disabled", !this.enabled);
 
     check.addEventListener("change", () => {
@@ -259,7 +259,7 @@ class PaletteColor {
     this.colorCount = colorCount;
     this.check.checked = this.enabled;
     if (!added) {
-      (this.locked ? lockedPaletteList : basicPaletteList).append(
+      (this.type === "locked" ? lockedPaletteList : basicPaletteList).append(
         this.colorListItem
       );
     } else {
