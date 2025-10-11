@@ -77,15 +77,14 @@ export const hex2Rgb = (h) => {
   return h.match(/.{2}/g).map((c) => parseInt(c, 16));
 };
 
+export const shortenHex = (h) =>
+  "#" + (/^#(.)\1(.)\2(.)\3$/.test(h) ? h[1] + h[3] + h[5] : h.slice(1));
+
 export const rgb2Hex = (r, g, b) => {
   const toHex = (c) => c.toString(16).padStart(2, "0");
-  let h = toHex(r) + toHex(g) + toHex(b);
+  const h = "#" + toHex(r) + toHex(g) + toHex(b);
 
-  if (/^(.)\1(.)\2(.)\3$/.test(h)) {
-    h = h[0] + h[2] + h[4];
-  }
-
-  return "#" + h.toUpperCase();
+  return shortenHex(h).toUpperCase();
 };
 
 export const isValidHex = (h) => /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(h);

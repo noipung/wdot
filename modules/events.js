@@ -26,7 +26,7 @@ import {
   addColorCancelBtn,
   addColorDialog,
   addColorConfirmBtn,
-  addColorPreview,
+  addColorPreviewSingle,
   inputR,
   inputG,
   inputB,
@@ -36,6 +36,9 @@ import {
   terrainColorInputs,
   showTerrainBgCheckbox,
   addColorForm,
+  addColorTextarea,
+  addColorPreviewContainer,
+  addColorTabSingle,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -46,6 +49,7 @@ import {
   isValidHex,
   hex2Rgb,
   getContentColor,
+  shortenHex,
 } from "./utils.js";
 import {
   handleImageLoad,
@@ -217,6 +221,137 @@ const highlightColorAt = (x, y) => {
     r: [rx, ry],
     imageData,
   };
+};
+
+export const updateScrollClass = (container) => {
+  const wrapper = container.parentNode;
+  const { scrollLeft, clientWidth, scrollWidth } = container;
+
+  const epsilon = 2;
+  const atStart = scrollLeft === 0;
+  const atEnd = scrollLeft + clientWidth >= scrollWidth - epsilon;
+
+  wrapper.classList.toggle("at-start", atStart);
+  wrapper.classList.toggle("at-end", atEnd);
+};
+
+const confirmAddColor = (e) => {
+  preventDefaults(e);
+
+  if (addColorTabSingle.checked) {
+    if (!isValidHex(inputHex.value)) {
+      addColorAlert.classList.remove("hidden");
+      addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+      return;
+    }
+
+    addColorAlert.classList.toggle("hidden", !state.contained);
+
+    if (state.contained) return;
+
+    const r = +inputR.value;
+    const g = +inputG.value;
+    const b = +inputB.value;
+
+    state.palette.addColor([r, g, b], inputHex.value.toUpperCase(), "added");
+  } else {
+    if (!state.colorsToAdd.length) return;
+
+    state.colorsToAdd.forEach(([hex, name]) =>
+      state.palette.addColor(hex2Rgb(hex), name || hex, "added")
+    );
+  }
+
+  drawUpdatedImage();
+
+  addColorDialog.close();
+};
+
+const handleInputRgb = (e) => {
+  const value = +e.target.value;
+  const newValue = Math.max(0, Math.min(255, value));
+  e.target.value = newValue;
+
+  const r = +inputR.value;
+  const g = +inputG.value;
+  const b = +inputB.value;
+
+  inputHex.value = rgb2Hex(r, g, b);
+
+  state.contained = state.palette.getColorByRgb(r, g, b);
+  addColorAlert.classList.toggle("hidden", !state.contained);
+
+  addColorPreviewSingle.style.background = inputHex.value;
+};
+
+const handleInputHex = (e) => {
+  const newValue =
+    "#" + e.target.value.replace(/[^a-f0-9]/gi, "").toUpperCase();
+
+  e.target.value = newValue;
+
+  if (!isValidHex(newValue)) {
+    addColorAlert.classList.remove("hidden");
+    addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+    return;
+  }
+
+  const [r, g, b] = hex2Rgb(newValue);
+
+  inputR.value = r;
+  inputG.value = g;
+  inputB.value = b;
+
+  state.contained = state.palette.getColorByRgb(r, g, b);
+
+  if (state.contained)
+    addColorAlert.textContent = "이미 팔레트에 있는 색입니다.";
+  addColorAlert.classList.toggle("hidden", !state.contained);
+
+  addColorPreviewSingle.style.background = newValue;
+};
+
+const createAddColorPreview = (hex) => {
+  const addColorPreview = document.createElement("div");
+
+  addColorPreview.classList.add("add-color-preview");
+  addColorPreview.style.background = hex;
+
+  return addColorPreview;
+};
+
+const handleInputTextarea = (e) => {
+  const value = e.target.value;
+  const parsedInfos = [
+    ...new Map(
+      value
+        .split(",")
+        .map((str) =>
+          (
+            str
+              .trim()
+              .replace(/^#?/, "#")
+              .match(/^(#(?:[a-f0-9]{3}){1,2})\s?(?:\((.+)?\)|$)?$/i) || []
+          ).slice(1)
+        )
+        .filter(
+          ([hex]) =>
+            isValidHex(hex) && !state.palette.getColorByRgb(...hex2Rgb(hex))
+        )
+        .map(([hex, name]) => [shortenHex(hex), [hex.toUpperCase(), name]])
+    ).values(),
+  ];
+
+  addColorPreviewContainer.innerHTML = "";
+  state.colorsToAdd = parsedInfos;
+
+  if (parsedInfos.length)
+    parsedInfos.forEach((info) => {
+      const addColorPreview = createAddColorPreview(...info);
+      addColorPreviewContainer.append(addColorPreview);
+    });
+
+  updateScrollClass(addColorPreviewContainer);
 };
 
 export const initEventListeners = () => {
@@ -642,78 +777,20 @@ export const initEventListeners = () => {
     terrainColorDialog.close();
   });
 
-  [inputR, inputG, inputB].forEach((input) =>
-    input.addEventListener("input", (e) => {
-      const value = +e.target.value;
-      const newValue = Math.max(0, Math.min(255, value));
-      e.target.value = newValue;
-
-      const r = +inputR.value;
-      const g = +inputG.value;
-      const b = +inputB.value;
-
-      inputHex.value = rgb2Hex(r, g, b);
-
-      state.contained = state.palette.getColorByRgb(r, g, b);
-      addColorAlert.classList.toggle("hidden", !state.contained);
-
-      addColorPreview.style.background = inputHex.value;
-    })
+  addColorPreviewContainer.addEventListener("scroll", (e) =>
+    updateScrollClass(e.target)
   );
 
-  inputHex.addEventListener("input", (e) => {
-    const value = e.target.value.replace(/[^a-f0-9]/gi, "").toUpperCase();
-    if (!value.startsWith("#")) e.target.value = `#${value}`;
+  [inputR, inputG, inputB].forEach((input) =>
+    input.addEventListener("input", handleInputRgb)
+  );
 
-    if (!isValidHex(value)) {
-      addColorAlert.classList.remove("hidden");
-      addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
-      return;
-    }
+  inputHex.addEventListener("input", handleInputHex);
 
-    addColorAlert.textContent = "이미 팔레트에 있는 색입니다.";
+  addColorTextarea.addEventListener("input", handleInputTextarea);
 
-    const newValue = value.replace(/^#?/, "#");
-    e.target.value = newValue;
-
-    const [r, g, b] = hex2Rgb(newValue);
-
-    inputR.value = r;
-    inputG.value = g;
-    inputB.value = b;
-
-    state.contained = state.palette.getColorByRgb(r, g, b);
-    addColorAlert.classList.toggle("hidden", !state.contained);
-
-    addColorPreview.style.background = newValue;
-  });
-
-  const handleConfirmAddColor = (e) => {
-    preventDefaults(e);
-
-    if (!isValidHex(inputHex.value)) {
-      addColorAlert.classList.remove("hidden");
-      addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
-      return;
-    }
-
-    addColorAlert.classList.toggle("hidden", !state.contained);
-
-    if (state.contained) return;
-
-    const r = +inputR.value;
-    const g = +inputG.value;
-    const b = +inputB.value;
-
-    state.palette.addColor([r, g, b], inputHex.value.toUpperCase(), "added");
-
-    drawUpdatedImage();
-
-    addColorDialog.close();
-  };
-
-  addColorForm.addEventListener("submit", handleConfirmAddColor);
-  addColorConfirmBtn.addEventListener("click", handleConfirmAddColor);
+  addColorForm.addEventListener("submit", confirmAddColor);
+  addColorConfirmBtn.addEventListener("click", confirmAddColor);
 
   addColorCancelBtn.addEventListener("click", () => addColorDialog.close());
 

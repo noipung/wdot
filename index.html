@@ -494,55 +494,76 @@
     </dialog>
     <dialog class="dialog add-color-dialog">
       <div class="dialog-inner">
-        <div class="input-item">
-          <div class="add-color-preview"></div>
-          <div class="add-color-alert hidden">이미 팔레트에 있는 색입니다.</div>
+        <div class="tab-group">
+          <input
+            type="radio"
+            name="add-color-tab"
+            id="add-color-tab-single"
+            checked
+          />
+          <label for="add-color-tab-single">단색 추가</label>
+          <input type="radio" name="add-color-tab" id="add-color-tab-list" />
+          <label for="add-color-tab-list">일괄 추가</label>
         </div>
         <form class="add-color-form">
-          <div class="input-item">
-            <label for="add-color-input-hex">HEX</label>
-            <input
-              type="text"
-              name="add-color-input-hex"
-              id="add-color-input-hex"
-              value="#000"
-              maxlength="7"
-            />
+          <div class="add-color-single">
+            <div class="input-item">
+              <div class="add-color-preview"></div>
+              <div class="add-color-alert hidden">
+                이미 팔레트에 있는 색입니다.
+              </div>
+            </div>
+            <div class="input-item">
+              <label for="add-color-input-hex">HEX</label>
+              <input
+                type="text"
+                name="add-color-input-hex"
+                id="add-color-input-hex"
+                value="#000"
+                maxlength="7"
+              />
+            </div>
+            <div class="input-group">
+              <div class="input-item">
+                <label for="add-color-input-r">R</label>
+                <input
+                  type="number"
+                  name="add-color-input-r"
+                  id="add-color-input-r"
+                  value="0"
+                  min="0"
+                  max="255"
+                />
+              </div>
+              <div class="input-item">
+                <label for="add-color-input-g">G</label>
+                <input
+                  type="number"
+                  name="add-color-input-g"
+                  id="add-color-input-g"
+                  value="0"
+                  min="0"
+                  max="255"
+                />
+              </div>
+              <div class="input-item">
+                <label for="add-color-input-b">B</label>
+                <input
+                  type="number"
+                  name="add-color-input-b"
+                  id="add-color-input-b"
+                  value="0"
+                  min="0"
+                  max="255"
+                />
+              </div>
+            </div>
           </div>
-          <div class="input-group">
-            <div class="input-item">
-              <label for="add-color-input-r">R</label>
-              <input
-                type="number"
-                name="add-color-input-r"
-                id="add-color-input-r"
-                value="0"
-                min="0"
-                max="255"
-              />
+          <div class="add-color-list">
+            <div class="add-color-preview-wrapper">
+              <div class="add-color-preview-container"></div>
             </div>
-            <div class="input-item">
-              <label for="add-color-input-g">G</label>
-              <input
-                type="number"
-                name="add-color-input-g"
-                id="add-color-input-g"
-                value="0"
-                min="0"
-                max="255"
-              />
-            </div>
-            <div class="input-item">
-              <label for="add-color-input-b">B</label>
-              <input
-                type="number"
-                name="add-color-input-b"
-                id="add-color-input-b"
-                value="0"
-                min="0"
-                max="255"
-              />
-            </div>
+            <textarea placeholder="#000, #3172E7, ..."></textarea>
           </div>
           <div class="dialog-btn-wrapper">
             <button class="confirm-btn">추가</button>

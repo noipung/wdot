@@ -56,13 +56,24 @@ export const terrainColorCancelBtn = document.querySelector(
 );
 export const addColorDialog = document.querySelector(".add-color-dialog");
 export const addColorForm = document.querySelector(".add-color-form");
+export const addColorTabSingle = document.querySelector(
+  "#add-color-tab-single"
+);
+export const addColorTextarea = document.querySelector(
+  ".add-color-list textarea"
+);
 export const addColorConfirmBtn = document.querySelector(
   ".add-color-dialog .confirm-btn"
 );
 export const addColorCancelBtn = document.querySelector(
   ".add-color-dialog .cancel-btn"
 );
-export const addColorPreview = document.querySelector(".add-color-preview");
+export const addColorPreviewSingle = document.querySelector(
+  ".add-color-single .add-color-preview"
+);
+export const addColorPreviewContainer = document.querySelector(
+  ".add-color-preview-container"
+);
 export const addColorAlert = document.querySelector(".add-color-alert");
 export const inputR = document.querySelector("#add-color-input-r");
 export const inputG = document.querySelector("#add-color-input-g");

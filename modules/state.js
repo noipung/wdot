@@ -26,6 +26,7 @@ export const state = {
   showOriginal: false,
   showTerrainBg: true,
   pickedColor: null,
+  colorsToAdd: [],
   method: "rgb",
   workers: {
     adjust: { instance: null, isProcessing: false },

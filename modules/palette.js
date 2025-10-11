@@ -1,6 +1,9 @@
 import { state } from "./state.js";
 import {
   addColorDialog,
+  addColorPreviewContainer,
+  addColorTabSingle,
+  addColorTextarea,
   basicPaletteList,
   customPaletteList,
   inputHex,
@@ -14,17 +17,25 @@ import { getContentColor, hex2Rgb, validate } from "./utils.js";
 import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
+import { updateScrollClass } from "./events.js";
 
 const createAddColorBtn = () => {
   const handleClick = () => {
     addColorDialog.showModal();
-    inputHex.dispatchEvent(
-      new Event("input", {
-        bubbles: true,
-        cancelable: false,
-      })
+
+    const onSingleTab = addColorTabSingle.checked;
+    const inputEvent = new Event("input", {
+      bubbles: true,
+      cancelable: false,
+    });
+
+    [inputHex, addColorTextarea].forEach((textField) =>
+      textField.dispatchEvent(inputEvent)
     );
-    inputHex.select();
+
+    if (onSingleTab) inputHex.select();
+
+    updateScrollClass(addColorPreviewContainer);
   };
 
   const li = document.createElement("li");
