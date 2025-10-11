@@ -54,6 +54,7 @@ export const terrainColorConfirmBtn = document.querySelector(
 export const terrainColorCancelBtn = document.querySelector(
   ".terrain-color-dialog .cancel-btn"
 );
+export const terrainNone = document.querySelector("#terrain-none");
 export const addColorDialog = document.querySelector(".add-color-dialog");
 export const addColorForm = document.querySelector(".add-color-form");
 export const addColorTabSingle = document.querySelector(

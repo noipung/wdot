@@ -11,6 +11,7 @@ import {
   paletteDropdown,
   selectAllBtn,
   terrainColorDialog,
+  terrainNone,
   unselectAllBtn,
 } from "./constants.js";
 import { getContentColor, hex2Rgb, validate } from "./utils.js";
@@ -103,8 +104,18 @@ class Palette {
     lockedPaletteList.classList.toggle("hidden", !this.hasLockedColor);
     customPaletteList.classList.toggle("hidden", !this.hasCustomColor);
 
-    if (this.hasTerrainColor)
+    if (this.hasTerrainColor) {
       this.setTerrainColorBtn = createSetTerrainColorBtn();
+    } else {
+      const changeEvent = new Event("change", {
+        bubbles: true,
+        cancelable: false,
+      });
+
+      terrainNone.checked = true;
+      terrainNone.dispatchEvent(changeEvent);
+    }
+
     if (this.hasCustomColor) this.addColorBtn = createAddColorBtn();
   }
 
