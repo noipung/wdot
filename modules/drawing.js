@@ -168,6 +168,7 @@ export const draw = () => {
   const resultImage = state.showOriginal ? state.adjusted : state.dithered;
 
   state.zoomRect = [...center, zw, zh];
+  ctx.imageSmoothingEnabled = zoom < 1;
   ctx.drawImage(resultImage, ...state.zoomRect);
 
   if (state.mark) drawMark();
