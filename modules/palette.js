@@ -86,6 +86,8 @@ class Palette {
 
     const paletteData = state.paletteData[paletteName];
 
+    console.log(state.paletteData);
+
     const colors = paletteData.colors.map(
       ({ rgb, name, type }) => new PaletteColor(rgb, name, type, this)
     );
@@ -120,6 +122,8 @@ class Palette {
   }
 
   addColor(rgb, name, type) {
+    state.paletteData[state.paletteName].colors.push({ rgb, name, type });
+
     const color = new PaletteColor(rgb, name, type, this);
 
     this.colors.push(color);
@@ -135,6 +139,11 @@ class Palette {
 
   removeAddedColors() {
     customPaletteList.innerHTML = "";
+
+    let paletteDataColors = state.paletteData[state.paletteName].colors;
+    paletteDataColors = paletteDataColors.filter(
+      ({ type }) => type !== "added"
+    );
 
     this.addColorBtn = createAddColorBtn();
 
@@ -180,8 +189,8 @@ class Palette {
     color.label.classList.add("highlighted");
   }
 
-  selectBasicColors() {
-    this.colors.forEach((color) => color.toggle(color.type === "basic"));
+  selectUnlockedColors() {
+    this.colors.forEach((color) => color.toggle(color.type !== "locked"));
   }
 
   selectAllColors() {
@@ -268,15 +277,20 @@ class PaletteColor {
     this.label = label;
     this.colorCount = colorCount;
     this.check.checked = this.enabled;
-    if (this.type !== "added") {
-      (this.type === "locked" ? lockedPaletteList : basicPaletteList).append(
-        this.colorListItem
-      );
+
+    if (this.type === "basic") {
+      basicPaletteList.append(this.colorListItem);
+    } else if (this.type === "locked") {
+      lockedPaletteList.append(this.colorListItem);
     } else {
-      customPaletteList.insertBefore(
-        this.colorListItem,
-        palette.addColorBtn.parentNode
-      );
+      if (!palette.addColorBtn?.parentNode?.parentNode) {
+        customPaletteList.append(this.colorListItem);
+      } else {
+        customPaletteList.insertBefore(
+          this.colorListItem,
+          palette.addColorBtn.parentNode
+        );
+      }
     }
   }
 

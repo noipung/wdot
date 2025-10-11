@@ -391,8 +391,6 @@ export const initEventListeners = () => {
     draw();
   });
 
-  // 메서드 드롭다운 선택
-
   [
     {
       dropdown: paletteDropdown,
@@ -583,8 +581,10 @@ export const initEventListeners = () => {
   });
 
   paletteResetBtn.addEventListener("click", () => {
-    if (state.palette.hasCustomColor) state.palette.removeAddedColors();
-    state.palette.selectBasicColors();
+    if (state.palette.hasCustomColor) {
+      state.palette.removeAddedColors();
+    }
+    state.palette.selectUnlockedColors();
 
     drawUpdatedImage();
   });
