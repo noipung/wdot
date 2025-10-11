@@ -642,7 +642,7 @@ export const initEventListeners = () => {
   });
 
   [inputR, inputG, inputB].forEach((input) =>
-    input.addEventListener("change", (e) => {
+    input.addEventListener("input", (e) => {
       const value = +e.target.value;
       const newValue = Math.max(0, Math.min(255, value));
       e.target.value = newValue;
@@ -663,10 +663,6 @@ export const initEventListeners = () => {
   inputHex.addEventListener("input", (e) => {
     const value = e.target.value.replace(/[^a-f0-9]/gi, "");
     if (!value.startsWith("#")) e.target.value = `#${value}`;
-  });
-
-  inputHex.addEventListener("change", (e) => {
-    const value = e.target.value;
 
     if (!isValidHex(value)) {
       addColorAlert.classList.remove("hidden");

@@ -135,6 +135,7 @@ class Palette {
       });
 
     this.colors = this.colors.filter(({ added }) => !added);
+    this.changed = true;
   }
 
   getEnabledColorRgbs() {
