@@ -109,7 +109,7 @@ class Palette {
   }
 
   addColor(rgb, name, type) {
-    const color = new PaletteColor(rgb, name, type, this, true);
+    const color = new PaletteColor(rgb, name, type, this);
 
     this.colors.push(color);
     this.changed = true;
@@ -128,13 +128,13 @@ class Palette {
     this.addColorBtn = createAddColorBtn();
 
     this.colors
-      .filter(({ added }) => added)
+      .filter(({ type }) => type === "added")
       .forEach(({ rgb }) => {
         const key = rgb.join(",");
         this.rgbMap.delete(key);
       });
 
-    this.colors = this.colors.filter(({ added }) => !added);
+    this.colors = this.colors.filter(({ type }) => type !== "added");
     this.changed = true;
   }
 
@@ -209,14 +209,13 @@ class Palette {
 }
 
 class PaletteColor {
-  constructor(rgb, name, type, palette, added = false) {
+  constructor(rgb, name, type, palette) {
     this.rgb = rgb;
     this.name = name;
     this.type = type;
     this.enabled = type !== "locked";
     this.count = 0;
     this.palette = palette;
-    this.added = added;
 
     const li = document.createElement("li");
     const check = document.createElement("input");
@@ -258,7 +257,7 @@ class PaletteColor {
     this.label = label;
     this.colorCount = colorCount;
     this.check.checked = this.enabled;
-    if (!added) {
+    if (this.type !== "added") {
       (this.type === "locked" ? lockedPaletteList : basicPaletteList).append(
         this.colorListItem
       );
