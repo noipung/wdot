@@ -100,7 +100,7 @@ body button {
   touch-action: none;
 }
 
-.canvas-overlay.dragging {
+.ready .canvas-overlay.dragging {
   cursor: grabbing;
 }
 
