@@ -1140,6 +1140,15 @@ h3.size::before {
   background: currentColor;
 }
 
+.add-color-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.add-color-form .dialog-btn-wrapper {
+  margin-top: 1em;
+}
+
 .add-color-dialog .input-item {
   display: flex;
   flex: 1;

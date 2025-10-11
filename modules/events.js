@@ -35,6 +35,7 @@ import {
   terrainColorDialog,
   terrainColorInputs,
   showTerrainBgCheckbox,
+  addColorForm,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -661,7 +662,7 @@ export const initEventListeners = () => {
   );
 
   inputHex.addEventListener("input", (e) => {
-    const value = e.target.value.replace(/[^a-f0-9]/gi, "");
+    const value = e.target.value.replace(/[^a-f0-9]/gi, "").toUpperCase();
     if (!value.startsWith("#")) e.target.value = `#${value}`;
 
     if (!isValidHex(value)) {
@@ -687,7 +688,9 @@ export const initEventListeners = () => {
     addColorPreview.style.background = newValue;
   });
 
-  addColorConfirmBtn.addEventListener("click", (e) => {
+  const handleConfirmAddColor = (e) => {
+    preventDefaults(e);
+
     if (!isValidHex(inputHex.value)) {
       addColorAlert.classList.remove("hidden");
       addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
@@ -707,16 +710,14 @@ export const initEventListeners = () => {
     drawUpdatedImage();
 
     addColorDialog.close();
-  });
+  };
 
-  addColorCancelBtn.addEventListener("click", (e) => {
-    addColorDialog.close();
-  });
+  addColorForm.addEventListener("submit", handleConfirmAddColor);
+  addColorConfirmBtn.addEventListener("click", handleConfirmAddColor);
 
-  aside.addEventListener("pointerdown", () => {
-    state.palette.unhighlightAll();
-  });
+  addColorCancelBtn.addEventListener("click", () => addColorDialog.close());
 
-  // 폼 제출 방지
+  aside.addEventListener("pointerdown", () => state.palette.unhighlightAll());
+
   settingsForm.addEventListener("submit", preventDefaults);
 };

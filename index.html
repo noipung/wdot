@@ -498,55 +498,57 @@
           <div class="add-color-preview"></div>
           <div class="add-color-alert hidden">이미 팔레트에 있는 색입니다.</div>
         </div>
-        <div class="input-item">
-          <label for="add-color-input-hex">HEX</label>
-          <input
-            type="text"
-            name="add-color-input-hex"
-            id="add-color-input-hex"
-            value="#000"
-            maxlength="7"
-          />
-        </div>
-        <div class="input-group">
+        <form class="add-color-form">
           <div class="input-item">
-            <label for="add-color-input-r">R</label>
+            <label for="add-color-input-hex">HEX</label>
             <input
-              type="number"
-              name="add-color-input-r"
-              id="add-color-input-r"
-              value="0"
-              min="0"
-              max="255"
+              type="text"
+              name="add-color-input-hex"
+              id="add-color-input-hex"
+              value="#000"
+              maxlength="7"
             />
           </div>
-          <div class="input-item">
-            <label for="add-color-input-g">G</label>
-            <input
-              type="number"
-              name="add-color-input-g"
-              id="add-color-input-g"
-              value="0"
-              min="0"
-              max="255"
-            />
+          <div class="input-group">
+            <div class="input-item">
+              <label for="add-color-input-r">R</label>
+              <input
+                type="number"
+                name="add-color-input-r"
+                id="add-color-input-r"
+                value="0"
+                min="0"
+                max="255"
+              />
+            </div>
+            <div class="input-item">
+              <label for="add-color-input-g">G</label>
+              <input
+                type="number"
+                name="add-color-input-g"
+                id="add-color-input-g"
+                value="0"
+                min="0"
+                max="255"
+              />
+            </div>
+            <div class="input-item">
+              <label for="add-color-input-b">B</label>
+              <input
+                type="number"
+                name="add-color-input-b"
+                id="add-color-input-b"
+                value="0"
+                min="0"
+                max="255"
+              />
+            </div>
           </div>
-          <div class="input-item">
-            <label for="add-color-input-b">B</label>
-            <input
-              type="number"
-              name="add-color-input-b"
-              id="add-color-input-b"
-              value="0"
-              min="0"
-              max="255"
-            />
+          <div class="dialog-btn-wrapper">
+            <button class="confirm-btn">추가</button>
+            <button type="button" class="cancel-btn">취소</button>
           </div>
-        </div>
-        <div class="dialog-btn-wrapper">
-          <button class="confirm-btn">추가</button>
-          <button class="cancel-btn">취소</button>
-        </div>
+        </form>
       </div>
     </dialog>
     <script type="module" src="main.js"></script>
