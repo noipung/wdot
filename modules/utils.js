@@ -92,7 +92,10 @@ export const isValidHex = (h) => /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(h);
 export const insertAndSelectText = (textField, textToInsert) => {
   const { value } = textField;
 
-  textField.value = value.replace(/(,\s*)?$/, ", ") + textToInsert + ", ";
+  console.log(value);
+
+  textField.value =
+    (value ? value.replace(/(,\s*)?$/, ", ") : value) + textToInsert + ", ";
   textField.focus();
 
   const end = textField.value.length;
