@@ -141,5 +141,10 @@
       { "rgb": [243, 15, 12], "name": "Red", "locked": false },
       { "rgb": [255, 120, 114], "name": "Watermelon", "locked": false }
     ]
+  },
+  "사용자 지정": {
+    "customColor": true,
+    "terrainColor": false,
+    "colors": []
   }
 }

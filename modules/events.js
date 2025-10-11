@@ -660,6 +660,11 @@ export const initEventListeners = () => {
     })
   );
 
+  inputHex.addEventListener("input", (e) => {
+    const value = e.target.value.replace(/[^a-f0-9]/gi, "");
+    if (!value.startsWith("#")) e.target.value = `#${value}`;
+  });
+
   inputHex.addEventListener("change", (e) => {
     const value = e.target.value;
 

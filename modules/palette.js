@@ -24,6 +24,7 @@ const createAddColorBtn = () => {
         cancelable: false,
       })
     );
+    inputHex.select();
   };
 
   const li = document.createElement("li");
