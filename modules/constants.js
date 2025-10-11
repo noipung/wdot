@@ -4,7 +4,7 @@ export const totalTime = document.querySelector(".total-time");
 export const totalTimeWithFlag = document.querySelector(
   ".total-time-with-flag"
 );
-export const form = document.querySelector("form");
+export const settingsForm = document.querySelector(".settings");
 export const canvasOverlay = document.querySelector(".canvas-overlay");
 export const canvasControlLayer = document.querySelector(
   ".canvas-control-layer"

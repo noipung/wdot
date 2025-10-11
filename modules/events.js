@@ -3,7 +3,7 @@ import {
   canvas,
   canvasOverlay,
   canvasControlLayer,
-  form,
+  settingsForm,
   uploadBtn,
   zoomInBtn,
   zoomOutBtn,
@@ -561,7 +561,7 @@ export const initEventListeners = () => {
   sizeBtns.forEach((button) => {
     button.addEventListener("click", () => {
       const { dimension, delta } = button.dataset;
-      const input = form[dimension];
+      const input = settingsForm[dimension];
       const value = Math.max(1, +input.value + +delta);
       input.value = value;
       input.dispatchEvent(new InputEvent("change"));
@@ -702,7 +702,7 @@ export const initEventListeners = () => {
     const g = +inputG.value;
     const b = +inputB.value;
 
-    state.palette.addColor([r, g, b], inputHex.value.toUpperCase());
+    state.palette.addColor([r, g, b], inputHex.value.toUpperCase(), "added");
 
     drawUpdatedImage();
 
@@ -718,5 +718,5 @@ export const initEventListeners = () => {
   });
 
   // 폼 제출 방지
-  form.addEventListener("submit", preventDefaults);
+  settingsForm.addEventListener("submit", preventDefaults);
 };

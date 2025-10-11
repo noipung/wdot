@@ -108,8 +108,8 @@ class Palette {
     });
   }
 
-  addColor(rgb, name, locked = false) {
-    const color = new PaletteColor(rgb, name, locked, this, true);
+  addColor(rgb, name, type) {
+    const color = new PaletteColor(rgb, name, type, this, true);
 
     this.colors.push(color);
     this.changed = true;
@@ -213,7 +213,7 @@ class PaletteColor {
     this.rgb = rgb;
     this.name = name;
     this.type = type;
-    this.enabled = type === "basic";
+    this.enabled = type !== "locked";
     this.count = 0;
     this.palette = palette;
     this.added = added;

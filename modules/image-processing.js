@@ -4,7 +4,7 @@ import {
   totalTime,
   totalTimeWithFlag,
   zoomInput,
-  form,
+  settingsForm,
   canvasOverlay,
   zoomInBtn,
   zoomOutBtn,
@@ -87,17 +87,17 @@ const enableInputs = () => {
   downloadBtn.disabled = false;
   settingsResetBtn.disabled = false;
 
-  form.brightness.disabled = false;
-  form.contrast.disabled = false;
-  form.saturation.disabled = false;
-  form.dither.disabled = false;
-  form.width.disabled = false;
-  form.height.disabled = false;
+  settingsForm.brightness.disabled = false;
+  settingsForm.contrast.disabled = false;
+  settingsForm.saturation.disabled = false;
+  settingsForm.dither.disabled = false;
+  settingsForm.width.disabled = false;
+  settingsForm.height.disabled = false;
 
-  form["brightness-range"].disabled = false;
-  form["contrast-range"].disabled = false;
-  form["saturation-range"].disabled = false;
-  form["dither-range"].disabled = false;
+  settingsForm["brightness-range"].disabled = false;
+  settingsForm["contrast-range"].disabled = false;
+  settingsForm["saturation-range"].disabled = false;
+  settingsForm["dither-range"].disabled = false;
 
   sizeBtns.forEach((btn) => (btn.disabled = false));
 };
@@ -106,8 +106,8 @@ export const handleImageLoad = async (image) => {
   state.image = image;
   state.aspectRatio = image.width / image.height;
 
-  state.width = form.width.value = image.width;
-  state.height = form.height.value = image.height;
+  state.width = settingsForm.width.value = image.width;
+  state.height = settingsForm.height.value = image.height;
   state.movedPosition = state.position = [0, 0];
 
   updateZoom();
