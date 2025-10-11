@@ -50,6 +50,7 @@ import {
   hex2Rgb,
   getContentColor,
   shortenHex,
+  enableAutoResize,
 } from "./utils.js";
 import {
   handleImageLoad,
@@ -793,6 +794,8 @@ export const initEventListeners = () => {
   );
 
   inputHex.addEventListener("input", handleInputHex);
+
+  enableAutoResize(addColorTextarea);
 
   addColorTextarea.addEventListener("input", handleInputTextarea);
 

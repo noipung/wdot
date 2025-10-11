@@ -88,3 +88,39 @@ export const rgb2Hex = (r, g, b) => {
 };
 
 export const isValidHex = (h) => /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(h);
+
+export const insertAndSelectText = (textField, textToInsert) => {
+  const { value } = textField;
+
+  textField.value = value.replace(/(,\s*)?$/, ", ") + textToInsert + ", ";
+  textField.focus();
+
+  const end = textField.value.length;
+
+  textField.setSelectionRange(end, end);
+
+  dispatchEventTo(textField, "input");
+  requestAnimationFrame(() => (textField.scrollTop = textField.scrollHeight));
+};
+
+export const enableAutoResize = (textarea) => {
+  const resize = () => {
+    textarea.style.height = "auto";
+    const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight);
+    const maxHeight = lineHeight * 10;
+    textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";
+  };
+
+  textarea.addEventListener("input", resize);
+
+  resize();
+};
+
+export const dispatchEventTo = (element, eventType) => {
+  const event = new Event(eventType, {
+    bubbles: true,
+    cancelable: false,
+  });
+
+  element.dispatchEvent(event);
+};

@@ -80,6 +80,9 @@ export const inputR = document.querySelector("#add-color-input-r");
 export const inputG = document.querySelector("#add-color-input-g");
 export const inputB = document.querySelector("#add-color-input-b");
 export const inputHex = document.querySelector("#add-color-input-hex");
+export const colorTextLoaderContainer = document.querySelector(
+  ".color-text-loader-container"
+);
 
 export const DRAG_THRESHOLD = 3;
 export const DPR = window.devicePixelRatio || 1;

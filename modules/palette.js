@@ -5,6 +5,7 @@ import {
   addColorTabSingle,
   addColorTextarea,
   basicPaletteList,
+  colorTextLoaderContainer,
   customPaletteList,
   inputHex,
   lockedPaletteList,
@@ -14,7 +15,14 @@ import {
   terrainNone,
   unselectAllBtn,
 } from "./constants.js";
-import { getContentColor, hex2Rgb, rgb2Hex, validate } from "./utils.js";
+import {
+  dispatchEventTo,
+  getContentColor,
+  hex2Rgb,
+  insertAndSelectText,
+  rgb2Hex,
+  validate,
+} from "./utils.js";
 import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
@@ -25,13 +33,9 @@ const createAddColorBtn = () => {
     addColorDialog.showModal();
 
     const onSingleTab = addColorTabSingle.checked;
-    const inputEvent = new Event("input", {
-      bubbles: true,
-      cancelable: false,
-    });
 
     [inputHex, addColorTextarea].forEach((textField) =>
-      textField.dispatchEvent(inputEvent)
+      dispatchEventTo(textField, "input")
     );
 
     if (onSingleTab) inputHex.select();
@@ -108,13 +112,8 @@ class Palette {
       if (this.terrainColor)
         setBgOfTerrainColorBtn(rgb2Hex(...this.terrainColor));
     } else {
-      const changeEvent = new Event("change", {
-        bubbles: true,
-        cancelable: false,
-      });
-
       terrainNone.checked = true;
-      terrainNone.dispatchEvent(changeEvent);
+      dispatchEventTo(terrainNone, "change");
     }
 
     if (this.hasCustomColor) this.addColorBtn = createAddColorBtn();
@@ -351,6 +350,23 @@ const createPaletteOptionItem = (name, checked = false) => {
   return optionItem;
 };
 
+const formatColorText = ({ rgb, name }) => `${rgb2Hex(...rgb)}(${name})`;
+
+const createColorTextLoader = (name) => {
+  const colorTextLoader = document.createElement("button");
+
+  colorTextLoader.textContent = name;
+  colorTextLoader.type = "button";
+
+  colorTextLoader.addEventListener("click", () => {
+    const colorText = state.colorTexts.get(name);
+
+    insertAndSelectText(addColorTextarea, colorText);
+  });
+
+  return colorTextLoader;
+};
+
 export const initPaletteUI = async () => {
   state.paletteData = await loadPaletteData();
   state.palette = new Palette(state.paletteName);
@@ -362,7 +378,21 @@ export const initPaletteUI = async () => {
   Object.keys(state.paletteData).forEach((name, i) => {
     const optionItem = createPaletteOptionItem(name, i === 0);
     paletteOptionsContainer.append(optionItem);
+
+    const { colors } = state.paletteData[name];
+
+    if (!colors.length) return;
+
+    const colorText = colors.map(formatColorText).join(", ");
+
+    state.colorTexts.set(name, colorText);
+
+    const colorTextLoader = createColorTextLoader(name);
+
+    colorTextLoaderContainer.append(colorTextLoader);
   });
+
+  console.log(state.colorTexts);
 
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();

@@ -18,6 +18,7 @@ export const state = {
   paletteData: {},
   paletteName: "WPlace",
   palette: null,
+  colorTexts: new Map(),
   fileName: null,
   image: null,
   adjusted: null,

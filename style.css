@@ -3,6 +3,7 @@
   --scrollbar-thumb: #ddd;
   --scrollbar-thumb-hover: #ccc;
   --scrollbar-track: #0000;
+  --dialog-width: 300px;
 }
 
 ::-webkit-scrollbar {
@@ -1131,7 +1132,7 @@ h3.size::before {
   display: flex;
   flex-flow: column;
   justify-content: space-between;
-  width: 300px;
+  width: min(var(--dialog-width), calc(100vw - 5em));
   gap: 1em;
 }
 
@@ -1164,6 +1165,7 @@ h3.size::before {
 }
 
 .add-color-dialog {
+  --dialog-width: 400px;
   border-top-left-radius: 0;
 }
 
@@ -1266,6 +1268,11 @@ h3.size::before {
   }
 }
 
+.color-text-loader-container {
+  display: flex;
+  gap: 4px;
+}
+
 .add-color-list textarea {
   box-sizing: border-box;
   font-family: monospace;
@@ -1275,8 +1282,7 @@ h3.size::before {
   line-height: 1.5;
   font-size: 1rem;
   min-height: 100px;
-  max-height: 500px;
-  resize: vertical;
+  resize: none;
   border: none;
   border-left: 2px solid #ddd;
   outline: none;
