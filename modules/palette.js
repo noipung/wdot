@@ -5,6 +5,7 @@ import {
   customPaletteList,
   inputHex,
   lockedPaletteList,
+  paletteDropdown,
   selectAllBtn,
   terrainColorDialog,
   unselectAllBtn,
@@ -79,10 +80,12 @@ class Palette {
 
     this.setColors(colors);
 
+    this.hasBasicColor = colors.some(({ locked }) => !locked);
     this.hasLockedColor = colors.some(({ locked }) => locked);
     this.hasCustomColor = paletteData.customColor;
     this.hasTerrainColor = paletteData.terrainColor;
 
+    basicPaletteList.classList.toggle("hidden", !this.hasBasicColor);
     lockedPaletteList.classList.toggle("hidden", !this.hasLockedColor);
     customPaletteList.classList.toggle("hidden", !this.hasCustomColor);
 
@@ -122,6 +125,14 @@ class Palette {
     customPaletteList.innerHTML = "";
 
     this.addColorBtn = createAddColorBtn();
+
+    this.colors
+      .filter(({ added }) => added)
+      .forEach(({ rgb }) => {
+        const key = rgb.join(",");
+        this.rgbMap.delete(key);
+      });
+
     this.colors = this.colors.filter(({ added }) => !added);
   }
 
@@ -275,9 +286,44 @@ class PaletteColor {
   }
 }
 
+const createPaletteOptionItem = (name, checked = false) => {
+  const optionItem = document.createElement("div");
+  const input = document.createElement("input");
+  const label = document.createElement("label");
+  const icon = document.createElement("i");
+  const labelInner = document.createElement("span");
+
+  const id = `palette-${name.toLowerCase()}`;
+
+  optionItem.classList.add("option-item");
+  input.type = "radio";
+  input.id = id;
+  input.name = "palette";
+  input.value = input.dataset.label = name;
+  input.setAttribute("auto-complete", "off");
+  input.checked = checked;
+  label.htmlFor = id;
+  labelInner.classList.add("option-label");
+  labelInner.textContent = name;
+
+  label.append(icon, labelInner);
+  optionItem.append(input, label);
+
+  return optionItem;
+};
+
 export const initPaletteUI = async () => {
   state.paletteData = await loadPaletteData();
   state.palette = new Palette(state.paletteName);
+
+  const paletteOptionsContainer = paletteDropdown.querySelector(
+    ".dropdown-options-container"
+  );
+
+  Object.keys(state.paletteData).forEach((name, i) => {
+    const optionItem = createPaletteOptionItem(name, i === 0);
+    paletteOptionsContainer.append(optionItem);
+  });
 
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();

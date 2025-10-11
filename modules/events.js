@@ -53,29 +53,8 @@ import {
 } from "./image-processing.js";
 import { draw } from "./drawing.js";
 
-// 이미지 드롭 이벤트
-["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-  canvasControlLayer.addEventListener(eventName, preventDefaults, false);
-});
-
-["dragenter", "dragover"].forEach((eventName) => {
-  canvasControlLayer.addEventListener(
-    eventName,
-    () => canvasOverlay.classList.add("active"),
-    false
-  );
-});
-
-["dragleave", "drop"].forEach((eventName) => {
-  canvasControlLayer.addEventListener(
-    eventName,
-    () => canvasOverlay.classList.remove("active"),
-    false
-  );
-});
-
 // 파일 처리
-export const handleFile = (file) => {
+const handleFile = (file) => {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
@@ -99,20 +78,18 @@ export const handleFile = (file) => {
   reader.readAsDataURL(file);
 };
 
-export const handleUpload = (e) => {
+const handleUpload = (e) => {
   const [file] = e.target.files;
   handleFile(file);
 };
 
-export const handleDrop = (e) => {
+const handleDrop = (e) => {
   const [file] = e.dataTransfer.files;
   handleFile(file);
 };
 
-uploadBtn.addEventListener("change", handleUpload, false);
-
 // 줌 이벤트
-export const zoom = (deltaY) => {
+const zoom = (deltaY) => {
   const isZoomIn = deltaY < 0;
 
   state.zoom = zoomInput.value = Math.max(
@@ -125,56 +102,8 @@ export const zoom = (deltaY) => {
   draw();
 };
 
-zoomInBtn.addEventListener("click", () => zoom(-1), false);
-zoomOutBtn.addEventListener("click", () => zoom(1), false);
-
-zoomInput.addEventListener("change", (e) => {
-  let value = Math.max(10, ~~e.target.value);
-  e.target.value = state.zoom = value;
-
-  if (!validate()) return;
-
-  draw();
-});
-
-// 메서드 드롭다운 선택
-
-[
-  {
-    dropdown: paletteDropdown,
-    cb: (value) => {
-      state.paletteName = value;
-      state.palette.setPalette(value);
-    },
-  },
-  {
-    dropdown: methodDropdown,
-    cb: (value) => {
-      state.method = value;
-    },
-  },
-].forEach(({ dropdown, cb }) => {
-  const optionRadios = dropdown.querySelectorAll(".option-item input");
-  const dropdownOpen = dropdown.querySelector(".dropdown-open");
-  const dropdownCurrentOption = dropdown.querySelector(
-    ".dropdown-current-option"
-  );
-
-  optionRadios.forEach((optionRadio) => {
-    optionRadio.addEventListener("change", (e) => {
-      dropdownCurrentOption.textContent = e.target.dataset.label;
-      dropdownOpen.checked = false;
-      cb(e.target.value);
-      drawUpdatedImage();
-    });
-  });
-});
-
-canvasControlLayer.addEventListener("drop", handleDrop, false);
-canvasControlLayer.addEventListener("wheel", (e) => zoom(e.deltaY), false);
-
 // 상태 유효성 검사 및 초기화 함수
-export const initState = () => {
+const initState = () => {
   if (!state.position) {
     state.position = [...state.movedPosition];
   }
@@ -235,89 +164,6 @@ const startDragging = () => {
   canvasOverlay.classList.add("dragging");
 };
 
-// 터치 이벤트
-canvasControlLayer.addEventListener("touchstart", (e) => {
-  preventDefaults(e);
-
-  // 모든 터치 포인트 저장
-  state.currentTouches = Array.from(e.touches);
-
-  if (e.touches.length === 1) {
-    state.position = [...state.movedPosition];
-    state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
-  } else if (e.touches.length === 2) {
-    const touch1 = e.touches[0];
-    const touch2 = e.touches[1];
-
-    state.position = [...state.movedPosition];
-    state.startPosition = getMidpoint(touch1, touch2);
-
-    state.startTouchDistance = getTouchDistance(touch1, touch2);
-    state.startZoom = state.zoom;
-  }
-});
-
-canvasControlLayer.addEventListener("touchmove", (e) => {
-  preventDefaults(e);
-
-  // 터치 포인트 업데이트
-  state.currentTouches = Array.from(e.touches);
-
-  if (e.touches.length === 1) {
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - state.startPosition[0];
-    const deltaY = touch.clientY - state.startPosition[1];
-
-    moveTempPosition(deltaX, deltaY);
-
-    if (!validate()) return;
-    requestAnimationFrame(draw);
-  } else if (e.touches.length === 2) {
-    handlePinchZoom(e);
-  }
-});
-
-canvasControlLayer.addEventListener("touchend", (e) => {
-  preventDefaults(e);
-  state.currentTouches = Array.from(e.touches);
-  if (e.touches.length < 2) {
-    state.position = [...state.movedPosition];
-    if (e.touches[0])
-      state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
-    state.startTouchDistance = 0;
-  }
-
-  if (e.touches.length === 0) {
-    if (!state.dragging) {
-      highlightColorAt(
-        e.changedTouches[0].clientX,
-        e.changedTouches[0].clientY
-      );
-    }
-    state.dragging = false;
-    state.position = [...state.movedPosition];
-    canvasOverlay.classList.remove("dragging");
-    if (!validate()) return;
-    draw();
-  }
-});
-
-// 포인터 이벤트
-canvasControlLayer.addEventListener(
-  "pointerdown",
-  (e) => {
-    if (e.pointerType !== "touch") {
-      if (e.button === 0) {
-        initState();
-        state.startPosition = [e.clientX, e.clientY];
-        state.dragging = false;
-        canvasControlLayer.setPointerCapture(e.pointerId);
-      }
-    }
-  },
-  false
-);
-
 const highlightColorAt = (x, y) => {
   if (!state.dithered) return;
 
@@ -372,344 +218,504 @@ const highlightColorAt = (x, y) => {
   };
 };
 
-canvasControlLayer.addEventListener(
-  "pointermove",
-  (e) => {
-    if (
-      e.pointerType !== "touch" &&
-      canvasControlLayer.hasPointerCapture(e.pointerId)
-    ) {
-      e.preventDefault();
+export const initEventListeners = () => {
+  // 이미지 드롭 이벤트
 
-      const deltaX = e.clientX - state.startPosition[0];
-      const deltaY = e.clientY - state.startPosition[1];
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    canvasControlLayer.addEventListener(eventName, preventDefaults, false);
+  });
 
-      moveTempPosition(deltaX, deltaY);
+  ["dragenter", "dragover"].forEach((eventName) => {
+    canvasControlLayer.addEventListener(
+      eventName,
+      () => canvasOverlay.classList.add("active"),
+      false
+    );
+  });
 
-      if (!validate()) return;
+  ["dragleave", "drop"].forEach((eventName) => {
+    canvasControlLayer.addEventListener(
+      eventName,
+      () => canvasOverlay.classList.remove("active"),
+      false
+    );
+  });
 
-      // 부드러운 애니메이션을 위한 requestAnimationFrame 사용
-      requestAnimationFrame(draw);
-    }
-  },
-  false
-);
+  uploadBtn.addEventListener("change", handleUpload, false);
 
-canvasControlLayer.addEventListener(
-  "pointerup",
-  (e) => {
-    if (e.pointerType === "touch") return;
+  zoomInBtn.addEventListener("click", () => zoom(-1), false);
+  zoomOutBtn.addEventListener("click", () => zoom(1), false);
 
-    if (state.dragging) {
-      state.position = [...state.movedPosition];
-    }
-
-    if (!state.dragging) {
-      highlightColorAt(e.clientX, e.clientY);
-    }
-
-    state.dragging = false;
-    canvasControlLayer.releasePointerCapture(e.pointerId);
-    canvasOverlay.classList.remove("dragging");
+  zoomInput.addEventListener("change", (e) => {
+    let value = Math.max(10, ~~e.target.value);
+    e.target.value = state.zoom = value;
 
     if (!validate()) return;
 
     draw();
-  },
-  false
-);
+  });
 
-canvasControlLayer.addEventListener(
-  "pointercancel",
-  (e) => {
-    state.dragging = false;
-    canvasControlLayer.releasePointerCapture(e.pointerId);
-    canvasOverlay.classList.remove("dragging");
-  },
-  false
-);
+  // 메서드 드롭다운 선택
 
-showOriginalInput.addEventListener("change", (e) => {
-  state.showOriginal = e.target.checked;
-  state.palette.unhighlightAll();
-
-  if (!validate()) return;
-
-  draw();
-});
-
-pixelatedModeToggle.addEventListener("change", (e) => {
-  state.isPixelMode = e.target.checked;
-
-  drawUpdatedImage();
-});
-
-paletteResetBtn.addEventListener("click", () => {
-  if (state.palette.hasCustomColor) state.palette.removeAddedColors();
-  state.palette.selectBasicColors();
-
-  drawUpdatedImage();
-});
-
-// 입력 동기화
-const links = {
-  brightness: {
-    link: ["#brightness", "#brightness-range"],
-    init: { label: ["label[for=brightness]"], fn: () => 50 },
-  },
-  contrast: {
-    link: ["#contrast", "#contrast-range"],
-    init: { label: ["label[for=contrast]"], fn: () => 50 },
-  },
-  saturation: {
-    link: ["#saturation", "#saturation-range"],
-    init: { label: ["label[for=saturation]"], fn: () => 50 },
-  },
-  dither: {
-    link: ["#dither", "#dither-range"],
-    init: { label: ["label[for=dither]"], fn: () => 0 },
-  },
-  size: {
-    link: ["#width", "#height"],
-    init: {
-      label: ["label[for=width]", "label[for=height]"],
-      fn: () => (state.image ? state.image.width : 1),
+  [
+    {
+      dropdown: paletteDropdown,
+      cb: (value) => {
+        state.paletteName = value;
+        state.palette.setPalette(value);
+      },
     },
-    logic: (value, name) =>
-      ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
-    cb: () => {
+    {
+      dropdown: methodDropdown,
+      cb: (value) => {
+        state.method = value;
+      },
+    },
+  ].forEach(({ dropdown, cb }) => {
+    const optionRadios = dropdown.querySelectorAll(".option-item input");
+    const dropdownOpen = dropdown.querySelector(".dropdown-open");
+    const dropdownCurrentOption = dropdown.querySelector(
+      ".dropdown-current-option"
+    );
+
+    optionRadios.forEach((optionRadio) => {
+      optionRadio.addEventListener("change", (e) => {
+        dropdownCurrentOption.textContent = e.target.dataset.label;
+        dropdownOpen.checked = false;
+        cb(e.target.value);
+        drawUpdatedImage();
+      });
+    });
+  });
+
+  canvasControlLayer.addEventListener("drop", handleDrop, false);
+  canvasControlLayer.addEventListener("wheel", (e) => zoom(e.deltaY), false);
+
+  // 터치 이벤트
+  canvasControlLayer.addEventListener("touchstart", (e) => {
+    preventDefaults(e);
+
+    // 모든 터치 포인트 저장
+    state.currentTouches = Array.from(e.touches);
+
+    if (e.touches.length === 1) {
+      state.position = [...state.movedPosition];
+      state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
+    } else if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+
+      state.position = [...state.movedPosition];
+      state.startPosition = getMidpoint(touch1, touch2);
+
+      state.startTouchDistance = getTouchDistance(touch1, touch2);
+      state.startZoom = state.zoom;
+    }
+  });
+
+  canvasControlLayer.addEventListener("touchmove", (e) => {
+    preventDefaults(e);
+
+    // 터치 포인트 업데이트
+    state.currentTouches = Array.from(e.touches);
+
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - state.startPosition[0];
+      const deltaY = touch.clientY - state.startPosition[1];
+
+      moveTempPosition(deltaX, deltaY);
+
       if (!validate()) return;
+      requestAnimationFrame(draw);
+    } else if (e.touches.length === 2) {
+      handlePinchZoom(e);
+    }
+  });
 
-      updateZoom();
+  canvasControlLayer.addEventListener("touchend", (e) => {
+    preventDefaults(e);
+    state.currentTouches = Array.from(e.touches);
+    if (e.touches.length < 2) {
+      state.position = [...state.movedPosition];
+      if (e.touches[0])
+        state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
+      state.startTouchDistance = 0;
+    }
+
+    if (e.touches.length === 0) {
+      if (!state.dragging) {
+        highlightColorAt(
+          e.changedTouches[0].clientX,
+          e.changedTouches[0].clientY
+        );
+      }
+      state.dragging = false;
+      state.position = [...state.movedPosition];
+      canvasOverlay.classList.remove("dragging");
+      if (!validate()) return;
+      draw();
+    }
+  });
+
+  // 포인터 이벤트
+  canvasControlLayer.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (e.pointerType !== "touch") {
+        if (e.button === 0) {
+          initState();
+          state.startPosition = [e.clientX, e.clientY];
+          state.dragging = false;
+          canvasControlLayer.setPointerCapture(e.pointerId);
+        }
+      }
     },
-  },
-};
+    false
+  );
 
-const resetLink =
-  (withDraw = true) =>
-  (key) => {
-    const { link, init } = links[key];
+  canvasControlLayer.addEventListener(
+    "pointermove",
+    (e) => {
+      if (
+        e.pointerType !== "touch" &&
+        canvasControlLayer.hasPointerCapture(e.pointerId)
+      ) {
+        e.preventDefault();
 
-    if (!init.fn) return;
+        const deltaX = e.clientX - state.startPosition[0];
+        const deltaY = e.clientY - state.startPosition[1];
 
-    const firstInput = document.querySelector(link[0]);
-    const newValue = init.fn();
+        moveTempPosition(deltaX, deltaY);
 
-    if (firstInput.value == newValue) return;
+        if (!validate()) return;
 
-    firstInput.value = newValue;
-    firstInput.syncInputs();
+        // 부드러운 애니메이션을 위한 requestAnimationFrame 사용
+        requestAnimationFrame(draw);
+      }
+    },
+    false
+  );
 
-    if (withDraw) drawUpdatedImage();
-  };
+  canvasControlLayer.addEventListener(
+    "pointerup",
+    (e) => {
+      if (e.pointerType === "touch") return;
 
-Object.keys(links).forEach((key) => {
-  const { link, init, logic, cb } = links[key];
-  const $ = (selector) => document.querySelector(selector);
-  const inputs = link.map($);
-  const labels = init.label.map($);
-
-  inputs.forEach((input) => {
-    const eventType = input.type === "range" ? "input" : "change";
-
-    input.syncInputs = () => {
-      let numberValue = +input.value;
-
-      if (input.type === "number" && eventType === "change") {
-        const min = input.min !== "" ? +input.min : -Infinity;
-        const max = input.max !== "" ? +input.max : Infinity;
-        numberValue = Math.max(min, Math.min(max, numberValue));
+      if (state.dragging) {
+        state.position = [...state.movedPosition];
       }
 
-      input.value = state[input.name] = numberValue;
+      if (!state.dragging) {
+        highlightColorAt(e.clientX, e.clientY);
+      }
 
-      const restInputs = inputs.filter(
-        (currentInput) => currentInput !== input
-      );
+      state.dragging = false;
+      canvasControlLayer.releasePointerCapture(e.pointerId);
+      canvasOverlay.classList.remove("dragging");
 
-      if (restInputs.length === 0) return;
+      if (!validate()) return;
 
-      restInputs.forEach((restInput) => {
-        restInput.value = state[restInput.name] = logic
-          ? logic(numberValue, input.name)
-          : numberValue;
-      });
+      draw();
+    },
+    false
+  );
 
-      if (cb) cb();
-    };
+  canvasControlLayer.addEventListener(
+    "pointercancel",
+    (e) => {
+      state.dragging = false;
+      canvasControlLayer.releasePointerCapture(e.pointerId);
+      canvasOverlay.classList.remove("dragging");
+    },
+    false
+  );
 
-    input.addEventListener(eventType, () => {
-      input.syncInputs();
-      drawUpdatedImage();
-    });
+  showOriginalInput.addEventListener("change", (e) => {
+    state.showOriginal = e.target.checked;
+    state.palette.unhighlightAll();
 
-    input.syncInputs();
+    if (!validate()) return;
+
+    draw();
   });
 
-  if (labels.length) {
-    labels.forEach((label) => {
-      label.addEventListener("click", () => {
-        if (!validate()) return;
-        resetLink(true)(key);
-      });
-    });
-  }
-});
-
-sizeBtns.forEach((button) => {
-  button.addEventListener("click", () => {
-    const { dimension, delta } = button.dataset;
-    const input = form[dimension];
-    const value = Math.max(1, +input.value + +delta);
-    input.value = value;
-    input.dispatchEvent(new InputEvent("change"));
-  });
-});
-
-const resetLinks = () => {
-  Object.keys(links).forEach(resetLink(false));
-
-  drawUpdatedImage();
-};
-
-settingsResetBtn.addEventListener("click", resetLinks);
-
-// 다운로드 이벤트
-downloadBtn.addEventListener("click", (e) => {
-  if (!state.dithered) return;
-
-  downloadDialog.showModal();
-});
-
-downloadConfirmBtn.addEventListener("click", (e) => {
-  const imageURL = state.dithered.toDataURL("image/png");
-  const link = document.createElement("a");
-
-  link.href = imageURL;
-  link.download = `${state.fileName.replace(/\.[a-zA-Z0-9]+$/, "")}_edited.png`;
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  downloadDialog.close();
-});
-
-downloadCancelBtn.addEventListener("click", (e) => {
-  downloadDialog.close();
-});
-
-showTerrainBgCheckbox.addEventListener("change", (e) => {
-  const { checked } = e.target;
-  state.showTerrainBg = checked;
-  canvas.style.background = checked
-    ? `rgb(${state.palette.terrainColor})`
-    : "#0000";
-});
-
-terrainColorInputs.forEach((input) => {
-  input.addEventListener("change", (e) => {
-    const { value } = e.target;
-
-    state.palette.setTerrainColor(value);
-
-    const color = value !== "none" ? value : "#0000";
-    const { setTerrainColorBtn } = state.palette;
-
-    canvas.style.background = state.showTerrainBg ? color : "#0000";
-    setTerrainColorBtn.style.setProperty("--background-color", color);
-    setTerrainColorBtn.classList.toggle("applied", value !== "none");
+  pixelatedModeToggle.addEventListener("change", (e) => {
+    state.isPixelMode = e.target.checked;
 
     drawUpdatedImage();
   });
 
-  const label = input.nextElementSibling;
-  const color = input.value;
+  paletteResetBtn.addEventListener("click", () => {
+    if (state.palette.hasCustomColor) state.palette.removeAddedColors();
+    state.palette.selectBasicColors();
 
-  if (color === "none") return;
+    drawUpdatedImage();
+  });
 
-  label.style.backgroundColor = color;
-  label.style.color = getContentColor(...hex2Rgb(color));
-});
+  // 입력 동기화
+  const links = {
+    brightness: {
+      link: ["#brightness", "#brightness-range"],
+      init: { label: ["label[for=brightness]"], fn: () => 50 },
+    },
+    contrast: {
+      link: ["#contrast", "#contrast-range"],
+      init: { label: ["label[for=contrast]"], fn: () => 50 },
+    },
+    saturation: {
+      link: ["#saturation", "#saturation-range"],
+      init: { label: ["label[for=saturation]"], fn: () => 50 },
+    },
+    dither: {
+      link: ["#dither", "#dither-range"],
+      init: { label: ["label[for=dither]"], fn: () => 0 },
+    },
+    size: {
+      link: ["#width", "#height"],
+      init: {
+        label: ["label[for=width]", "label[for=height]"],
+        fn: () => (state.image ? state.image.width : 1),
+      },
+      logic: (value, name) =>
+        ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
+      cb: () => {
+        if (!validate()) return;
 
-terrainColorCancelBtn.addEventListener("click", (e) => {
-  terrainColorDialog.close();
-});
+        updateZoom();
+      },
+    },
+  };
 
-[inputR, inputG, inputB].forEach((input) =>
-  input.addEventListener("change", (e) => {
-    const value = +e.target.value;
-    const newValue = Math.max(0, Math.min(255, value));
+  const resetLink =
+    (withDraw = true) =>
+    (key) => {
+      const { link, init } = links[key];
+
+      if (!init.fn) return;
+
+      const firstInput = document.querySelector(link[0]);
+      const newValue = init.fn();
+
+      if (firstInput.value == newValue) return;
+
+      firstInput.value = newValue;
+      firstInput.syncInputs();
+
+      if (withDraw) drawUpdatedImage();
+    };
+
+  Object.keys(links).forEach((key) => {
+    const { link, init, logic, cb } = links[key];
+    const $ = (selector) => document.querySelector(selector);
+    const inputs = link.map($);
+    const labels = init.label.map($);
+
+    inputs.forEach((input) => {
+      const eventType = input.type === "range" ? "input" : "change";
+
+      input.syncInputs = () => {
+        let numberValue = +input.value;
+
+        if (input.type === "number" && eventType === "change") {
+          const min = input.min !== "" ? +input.min : -Infinity;
+          const max = input.max !== "" ? +input.max : Infinity;
+          numberValue = Math.max(min, Math.min(max, numberValue));
+        }
+
+        input.value = state[input.name] = numberValue;
+
+        const restInputs = inputs.filter(
+          (currentInput) => currentInput !== input
+        );
+
+        if (restInputs.length === 0) return;
+
+        restInputs.forEach((restInput) => {
+          restInput.value = state[restInput.name] = logic
+            ? logic(numberValue, input.name)
+            : numberValue;
+        });
+
+        if (cb) cb();
+      };
+
+      input.addEventListener(eventType, () => {
+        input.syncInputs();
+        drawUpdatedImage();
+      });
+
+      input.syncInputs();
+    });
+
+    if (labels.length) {
+      labels.forEach((label) => {
+        label.addEventListener("click", () => {
+          if (!validate()) return;
+          resetLink(true)(key);
+        });
+      });
+    }
+  });
+
+  sizeBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const { dimension, delta } = button.dataset;
+      const input = form[dimension];
+      const value = Math.max(1, +input.value + +delta);
+      input.value = value;
+      input.dispatchEvent(new InputEvent("change"));
+    });
+  });
+
+  const resetLinks = () => {
+    Object.keys(links).forEach(resetLink(false));
+
+    drawUpdatedImage();
+  };
+
+  settingsResetBtn.addEventListener("click", resetLinks);
+
+  // 다운로드 이벤트
+  downloadBtn.addEventListener("click", (e) => {
+    if (!state.dithered) return;
+
+    downloadDialog.showModal();
+  });
+
+  downloadConfirmBtn.addEventListener("click", (e) => {
+    const imageURL = state.dithered.toDataURL("image/png");
+    const link = document.createElement("a");
+
+    link.href = imageURL;
+    link.download = `${state.fileName.replace(
+      /\.[a-zA-Z0-9]+$/,
+      ""
+    )}_edited.png`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    downloadDialog.close();
+  });
+
+  downloadCancelBtn.addEventListener("click", (e) => {
+    downloadDialog.close();
+  });
+
+  showTerrainBgCheckbox.addEventListener("change", (e) => {
+    const { checked } = e.target;
+    state.showTerrainBg = checked;
+    canvas.style.background = checked
+      ? `rgb(${state.palette.terrainColor})`
+      : "#0000";
+  });
+
+  terrainColorInputs.forEach((input) => {
+    input.addEventListener("change", (e) => {
+      const { value } = e.target;
+
+      state.palette.setTerrainColor(value);
+
+      const color = value !== "none" ? value : "#0000";
+      const { setTerrainColorBtn } = state.palette;
+
+      canvas.style.background = state.showTerrainBg ? color : "#0000";
+      setTerrainColorBtn.style.setProperty("--background-color", color);
+      setTerrainColorBtn.classList.toggle("applied", value !== "none");
+
+      drawUpdatedImage();
+    });
+
+    const label = input.nextElementSibling;
+    const color = input.value;
+
+    if (color === "none") return;
+
+    label.style.backgroundColor = color;
+    label.style.color = getContentColor(...hex2Rgb(color));
+  });
+
+  terrainColorCancelBtn.addEventListener("click", (e) => {
+    terrainColorDialog.close();
+  });
+
+  [inputR, inputG, inputB].forEach((input) =>
+    input.addEventListener("change", (e) => {
+      const value = +e.target.value;
+      const newValue = Math.max(0, Math.min(255, value));
+      e.target.value = newValue;
+
+      const r = +inputR.value;
+      const g = +inputG.value;
+      const b = +inputB.value;
+
+      inputHex.value = rgb2Hex(r, g, b);
+
+      state.contained = state.palette.getColorByRgb(r, g, b);
+      addColorAlert.classList.toggle("hidden", !state.contained);
+
+      addColorPreview.style.background = inputHex.value;
+    })
+  );
+
+  inputHex.addEventListener("change", (e) => {
+    const value = e.target.value;
+
+    if (!isValidHex(value)) {
+      addColorAlert.classList.remove("hidden");
+      addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+      return;
+    }
+
+    addColorAlert.textContent = "이미 팔레트에 있는 색입니다.";
+
+    const newValue = value.replace(/^#?/, "#");
     e.target.value = newValue;
+
+    const [r, g, b] = hex2Rgb(newValue);
+
+    inputR.value = r;
+    inputG.value = g;
+    inputB.value = b;
+
+    state.contained = state.palette.getColorByRgb(r, g, b);
+    addColorAlert.classList.toggle("hidden", !state.contained);
+
+    addColorPreview.style.background = newValue;
+  });
+
+  addColorConfirmBtn.addEventListener("click", (e) => {
+    if (!isValidHex(inputHex.value)) {
+      addColorAlert.classList.remove("hidden");
+      addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+      return;
+    }
+
+    addColorAlert.classList.toggle("hidden", !state.contained);
+
+    if (state.contained) return;
 
     const r = +inputR.value;
     const g = +inputG.value;
     const b = +inputB.value;
 
-    inputHex.value = rgb2Hex(r, g, b);
+    state.palette.addColor([r, g, b], inputHex.value.toUpperCase());
 
-    state.contained = state.palette.getColorByRgb(r, g, b);
-    addColorAlert.classList.toggle("hidden", !state.contained);
+    drawUpdatedImage();
 
-    addColorPreview.style.background = inputHex.value;
-  })
-);
+    addColorDialog.close();
+  });
 
-inputHex.addEventListener("change", (e) => {
-  const value = e.target.value;
+  addColorCancelBtn.addEventListener("click", (e) => {
+    addColorDialog.close();
+  });
 
-  if (!isValidHex(value)) {
-    addColorAlert.classList.remove("hidden");
-    addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
-    return;
-  }
+  aside.addEventListener("pointerdown", () => {
+    state.palette.unhighlightAll();
+  });
 
-  addColorAlert.textContent = "이미 팔레트에 있는 색입니다.";
-
-  const newValue = value.replace(/^#?/, "#");
-  e.target.value = newValue;
-
-  const [r, g, b] = hex2Rgb(newValue);
-
-  inputR.value = r;
-  inputG.value = g;
-  inputB.value = b;
-
-  state.contained = state.palette.getColorByRgb(r, g, b);
-  addColorAlert.classList.toggle("hidden", !state.contained);
-
-  addColorPreview.style.background = newValue;
-});
-
-addColorConfirmBtn.addEventListener("click", (e) => {
-  if (!isValidHex(inputHex.value)) {
-    addColorAlert.classList.remove("hidden");
-    addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
-    return;
-  }
-
-  addColorAlert.classList.toggle("hidden", !state.contained);
-
-  if (state.contained) return;
-
-  const r = +inputR.value;
-  const g = +inputG.value;
-  const b = +inputB.value;
-
-  state.palette.addColor([r, g, b], inputHex.value.toUpperCase());
-
-  drawUpdatedImage();
-
-  addColorDialog.close();
-});
-
-addColorCancelBtn.addEventListener("click", (e) => {
-  addColorDialog.close();
-});
-
-aside.addEventListener("pointerdown", () => {
-  state.palette.unhighlightAll();
-});
-
-// 폼 제출 방지
-form.addEventListener("submit", preventDefaults);
+  // 폼 제출 방지
+  form.addEventListener("submit", preventDefaults);
+};
