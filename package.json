@@ -1,0 +1,24 @@
+{
+  "name": "wdot",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noipung/wdot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noipung/wdot/issues"
+  },
+  "homepage": "https://github.com/noipung/wdot#readme",
+  "description": "",
+  "dependencies": {
+    "vite": "^7.1.9"
+  }
+}

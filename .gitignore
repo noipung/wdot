@@ -1,1 +1,6 @@
 scratch/
+# Vite
+/dist
+.vscode
+# npm
+/node_modules

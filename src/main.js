@@ -1,7 +1,7 @@
-import "./modules/events.js";
-import { initEventListeners } from "./modules/events.js";
-import { initPaletteUI } from "./modules/palette.js";
-import "./modules/ui.js";
+import "../modules/events.js";
+import { initEventListeners } from "../modules/events.js";
+import { initPaletteUI } from "../modules/palette.js";
+import "../modules/ui.js";
 
 const initializeApp = async () => {
   try {
