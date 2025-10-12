@@ -1,6 +1,6 @@
 export const loadPaletteData = async () => {
   try {
-    const response = await fetch("/palette.json");
+    const response = await fetch(new URL("/palette.json", import.meta.url));
     if (!response.ok) {
       throw new Error("팔레트 데이터를 불러오지 못했습니다.");
     }
