@@ -45,15 +45,14 @@ export const formatTime = (seconds) => {
   return result.join(" ");
 };
 
-export const toPhysicalCoords = (x, y) => [x * DPR, y * DPR];
-
-export const getZoom = (size = 3 / 4 / DPR) =>
+export const getInitZoom = (size = 3 / 4) =>
   ~~(
-    (state.aspectRatio > canvas.width / canvas.height
+    ((state.aspectRatio > canvas.width / canvas.height
       ? canvas.width / state.width
       : canvas.height / state.height) *
-    size *
-    100
+      size *
+      100) /
+    DPR
   );
 
 export const getTouchDistance = (touch1, touch2) => {
@@ -91,8 +90,6 @@ export const isValidHex = (h) => /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(h);
 
 export const insertAndSelectText = (textField, textToInsert) => {
   const { value } = textField;
-
-  console.log(value);
 
   textField.value =
     (value ? value.replace(/(,\s*)?$/, ", ") : value) + textToInsert + ", ";

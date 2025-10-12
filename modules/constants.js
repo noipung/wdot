@@ -12,6 +12,7 @@ export const canvasControlLayer = document.querySelector(
 export const canvas = document.querySelector("canvas");
 export const ctx = canvas.getContext("2d", { willReadFrequently: true });
 export const showOriginalInput = document.querySelector("#show-original");
+export const showGridInput = document.querySelector("#show-grid");
 export const aside = document.querySelector("aside");
 export const basicPaletteList = document.querySelector(".palette.basic");
 export const lockedPaletteList = document.querySelector(".palette.locked");

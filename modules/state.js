@@ -25,6 +25,7 @@ export const state = {
   resized: null,
   dithered: null,
   showOriginal: false,
+  showGrid: false,
   showTerrainBg: true,
   pickedColor: null,
   colorsToAdd: [],

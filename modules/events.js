@@ -39,6 +39,7 @@ import {
   addColorTextarea,
   addColorPreviewContainer,
   addColorTabSingle,
+  showGridInput,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -583,6 +584,14 @@ export const initEventListeners = () => {
     draw();
   });
 
+  showGridInput.addEventListener("change", (e) => {
+    state.showGrid = e.target.checked;
+
+    if (!validate()) return;
+
+    draw();
+  });
+
   pixelatedModeToggle.addEventListener("change", (e) => {
     state.isPixelMode = e.target.checked;
 
@@ -624,10 +633,12 @@ export const initEventListeners = () => {
       },
       logic: (value, name) =>
         ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
-      cb: () => {
+      cb: (prevValue, newValue) => {
         if (!validate()) return;
 
-        updateZoom();
+        const newZoom = Math.round(state.zoom * (prevValue / newValue));
+
+        updateZoom(newZoom);
       },
     },
   };
@@ -661,6 +672,7 @@ export const initEventListeners = () => {
 
       input.syncInputs = () => {
         let numberValue = +input.value;
+        const prevValue = state[input.name];
 
         if (input.type === "number" && eventType === "change") {
           const min = input.min !== "" ? +input.min : -Infinity;
@@ -682,7 +694,7 @@ export const initEventListeners = () => {
             : numberValue;
         });
 
-        if (cb) cb();
+        if (cb) cb(prevValue, numberValue);
       };
 
       input.addEventListener(eventType, () => {

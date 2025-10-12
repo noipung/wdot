@@ -392,8 +392,6 @@ export const initPaletteUI = async () => {
     colorTextLoaderContainer.append(colorTextLoader);
   });
 
-  console.log(state.colorTexts);
-
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();
 

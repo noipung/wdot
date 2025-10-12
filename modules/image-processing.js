@@ -12,7 +12,7 @@ import {
   sizeBtns,
   settingsResetBtn,
 } from "./constants.js";
-import { calculateTime, formatTime, getZoom, validate } from "./utils.js";
+import { calculateTime, formatTime, getInitZoom, validate } from "./utils.js";
 import { adjust, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 import { resetAllWorkers } from "./worker.js";
@@ -118,6 +118,6 @@ export const handleImageLoad = async (image) => {
   drawUpdatedImage();
 };
 
-export const updateZoom = () => {
-  zoomInput.value = state.zoom = getZoom();
+export const updateZoom = (zoom) => {
+  zoomInput.value = state.zoom = zoom || getInitZoom();
 };

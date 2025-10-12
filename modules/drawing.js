@@ -146,6 +146,29 @@ const drawMark = () => {
   drawSpeechBubbleFromTail(ctx, imageData, x, y, 30, 30, 4, 4);
 };
 
+const drawGrid = () => {
+  const [zx, zy, zw, zh] = state.zoomRect;
+  const { width, height } = state;
+
+  ctx.beginPath();
+
+  for (let ix = 0; ix <= width; ix++) {
+    const x = zx + (zw / width) * ix;
+    ctx.moveTo(x, zy);
+    ctx.lineTo(x, zy + zh);
+  }
+
+  for (let iy = 0; iy <= height; iy++) {
+    const y = zy + (zh / height) * iy;
+    ctx.moveTo(zx, y);
+    ctx.lineTo(zx + zw, y);
+  }
+
+  ctx.linewidth = 1;
+  ctx.strokeStyle = "#0002";
+  ctx.stroke();
+};
+
 export const draw = () => {
   let { width: cw, height: ch } = canvas;
 
@@ -171,5 +194,6 @@ export const draw = () => {
   ctx.imageSmoothingEnabled = zoom < 1;
   ctx.drawImage(resultImage, ...state.zoomRect);
 
+  if (state.showOriginal && state.showGrid && state.zoom >= 200) drawGrid();
   if (state.mark) drawMark();
 };

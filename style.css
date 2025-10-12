@@ -221,6 +221,7 @@ body button {
   left: 0;
   margin: 0.5em;
   border: none;
+  display: flex;
 }
 
 .show-original-input-wrapper input {
@@ -230,6 +231,8 @@ body button {
 .show-original-input-wrapper label {
   user-select: none;
   display: flex;
+  align-items: center;
+  gap: 0.5em;
   background: #fff;
   color: #aaa;
   border: 1px solid #ccc;
@@ -257,12 +260,46 @@ body button {
   width: 1.5em;
   aspect-ratio: 1;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility_off/wght600/48px.svg")
-    no-repeat center / 100%;
+  mask: no-repeat center / 100%;
 }
 
-.show-original-input-wrapper input:checked + label i {
-  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility/wght600/48px.svg");
+#show-original:checked + label {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#show-grid + label {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+}
+
+:has(#show-original:not(:checked)) #show-grid + label {
+  display: none;
+}
+
+#show-original + label i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/hide_image/wght600/48px.svg");
+}
+
+#show-original:checked + label i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/image/wght600/48px.svg");
+}
+
+#show-original + label::after {
+  content: "도트 표시 중";
+}
+
+#show-original:checked + label::after {
+  content: "원본 표시 중";
+}
+
+#show-grid + label i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_off/wght600/48px.svg");
+}
+
+#show-grid:checked + label i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_on/wght600/48px.svg");
 }
 
 .zoom-input-wrapper {
@@ -535,7 +572,7 @@ label[for$="dropdown-open"] i {
   width: 1.2em;
   aspect-ratio: 1;
   background: currentColor;
-  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_off/wght600/48px.svg")
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/blur_off/wght600/48px.svg")
     no-repeat center / 100%;
 }
 
@@ -551,7 +588,7 @@ label[for$="dropdown-open"] i {
 }
 
 .pixelated-mode-toggle-wrapper :checked + label i {
-  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/grid_on/wght600/48px.svg");
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/blur_on/wght600/48px.svg");
 }
 
 .pixelated-mode-toggle-wrapper .tooltip {
