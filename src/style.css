@@ -222,7 +222,6 @@ body button {
   margin: 0.5em;
   border: none;
   display: flex;
-  font-size: 0.9em;
 }
 
 .show-original-input-wrapper input {
@@ -316,7 +315,6 @@ body button {
   padding: 0.5em;
   border-radius: 4px;
   border: 1px solid #ddd;
-  font-size: 0.9em;
 }
 
 .zoom-btn {
@@ -358,6 +356,11 @@ body button {
 .palette-dropdown {
   display: inline-block;
   margin-right: 0.5em;
+}
+
+.palette-dropdown
+  > :is(label[for="palette-dropdown-open"], .dropdown-options-container) {
+  border-color: #ddd;
 }
 
 .dropdown-open {
