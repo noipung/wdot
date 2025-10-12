@@ -222,6 +222,7 @@ body button {
   margin: 0.5em;
   border: none;
   display: flex;
+  font-size: 0.9em;
 }
 
 .show-original-input-wrapper input {
