@@ -1,16 +1,21 @@
 import { state } from "./state.js";
 
-const getWorker = (url) =>
-  new Worker(new URL(url, import.meta.url), {
-    type: "module",
-  });
+import AdjustWorker from "../workers/adjust.worker.js?worker";
+import DitherWorker from "../workers/dither.worker.js?worker";
 
-const resetWorker = (key) => {
+const workersMap = {
+  adjust: AdjustWorker,
+  dither: DitherWorker,
+};
+
+export const getWorker = (key) => new workersMap[key]();
+
+export const resetWorker = (key) => {
   const currentWorker = state.workers[key];
 
-  if (!currentWorker.instance) {
+  if (!currentWorker?.instance) {
     state.workers[key] = {
-      instance: getWorker(`../workers/${key}.worker.js`),
+      instance: getWorker(key),
       isProcessing: false,
     };
     return;
@@ -20,7 +25,7 @@ const resetWorker = (key) => {
 
   currentWorker.instance.terminate();
   state.workers[key] = {
-    instance: getWorker(`../workers/${key}.worker.js`),
+    instance: getWorker(key),
     isProcessing: false,
   };
 };
