@@ -508,6 +508,11 @@ label[for$="dropdown-open"] i {
   --dialog-width: 400px;
 }
 
+.result-image {
+  max-height: min(400px, 80vw);
+  object-fit: contain;
+}
+
 .result-image.smaller {
   image-rendering: pixelated;
 }
