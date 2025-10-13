@@ -35,6 +35,7 @@ export const settingsResetBtn = document.querySelector(
   ".settings-form-group .reset-btn"
 );
 export const sizeBtns = document.querySelectorAll(".size-btn");
+export const resultImage = document.querySelector(".result-image");
 export const downloadDialog = document.querySelector(".download-dialog");
 export const downloadConfirmBtn = document.querySelector(
   ".download-dialog .confirm-btn"

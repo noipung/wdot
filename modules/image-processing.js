@@ -11,6 +11,7 @@ import {
   downloadBtn,
   sizeBtns,
   settingsResetBtn,
+  resultImage,
 } from "./constants.js";
 import { calculateTime, formatTime, getInitZoom, validate } from "./utils.js";
 import { adjust, makeOpaque, dither } from "./dithering.js";
@@ -61,6 +62,9 @@ export const updateImageProcessing = async () => {
 
   state.resized = resized;
   state.dithered = dithered;
+  state.dataURL = dithered.toDataURL("image/png");
+
+  resultImage.src = state.dataURL;
 
   document.body.classList.add("ready");
 };

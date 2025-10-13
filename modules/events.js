@@ -40,6 +40,7 @@ import {
   addColorPreviewContainer,
   addColorTabSingle,
   showGridInput,
+  resultImage,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -738,10 +739,14 @@ export const initEventListeners = () => {
     if (!state.dithered) return;
 
     downloadDialog.showModal();
+
+    const { width, naturalWidth } = resultImage;
+
+    resultImage.classList.toggle("smaller", width > naturalWidth);
   });
 
   downloadConfirmBtn.addEventListener("click", (e) => {
-    const imageURL = state.dithered.toDataURL("image/png");
+    const imageURL = state.dataURL;
     const link = document.createElement("a");
 
     link.href = imageURL;

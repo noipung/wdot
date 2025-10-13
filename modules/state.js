@@ -24,6 +24,7 @@ export const state = {
   adjusted: null,
   resized: null,
   dithered: null,
+  dataURL: null,
   showOriginal: false,
   showGrid: false,
   showTerrainBg: true,
