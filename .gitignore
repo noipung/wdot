@@ -4,3 +4,6 @@ scratch/
 .vscode
 # npm
 /node_modules
+# 환경 변수
+.env
+.env.*
