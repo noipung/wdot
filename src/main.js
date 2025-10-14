@@ -1,6 +1,7 @@
 import "../modules/events.js";
 import { initEventListeners } from "../modules/events.js";
 import { initPaletteUI } from "../modules/palette.js";
+import { GA_ID } from "../modules/constants.js";
 import "../modules/ui.js";
 
 const initGaAnalytics = () => {
@@ -8,9 +9,7 @@ const initGaAnalytics = () => {
 
   const s1 = document.createElement("script");
   s1.async = true;
-  s1.src = `https://www.googletagmanager.com/gtag/js?id=${
-    import.meta.env.VITE_GA_ID
-  }`;
+  s1.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   document.head.appendChild(s1);
 
   const s2 = document.createElement("script");
@@ -18,7 +17,7 @@ const initGaAnalytics = () => {
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', '${import.meta.env.VITE_GA_ID}');
+    gtag('config', '${GA_ID}');
   `;
   document.head.appendChild(s2);
 };

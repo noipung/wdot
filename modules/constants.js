@@ -88,3 +88,4 @@ export const colorTextLoaderContainer = document.querySelector(
 
 export const DRAG_THRESHOLD = 3;
 export const DPR = window.devicePixelRatio || 1;
+export const GA_ID = "G-3V8JLXQZ5F";
