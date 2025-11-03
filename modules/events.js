@@ -585,6 +585,8 @@ export const initEventListeners = () => {
   });
 
   // 포인터 이벤트
+  canvasControlLayer.addEventListener("contextmenu", preventDefaults);
+
   canvasControlLayer.addEventListener(
     "pointerdown",
     (e) => {
