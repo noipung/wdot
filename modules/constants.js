@@ -43,6 +43,8 @@ export const settingsResetBtn = document.querySelector(
 export const sizeBtns = document.querySelectorAll(".size-btn");
 export const resultImage = document.querySelector(".result-image");
 export const downloadDialog = document.querySelector(".download-dialog");
+export const downloadFileName = document.querySelector(".file-name");
+export const downloadImageSize = document.querySelector(".image-size");
 export const downloadConfirmBtn = document.querySelector(
   ".download-dialog .confirm-btn"
 );

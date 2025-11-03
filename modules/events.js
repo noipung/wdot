@@ -52,6 +52,8 @@ import {
   savePaletteAlert,
   inputColorName,
   customPaletteList,
+  downloadFileName,
+  downloadImageSize,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -90,7 +92,7 @@ const handleFile = (file) => {
     return;
   }
 
-  state.fileName = file.name;
+  state.fileName = `${file.name.replace(/\.[a-zA-Z0-9]+$/, "")}_wdot.png`;
 
   const reader = new FileReader();
 
@@ -895,6 +897,8 @@ export const initEventListeners = () => {
     if (!state.dithered) return;
 
     downloadDialog.showModal();
+    downloadFileName.textContent = state.fileName;
+    downloadImageSize.textContent = `${state.width}×${state.height}`;
 
     const { width, naturalWidth } = resultImage;
 
@@ -906,10 +910,7 @@ export const initEventListeners = () => {
     const link = document.createElement("a");
 
     link.href = imageURL;
-    link.download = `${state.fileName.replace(
-      /\.[a-zA-Z0-9]+$/,
-      ""
-    )}_edited.png`;
+    link.download = state.fileName;
 
     document.body.appendChild(link);
     link.click();

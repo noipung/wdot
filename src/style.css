@@ -533,6 +533,39 @@ label[for$="dropdown-open"] i {
   image-rendering: pixelated;
 }
 
+.image-info {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.5;
+  font-size: 0.9em;
+}
+
+.image-info::before {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  width: 1lh;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/image/wght600/48px.svg")
+    no-repeat center / 80%;
+}
+
+.file-name {
+  margin-right: 0.3em;
+  word-break: break-all;
+}
+
+.image-size {
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #ccc;
+  color: #888;
+  font-size: 0.7em;
+  padding: 0.2em 0.3em;
+  border-radius: 4px;
+}
+
 .download-btn:not(:disabled) {
   background: #3172e7;
   color: #fff;
