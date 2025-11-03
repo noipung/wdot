@@ -7,9 +7,10 @@ import {
   basicPaletteList,
   colorTextLoaderContainer,
   customPaletteList,
+  inputColorName,
   inputHex,
   lockedPaletteList,
-  paletteDropdown,
+  paletteOptionsContainer,
   selectAllBtn,
   terrainColorDialog,
   terrainNone,
@@ -17,9 +18,12 @@ import {
 } from "./constants.js";
 import {
   dispatchEventTo,
+  formatColorTexts,
   getContentColor,
   hex2Rgb,
   insertAndSelectText,
+  parseColorText,
+  preventDefaults,
   rgb2Hex,
   validate,
 } from "./utils.js";
@@ -33,10 +37,14 @@ const createAddColorBtn = () => {
     addColorDialog.showModal();
 
     const onSingleTab = addColorTabSingle.checked;
+    const textFields = onSingleTab
+      ? [inputHex, inputColorName]
+      : [addColorTextarea];
 
-    [inputHex, addColorTextarea].forEach((textField) =>
-      dispatchEventTo(textField, "input")
-    );
+    textFields.forEach((textField) => dispatchEventTo(textField, "input"));
+
+    inputColorName.value = addColorTextarea.value = "";
+    addColorPreviewContainer.textContent = "";
 
     if (onSingleTab) inputHex.select();
 
@@ -133,7 +141,9 @@ class Palette {
   }
 
   addColor(rgb, name, type) {
-    state.paletteData[state.paletteName].colors.push({ rgb, name, type });
+    const currentPaletteData = state.paletteData[state.paletteName];
+
+    currentPaletteData.colors.push({ rgb, name, type });
 
     const color = new PaletteColor(rgb, name, type, this);
 
@@ -142,6 +152,26 @@ class Palette {
 
     const key = rgb.join(",");
     this.rgbMap.set(key, color);
+  }
+
+  removeColor(color) {
+    customPaletteList.removeChild(color.colorListItem);
+
+    const currentPaletteData = state.paletteData[state.paletteName];
+
+    currentPaletteData.colors = currentPaletteData.colors.filter(
+      (c) => rgb2Hex(...c.rgb) !== rgb2Hex(...color.rgb)
+    );
+
+    const index = this.colors.indexOf(color);
+
+    if (index === -1) return;
+
+    this.colors.splice(index, 1);
+    this.changed = true;
+
+    const key = color.rgb.join(",");
+    this.rgbMap.delete(key);
   }
 
   setTerrainColor(hex) {
@@ -255,11 +285,7 @@ class PaletteColor {
     const i = document.createElement("i");
     const colorCount = document.createElement("span");
     const tooltip = document.createElement("div");
-
-    const id = name
-      .replace(/[^a-z0-9]/gi, "")
-      .toLowerCase()
-      .replaceAll(" ", "-");
+    const id = name.toLowerCase().replace(/\s/g, "-");
 
     check.type = "checkbox";
     check.id = label.htmlFor = id;
@@ -279,6 +305,15 @@ class PaletteColor {
 
       drawUpdatedImage();
     });
+
+    label.addEventListener("contextmenu", preventDefaults);
+
+    if (type === "added") {
+      label.addEventListener("contextmenu", (e) => {
+        this.remove();
+        drawUpdatedImage();
+      });
+    }
 
     label.append(i, colorCount);
     label.tooltip = tooltip;
@@ -322,16 +357,25 @@ class PaletteColor {
       this.colorCount.classList.remove("zero");
     }
   }
+
+  remove() {
+    this.palette.removeColor(this);
+  }
 }
 
-const createPaletteOptionItem = (name, checked = false) => {
+const createPaletteOptionItem = (name, settings = {}) => {
   const optionItem = document.createElement("div");
   const input = document.createElement("input");
   const label = document.createElement("label");
   const icon = document.createElement("i");
   const labelInner = document.createElement("span");
+  const id = `palette-${name.toLowerCase().replace(/\s/g, "-")}`;
+  let removeBtn;
 
-  const id = `palette-${name.toLowerCase()}`;
+  if (settings.custom) {
+    removeBtn = document.createElement("button");
+    removeBtn.classList.add("option-remove-btn");
+  }
 
   optionItem.classList.add("option-item");
   input.type = "radio";
@@ -339,23 +383,24 @@ const createPaletteOptionItem = (name, checked = false) => {
   input.name = "palette";
   input.value = input.dataset.label = name;
   input.setAttribute("auto-complete", "off");
-  input.checked = checked;
+  input.checked = !!settings.checked;
   label.htmlFor = id;
   labelInner.classList.add("option-label");
   labelInner.textContent = name;
 
   label.append(icon, labelInner);
+
+  if (removeBtn) label.append(removeBtn);
+
   optionItem.append(input, label);
 
   return optionItem;
 };
 
-const formatColorText = ({ rgb, name }) => `${rgb2Hex(...rgb)}(${name})`;
-
 const createColorTextLoader = (name) => {
   const colorTextLoader = document.createElement("button");
 
-  colorTextLoader.textContent = name;
+  colorTextLoader.textContent = colorTextLoader.dataset.label = name;
   colorTextLoader.type = "button";
 
   colorTextLoader.addEventListener("click", () => {
@@ -367,30 +412,104 @@ const createColorTextLoader = (name) => {
   return colorTextLoader;
 };
 
-export const initPaletteUI = async () => {
-  state.paletteData = await loadPaletteData();
-  state.palette = new Palette(state.paletteName);
+export const setPaletteUI = (name, settings = {}) => {
+  const optionItem = createPaletteOptionItem(name, settings);
 
-  const paletteOptionsContainer = paletteDropdown.querySelector(
-    ".dropdown-options-container"
+  paletteOptionsContainer.insertBefore(
+    optionItem,
+    document.querySelector('.option-item:has([value="커스텀"])')
   );
 
-  Object.keys(state.paletteData).forEach((name, i) => {
-    const optionItem = createPaletteOptionItem(name, i === 0);
-    paletteOptionsContainer.append(optionItem);
+  const option = optionItem.querySelector("input");
 
-    const { colors } = state.paletteData[name];
+  if (settings.checked && settings.custom) {
+    option.checked = true;
+    dispatchEventTo(option, "change");
+  }
 
-    if (!colors.length) return;
+  const { colors } = state.paletteData[name];
 
-    const colorText = colors.map(formatColorText).join(", ");
+  if (!colors.length) return;
 
-    state.colorTexts.set(name, colorText);
+  const colorText = formatColorTexts(colors);
 
-    const colorTextLoader = createColorTextLoader(name);
+  state.colorTexts.set(name, colorText);
 
-    colorTextLoaderContainer.append(colorTextLoader);
+  const colorTextLoader = createColorTextLoader(name);
+
+  colorTextLoaderContainer.append(colorTextLoader);
+};
+
+export const removePaletteUI = (name) => {
+  const optionItem = paletteOptionsContainer.querySelector(
+    `.option-item:has([value="${name}"])`
+  );
+  const option = optionItem.querySelector("input");
+  const previousOptionItem = optionItem.previousElementSibling;
+  const previousOption = previousOptionItem.querySelector("input");
+
+  if (option.checked) {
+    previousOption.checked = true;
+    dispatchEventTo(previousOption, "change");
+  }
+
+  optionItem.remove();
+
+  state.colorTexts.delete(name);
+  colorTextLoaderContainer.querySelector(`[data-label="${name}"]`).remove();
+};
+
+export const getCustomPaletteData = (colorTextMap) => {
+  const customPaletteData = {};
+
+  Object.keys(colorTextMap).forEach((key) => {
+    customPaletteData[key] = {
+      customColor: true,
+      terrainColor: false,
+      isCustomPalette: true,
+      colors: parseColorText(colorTextMap[key], false).map(([hex, name]) => ({
+        rgb: hex2Rgb(hex),
+        name: name || hex,
+        type: "basic",
+      })),
+    };
   });
+
+  return customPaletteData;
+};
+
+export const setCustomPaletteData = (customPaletteData) => {
+  state.paletteData = {
+    ...state.initPaletteData,
+    ...customPaletteData,
+    커스텀: {
+      customColor: true,
+      terrainColor: false,
+      colors: [],
+    },
+  };
+};
+
+export const initPaletteUI = async () => {
+  state.initPaletteData = await loadPaletteData();
+
+  const colorTextData = localStorage.getItem("custom_palette_color_text_data");
+  const colorTextMap = JSON.parse(colorTextData);
+
+  setCustomPaletteData(colorTextData ? getCustomPaletteData(colorTextMap) : {});
+
+  state.palette = new Palette(state.paletteName);
+
+  const moveCustomToLast = (a, b) => (a === "커스텀") - (b === "커스텀");
+
+  Object.keys(state.paletteData)
+    .sort(moveCustomToLast)
+    .forEach((name, i) => {
+      setPaletteUI(name, {
+        checked: i === 0,
+        custom: state.paletteData[name].isCustomPalette,
+      });
+    });
 
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();

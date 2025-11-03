@@ -26,7 +26,7 @@ import {
   addColorCancelBtn,
   addColorDialog,
   addColorConfirmBtn,
-  addColorPreviewSingle,
+  colorPreviewSingle,
   inputR,
   inputG,
   inputB,
@@ -41,6 +41,16 @@ import {
   addColorTabSingle,
   showGridInput,
   resultImage,
+  savePaletteBtn,
+  savePaletteDialog,
+  savePaletteColorPreviewContainer,
+  savePaletteCancelBtn,
+  savePaletteConfirmBtn,
+  savePaletteNameInput,
+  savePaletteColorCount,
+  addColorTabList,
+  savePaletteAlert,
+  inputColorName,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -51,8 +61,11 @@ import {
   isValidHex,
   hex2Rgb,
   getContentColor,
-  shortenHex,
   enableAutoResize,
+  dispatchEventTo,
+  formatColorTexts,
+  parseColorText,
+  shortenHex,
 } from "./utils.js";
 import {
   handleImageLoad,
@@ -60,6 +73,12 @@ import {
   updateZoom,
 } from "./image-processing.js";
 import { draw } from "./drawing.js";
+import {
+  getCustomPaletteData,
+  removePaletteUI,
+  setCustomPaletteData,
+  setPaletteUI,
+} from "./palette.js";
 
 // 파일 처리
 const handleFile = (file) => {
@@ -215,6 +234,7 @@ const highlightColorAt = (x, y) => {
       inputG.value = g;
       inputB.value = b;
       inputHex.value = rgb2Hex(r, g, b);
+      addColorTabSingle.checked = true;
     }
   } else {
     state.palette.highlight(colorOnPalette);
@@ -263,104 +283,126 @@ const confirmAddColor = (e) => {
     const r = +inputR.value;
     const g = +inputG.value;
     const b = +inputB.value;
+    const colorName =
+      inputColorName.value || shortenHex(inputHex.value).toUpperCase();
 
-    state.palette.addColor([r, g, b], inputHex.value.toUpperCase(), "added");
+    state.palette.addColor([r, g, b], colorName, "added");
   } else {
     if (!state.colorsToAdd.length) return;
 
     state.colorsToAdd.forEach(([hex, name]) =>
-      state.palette.addColor(hex2Rgb(hex), name || hex, "added")
+      state.palette.addColor(hex2Rgb(hex), name, "added")
     );
   }
 
   drawUpdatedImage();
 
+  savePaletteBtn.disabled = false;
+
   addColorDialog.close();
+};
+
+const updateAddColorValidationUI = () => {
+  const { addColorValidation } = state;
+
+  const messages = {
+    invalidHex: "헥스코드가 올바르지 않습니다.",
+    colorAlreadyExists: "현재 팔레트에 중복되는 색이 있습니다.",
+    nameAlreadyExists: "현재 팔레트에 중복되는 색 이름이 있습니다.",
+    valid: "이 색을 추가합니다.",
+  };
+
+  const isInvalid = Object.values(addColorValidation).some((error) => error);
+
+  const type =
+    Object.keys(messages).find((key) => addColorValidation[key]) || "valid";
+
+  addColorAlert.classList.toggle("good", !isInvalid);
+  addColorAlert.textContent = messages[type];
+  addColorConfirmBtn.disabled = isInvalid;
 };
 
 const handleInputRgb = (e) => {
   const value = +e.target.value;
   const newValue = Math.max(0, Math.min(255, value));
+
   e.target.value = newValue;
 
-  const r = +inputR.value;
-  const g = +inputG.value;
-  const b = +inputB.value;
+  const rgb = [inputR, inputG, inputB].map(({ value }) => +value);
 
-  inputHex.value = rgb2Hex(r, g, b);
+  inputHex.value = inputColorName.placeholder = rgb2Hex(...rgb);
 
-  state.contained = state.palette.getColorByRgb(r, g, b);
-  addColorAlert.classList.toggle("hidden", !state.contained);
+  state.addColorValidation.colorAlreadyExists = !!state.palette.getColorByRgb(
+    ...rgb
+  );
 
-  addColorPreviewSingle.style.background = inputHex.value;
+  colorPreviewSingle.style.background = inputHex.value;
+
+  updateAddColorValidationUI();
 };
 
 const handleInputHex = (e) => {
   const newValue =
     "#" + e.target.value.replace(/[^a-f0-9]/gi, "").toUpperCase();
 
-  e.target.value = newValue;
+  e.target.value = inputColorName.placeholder = newValue;
+  const invalidHex = (state.addColorValidation.invalidHex =
+    !isValidHex(newValue));
 
-  if (!isValidHex(newValue)) {
-    addColorAlert.classList.remove("hidden");
-    addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+  if (invalidHex) {
+    updateAddColorValidationUI();
     return;
   }
 
-  const [r, g, b] = hex2Rgb(newValue);
+  const rgb = hex2Rgb(newValue);
 
-  inputR.value = r;
-  inputG.value = g;
-  inputB.value = b;
+  [inputR.value, inputG.value, inputB.value] = rgb;
 
-  state.contained = state.palette.getColorByRgb(r, g, b);
+  state.addColorValidation.colorAlreadyExists = !!state.palette.getColorByRgb(
+    ...rgb
+  );
 
-  if (state.contained)
-    addColorAlert.textContent = "이미 팔레트에 있는 색입니다.";
-  addColorAlert.classList.toggle("hidden", !state.contained);
+  colorPreviewSingle.style.background = newValue;
 
-  addColorPreviewSingle.style.background = newValue;
+  updateAddColorValidationUI();
 };
 
-const createAddColorPreview = (hex) => {
-  const addColorPreview = document.createElement("div");
+const handleInputColorName = (e) => {
+  const colorName = e.target.value.trim();
 
-  addColorPreview.classList.add("add-color-preview");
-  addColorPreview.style.background = hex;
+  state.addColorValidation.nameAlreadyExists = state.palette.colors
+    .map(({ name }) => name.toUpperCase())
+    .includes(colorName.toUpperCase());
 
-  return addColorPreview;
+  updateAddColorValidationUI();
+};
+
+const createColorPreview = (hex) => {
+  const colorPreview = document.createElement("div");
+
+  colorPreview.classList.add("color-preview");
+  colorPreview.style.background = hex;
+
+  return colorPreview;
 };
 
 const handleInputTextarea = (e) => {
   const value = e.target.value;
-  const parsedInfos = [
-    ...new Map(
-      value
-        .split(",")
-        .map((str) =>
-          (
-            str
-              .trim()
-              .replace(/^#?/, "#")
-              .match(/^(#(?:[a-f0-9]{3}){1,2})\s?(?:\((.+)?\)|$)?$/i) || []
-          ).slice(1)
-        )
-        .filter(
-          ([hex]) =>
-            isValidHex(hex) && !state.palette.getColorByRgb(...hex2Rgb(hex))
-        )
-        .map(([hex, name]) => [shortenHex(hex), [hex.toUpperCase(), name]])
-    ).values(),
-  ];
+  const parsedInfos = parseColorText(value);
 
   addColorPreviewContainer.innerHTML = "";
   state.colorsToAdd = parsedInfos;
 
-  if (parsedInfos.length)
+  if (parsedInfos.length) {
     parsedInfos.forEach((info) => {
-      const addColorPreview = createAddColorPreview(...info);
-      addColorPreviewContainer.append(addColorPreview);
+      const colorPreview = createColorPreview(...info);
+      addColorPreviewContainer.append(colorPreview);
     });
+
+    addColorConfirmBtn.disabled = false;
+  } else {
+    addColorConfirmBtn.disabled = true;
+  }
 
   updateScrollClass(addColorPreviewContainer);
 };
@@ -408,6 +450,15 @@ export const initEventListeners = () => {
       cb: (value) => {
         state.paletteName = value;
         state.palette.setPalette(value);
+
+        const isCustomPalette = value === "커스텀";
+
+        savePaletteBtn.classList.toggle("hidden", !isCustomPalette);
+
+        const noColorInCustomPalette =
+          isCustomPalette && !state.paletteData[value].colors.length;
+
+        savePaletteBtn.disabled = noColorInCustomPalette;
       },
     },
     {
@@ -417,19 +468,46 @@ export const initEventListeners = () => {
       },
     },
   ].forEach(({ dropdown, cb }) => {
-    const optionRadios = dropdown.querySelectorAll(".option-item input");
     const dropdownOpen = dropdown.querySelector(".dropdown-open");
     const dropdownCurrentOption = dropdown.querySelector(
       ".dropdown-current-option"
     );
 
-    optionRadios.forEach((optionRadio) => {
-      optionRadio.addEventListener("change", (e) => {
-        dropdownCurrentOption.textContent = e.target.dataset.label;
+    dropdown.addEventListener("change", (e) => {
+      const target = e.target;
+
+      if (target.matches('.option-item input[type="radio"]')) {
+        dropdownCurrentOption.textContent = target.dataset.label;
         dropdownOpen.checked = false;
-        cb(e.target.value);
+
+        cb(target.value);
+
         drawUpdatedImage();
-      });
+      }
+    });
+
+    dropdown.addEventListener("click", (e) => {
+      const target = e.target;
+
+      if (target.matches(".option-remove-btn")) {
+        const name = target.previousElementSibling.textContent;
+        const colorTextData = localStorage.getItem(
+          "custom_palette_color_text_data"
+        );
+        const colorTextMap = JSON.parse(colorTextData);
+
+        removePaletteUI(name);
+
+        delete state.paletteData[name];
+        delete colorTextMap[name];
+
+        const newColorTextData = JSON.stringify(colorTextMap);
+
+        localStorage.setItem(
+          "custom_palette_color_text_data",
+          newColorTextData
+        );
+      }
     });
   });
 
@@ -599,9 +677,86 @@ export const initEventListeners = () => {
     drawUpdatedImage();
   });
 
+  savePaletteBtn.addEventListener("click", () => {
+    const { colors } = state.palette;
+    const colorCount = colors.length;
+    const hexes = colors.map(({ rgb }) => rgb2Hex(...rgb));
+
+    if (!colorCount) return;
+
+    savePaletteColorCount.textContent = colorCount;
+
+    savePaletteDialog.showModal();
+    savePaletteNameInput.select();
+    savePaletteColorPreviewContainer.innerHTML = "";
+
+    hexes.forEach((hex) => {
+      const colorPreview = createColorPreview(hex);
+      savePaletteColorPreviewContainer.append(colorPreview);
+    });
+
+    updateScrollClass(savePaletteColorPreviewContainer);
+    dispatchEventTo(savePaletteNameInput, "input");
+  });
+
+  const addCustomPalette = (name) => {
+    const { colors } = state.palette;
+
+    const alreadyExists = Object.keys(state.paletteData).includes(name);
+
+    if (alreadyExists) return;
+
+    const colorTextData = localStorage.getItem(
+      "custom_palette_color_text_data"
+    );
+    const colorTextMap = colorTextData ? JSON.parse(colorTextData) : {};
+    const currentColorTexts = formatColorTexts(colors);
+
+    colorTextMap[name] = currentColorTexts;
+
+    const customPaletteData = getCustomPaletteData(colorTextMap);
+
+    setCustomPaletteData(customPaletteData);
+
+    localStorage.setItem(
+      "custom_palette_color_text_data",
+      JSON.stringify(colorTextMap)
+    );
+
+    setPaletteUI(name, { checked: true, custom: true });
+  };
+
+  savePaletteNameInput.addEventListener("input", (e) => {
+    const paletteName = e.target.value.trim();
+    const isEmpty = !paletteName;
+    const alreadyExists = Object.keys(state.paletteData).includes(paletteName);
+    const isValid = !isEmpty && !alreadyExists;
+
+    savePaletteAlert.textContent = isValid
+      ? "이 팔레트를 저장합니다."
+      : isEmpty
+      ? "팔레트 이름을 입력해주세요."
+      : "이미 사용 중인 팔레트 이름입니다.";
+    savePaletteAlert.classList.toggle("good", isValid);
+    savePaletteConfirmBtn.disabled = !isValid;
+  });
+
+  savePaletteConfirmBtn.addEventListener("click", () => {
+    const paletteName = savePaletteNameInput.value.trim();
+
+    addCustomPalette(paletteName);
+
+    savePaletteDialog.close();
+  });
+
+  savePaletteCancelBtn.addEventListener("click", () =>
+    savePaletteDialog.close()
+  );
+
   paletteResetBtn.addEventListener("click", () => {
     if (state.palette.hasCustomColor) {
       state.palette.removeAddedColors();
+      savePaletteBtn.disabled = true;
     }
     state.palette.selectUnlockedColors();
 
@@ -802,8 +957,12 @@ export const initEventListeners = () => {
     terrainColorDialog.close();
   });
 
-  addColorPreviewContainer.addEventListener("scroll", (e) =>
-    updateScrollClass(e.target)
+  [addColorPreviewContainer, savePaletteColorPreviewContainer].forEach(
+    (colorPreviewContainer) => {
+      colorPreviewContainer.addEventListener("scroll", (e) =>
+        updateScrollClass(e.target)
+      );
+    }
   );
 
   [inputR, inputG, inputB].forEach((input) =>
@@ -812,7 +971,20 @@ export const initEventListeners = () => {
 
   inputHex.addEventListener("input", handleInputHex);
 
+  inputColorName.addEventListener("input", handleInputColorName);
+
   enableAutoResize(addColorTextarea);
+
+  [addColorTabSingle, addColorTabList].forEach((tab) =>
+    tab.addEventListener("change", (e) => {
+      const textField =
+        e.target === addColorTabSingle ? inputHex : addColorTextarea;
+
+      dispatchEventTo(textField, "input");
+
+      textField.select();
+    })
+  );
 
   addColorTextarea.addEventListener("input", handleInputTextarea);
 

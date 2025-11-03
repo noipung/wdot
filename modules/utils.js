@@ -124,3 +124,48 @@ export const dispatchEventTo = (element, eventType) => {
 
   element.dispatchEvent(event);
 };
+
+const formatColorText = ({ rgb, name }) => `${rgb2Hex(...rgb)}(${name})`;
+
+export const formatColorTexts = (colors) =>
+  colors.map(formatColorText).join(", ");
+
+export const parseColorText = (colorText, skipExisting = true) =>
+  colorText
+    .split(",")
+    .map((str) =>
+      (
+        str
+          .trim()
+          .replace(/^#?/, "#")
+          .match(/^(#(?:[a-f0-9]{3}){1,2})\s?(?:\((.+)?\)|$)?$/i) || []
+      ).slice(1)
+    )
+    .filter(([hex]) => isValidHex(hex))
+    .map(([hex, name]) => {
+      const shortUpperHex = shortenHex(hex).toUpperCase();
+      return [shortUpperHex, (name || shortUpperHex).trim()];
+    })
+    .filter(
+      ([hex, name]) =>
+        !skipExisting ||
+        (!state.palette.getColorByRgb(...hex2Rgb(hex)) &&
+          !state.palette.colors.find(
+            (color) => color.name.toUpperCase() === name.toUpperCase()
+          ))
+    )
+    .reduce(
+      (acc, [hex, name]) => {
+        const [colors, hexSet, nameSet] = acc;
+        const upperName = name.toUpperCase();
+
+        if (hexSet.has(hex) || nameSet.has(upperName)) return acc;
+
+        hexSet.add(hex);
+        nameSet.add(upperName);
+        colors.push([hex, name]);
+
+        return acc;
+      },
+      [[], new Set(), new Set()]
+    )[0];

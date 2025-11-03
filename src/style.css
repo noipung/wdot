@@ -32,6 +32,10 @@
   background: #3172e740;
 }
 
+::placeholder {
+  color: #aaa;
+}
+
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
@@ -355,7 +359,6 @@ body button {
 
 .palette-dropdown {
   display: inline-block;
-  margin-right: 0.5em;
 }
 
 .palette-dropdown
@@ -467,6 +470,19 @@ label[for$="dropdown-open"] i {
 
 .option-item input:checked + label i {
   opacity: 1;
+}
+
+.option-item label .option-remove-btn {
+  width: 1.3em;
+  aspect-ratio: 1;
+  color: currentColor;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/delete/wght700/48px.svg")
+    no-repeat center / 100%;
+
+  &:hover {
+    background: #000;
+  }
 }
 
 .option-method {
@@ -631,15 +647,14 @@ main aside {
 
 main aside h2 {
   font-size: 1.1em;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
   position: relative;
 }
 
 main aside h2 button {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  translate: 0 -50%;
   padding: 0.2em;
 }
 
@@ -650,6 +665,45 @@ main aside h2 button i {
   aspect-ratio: 1;
   background: currentColor;
   mask: no-repeat center / 100%;
+}
+
+.save-palette-btn.hidden {
+  display: none;
+}
+
+.save-palette-btn i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/save/wght600/48px.svg");
+}
+
+.save-palette-dialog .input-item:has(.color-preview-container) {
+  display: flex;
+  gap: 1em;
+}
+
+.save-palette-dialog .color-preview-wrapper {
+  overflow: hidden;
+}
+
+.save-palette-dialog .color-preview-wrapper + div {
+  padding-top: 9px;
+  font-size: 0.9em;
+  color: #888;
+  white-space: nowrap;
+}
+
+.save-palette-alert {
+  justify-content: end;
+}
+
+.input-item label[for="save-palette-name-input"]::before {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/palette/wght600/48px.svg");
+}
+
+.reset-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
 }
 
 .reset-btn i {
@@ -717,6 +771,7 @@ main aside h2 button i {
   display: flex;
   gap: 0.5em;
   align-items: center;
+  word-break: keep-all;
 }
 
 .ready .input-item label {
@@ -1211,6 +1266,10 @@ h3.size::before {
   &:hover {
     background: #124ebe;
   }
+
+  &:disabled {
+    background: #b1cbfa;
+  }
 }
 
 .input-group {
@@ -1258,7 +1317,7 @@ h3.size::before {
   display: none;
 }
 
-.add-color-preview {
+.color-preview {
   height: 40px;
   aspect-ratio: 1;
   border-radius: 4px;
@@ -1277,7 +1336,7 @@ h3.size::before {
   gap: 1em;
 }
 
-.add-color-preview-wrapper {
+.color-preview-wrapper {
   position: relative;
 
   &::after {
@@ -1305,7 +1364,7 @@ h3.size::before {
   }
 }
 
-.add-color-preview-container {
+.color-preview-container {
   display: flex;
   gap: 4px;
   padding-bottom: 4px;
@@ -1340,10 +1399,6 @@ h3.size::before {
   border: none;
   border-left: 2px solid #ddd;
   outline: none;
-
-  &::placeholder {
-    color: #aaa;
-  }
 }
 
 .add-color-form .dialog-btn-wrapper {
@@ -1357,28 +1412,34 @@ h3.size::before {
   align-items: center;
 }
 
-.add-color-alert {
+.alert {
   color: #e55;
-  display: flex;
-  align-items: center;
-  opacity: 1;
-  transition: opacity 0.2s;
-  font-size: 0.9em;
+  font-size: 0.8em;
   font-weight: bold;
+  display: flex;
 
   &::before {
     content: "";
     display: block;
-    width: 1.5em;
+    width: 1.2em;
     aspect-ratio: 1;
+    margin-right: 0.2em;
     background: currentColor;
     mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/error/wght700/48px.svg")
-      no-repeat center / 75%;
+      no-repeat center / 100%;
+  }
+
+  &.good {
+    color: #5f91ec;
+
+    &::before {
+      mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check_circle/wght700/48px.svg");
+    }
   }
 }
 
-.add-color-alert.hidden {
-  opacity: 0;
+.add-color-alert {
+  align-items: center;
 }
 
 .add-color-dialog .input-item label::before {

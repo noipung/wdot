@@ -141,6 +141,14 @@
                 <div class="dropdown-options-container"></div>
               </div>
               팔레트
+              <button
+                type="button"
+                class="save-palette-btn hidden"
+                autocomplete="off"
+                disabled
+              >
+                <i></i>
+              </button>
               <button type="button" class="reset-btn" autocomplete="off">
                 <i></i>
               </button>
@@ -408,7 +416,7 @@
             </div>
           </div>
           <button class="download-btn" disabled autocomplete="off">
-            도트 이미지 저장
+            도트 이미지 다운로드
           </button>
         </div>
       </aside>
@@ -416,9 +424,9 @@
     <dialog class="dialog download-dialog">
       <div class="dialog-inner">
         <img class="result-image" alt="결과 이미지" />
-        <p>저장하시겠습니까?</p>
+        <p>다운로드하시겠습니까?</p>
         <div class="dialog-btn-wrapper">
-          <button class="confirm-btn">저장</button>
+          <button class="confirm-btn">다운로드</button>
           <button class="cancel-btn">취소</button>
         </div>
       </div>
@@ -520,20 +528,31 @@
         <form class="add-color-form">
           <div class="add-color-single">
             <div class="input-item">
-              <div class="add-color-preview"></div>
-              <div class="add-color-alert hidden">
-                이미 팔레트에 있는 색입니다.
+              <div class="color-preview"></div>
+              <div class="alert add-color-alert good">
+                이 색상을 추가합니다.
               </div>
             </div>
-            <div class="input-item">
-              <label for="add-color-input-hex">HEX</label>
-              <input
-                type="text"
-                name="add-color-input-hex"
-                id="add-color-input-hex"
-                value="#000"
-                maxlength="7"
-              />
+            <div class="input-group">
+              <div class="input-item">
+                <label for="add-color-input-name">이름</label>
+                <input
+                  type="text"
+                  name="add-color-input-name"
+                  id="add-color-input-name"
+                  placeholder="#000"
+                />
+              </div>
+              <div class="input-item">
+                <label for="add-color-input-hex">HEX</label>
+                <input
+                  type="text"
+                  name="add-color-input-hex"
+                  id="add-color-input-hex"
+                  value="#000"
+                  maxlength="7"
+                />
+              </div>
             </div>
             <div class="input-group">
               <div class="input-item">
@@ -572,8 +591,8 @@
             </div>
           </div>
           <div class="add-color-list">
-            <div class="add-color-preview-wrapper">
-              <div class="add-color-preview-container"></div>
+            <div class="color-preview-wrapper">
+              <div class="color-preview-container"></div>
             </div>
             <div class="color-text-loader-container"></div>
             <textarea
@@ -586,6 +605,30 @@
             <button type="button" class="cancel-btn">취소</button>
           </div>
         </form>
+      </div>
+    </dialog>
+    <dialog class="dialog save-palette-dialog">
+      <div class="dialog-inner">
+        <div class="alert save-palette-alert good">이 팔레트를 저장합니다.</div>
+        <div class="input-item">
+          <label for="save-palette-name-input">팔레트 이름</label>
+          <input
+            type="text"
+            name="save-palette-name-input"
+            id="save-palette-name-input"
+            value="이름"
+          />
+        </div>
+        <div class="input-item">
+          <div class="color-preview-wrapper">
+            <div class="color-preview-container"></div>
+          </div>
+          <div>= <span class="save-palette-color-count">0</span>색</div>
+        </div>
+        <div class="dialog-btn-wrapper">
+          <button class="confirm-btn">저장</button>
+          <button class="cancel-btn">취소</button>
+        </div>
       </div>
     </dialog>
     <script type="module" src="src/main.js"></script>

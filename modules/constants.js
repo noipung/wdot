@@ -27,7 +27,13 @@ export const zoomInBtn = document.querySelector(".zoom-in");
 export const zoomOutBtn = document.querySelector(".zoom-out");
 export const zoomInput = document.querySelector("#zoom");
 export const paletteDropdown = document.querySelector(".palette-dropdown");
+export const paletteOptionsContainer = paletteDropdown.querySelector(
+  ".dropdown-options-container"
+);
 export const methodDropdown = document.querySelector(".method-dropdown");
+export const savePaletteBtn = document.querySelector(
+  ".palette-form-group .save-palette-btn"
+);
 export const paletteResetBtn = document.querySelector(
   ".palette-form-group .reset-btn"
 );
@@ -62,6 +68,7 @@ export const addColorForm = document.querySelector(".add-color-form");
 export const addColorTabSingle = document.querySelector(
   "#add-color-tab-single"
 );
+export const addColorTabList = document.querySelector("#add-color-tab-list");
 export const addColorTextarea = document.querySelector(
   ".add-color-list textarea"
 );
@@ -71,19 +78,37 @@ export const addColorConfirmBtn = document.querySelector(
 export const addColorCancelBtn = document.querySelector(
   ".add-color-dialog .cancel-btn"
 );
-export const addColorPreviewSingle = document.querySelector(
-  ".add-color-single .add-color-preview"
+export const colorPreviewSingle = document.querySelector(
+  ".add-color-single .color-preview"
 );
 export const addColorPreviewContainer = document.querySelector(
-  ".add-color-preview-container"
+  ".add-color-dialog .color-preview-container"
 );
 export const addColorAlert = document.querySelector(".add-color-alert");
 export const inputR = document.querySelector("#add-color-input-r");
 export const inputG = document.querySelector("#add-color-input-g");
 export const inputB = document.querySelector("#add-color-input-b");
 export const inputHex = document.querySelector("#add-color-input-hex");
+export const inputColorName = document.querySelector("#add-color-input-name");
 export const colorTextLoaderContainer = document.querySelector(
   ".color-text-loader-container"
+);
+export const savePaletteDialog = document.querySelector(".save-palette-dialog");
+export const savePaletteColorPreviewContainer = document.querySelector(
+  ".save-palette-dialog .color-preview-container"
+);
+export const savePaletteAlert = document.querySelector(".save-palette-alert");
+export const savePaletteNameInput = document.querySelector(
+  "#save-palette-name-input"
+);
+export const savePaletteColorCount = document.querySelector(
+  ".save-palette-color-count"
+);
+export const savePaletteConfirmBtn = document.querySelector(
+  ".save-palette-dialog .confirm-btn"
+);
+export const savePaletteCancelBtn = document.querySelector(
+  ".save-palette-dialog .cancel-btn"
 );
 
 export const DRAG_THRESHOLD = 3;

@@ -15,6 +15,7 @@ export const state = {
   startTouchDistance: 0,
   startZoom: 0,
   currentTouches: [],
+  initPaletteData: {},
   paletteData: {},
   paletteName: "WPlace",
   palette: null,
@@ -29,6 +30,7 @@ export const state = {
   showGrid: false,
   showTerrainBg: true,
   pickedColor: null,
+  addColorValidation: {},
   colorsToAdd: [],
   method: "rgb",
   workers: {
