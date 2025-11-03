@@ -51,6 +51,7 @@ import {
   addColorTabList,
   savePaletteAlert,
   inputColorName,
+  customPaletteList,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -993,7 +994,19 @@ export const initEventListeners = () => {
 
   addColorCancelBtn.addEventListener("click", () => addColorDialog.close());
 
-  aside.addEventListener("pointerdown", () => state.palette.unhighlightAll());
+  aside.addEventListener("pointerdown", (e) => {
+    state.palette.unhighlightAll();
+
+    if (e.target.matches(".color-remove-btn")) return;
+
+    const colorsToRemove = customPaletteList.querySelectorAll("label.removing");
+
+    if (!colorsToRemove.length) return;
+
+    colorsToRemove.forEach((label) => {
+      label.classList.remove("removing");
+    });
+  });
 
   settingsForm.addEventListener("submit", preventDefaults);
 };

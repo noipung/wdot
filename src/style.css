@@ -1017,6 +1017,43 @@ h3.size::before {
   }
 }
 
+.palette li label .color-remove-btn {
+  --delete-btn-background-color: rgba(from var(--background-color) r g b / 0.8);
+
+  display: flex;
+  visibility: hidden;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  z-index: 20;
+  background: var(--delete-btn-background-color);
+  color: currentColor;
+
+  &:hover {
+    background: var(--delete-btn-background-color);
+  }
+
+  &::before {
+    content: "";
+    display: block;
+    width: 50%;
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/delete/wght600/48px.svg")
+      no-repeat center / 100%;
+    opacity: 0.5;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+.palette li label.removing .color-remove-btn {
+  visibility: visible;
+}
+
 .palette-btn-wrapper {
   display: flex;
   gap: 1em;

@@ -308,16 +308,26 @@ class PaletteColor {
 
     label.addEventListener("contextmenu", preventDefaults);
 
+    label.append(i, colorCount);
+    label.tooltip = tooltip;
+    li.append(check, label, tooltip);
+
     if (type === "added") {
+      const colorRemoveBtn = document.createElement("button");
+
+      colorRemoveBtn.classList.add("color-remove-btn");
+
+      label.append(colorRemoveBtn);
+
       label.addEventListener("contextmenu", (e) => {
+        label.classList.toggle("removing");
+      });
+
+      colorRemoveBtn.addEventListener("click", () => {
         this.remove();
         drawUpdatedImage();
       });
     }
-
-    label.append(i, colorCount);
-    label.tooltip = tooltip;
-    li.append(check, label, tooltip);
 
     this.colorListItem = li;
     this.check = check;
