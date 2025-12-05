@@ -1,10 +1,10 @@
 import "../modules/events.js";
 import { initEventListeners } from "../modules/events.js";
 import { initPaletteUI } from "../modules/palette.js";
-import { GA_ID } from "../modules/constants.js";
+import { GA_ID, CLARITY_ID } from "../modules/constants.js";
 import "../modules/ui.js";
 
-const initGaAnalytics = () => {
+const initAnalytics = () => {
   if (!import.meta.env.PROD) return;
 
   const s1 = document.createElement("script");
@@ -20,10 +20,20 @@ const initGaAnalytics = () => {
     gtag('config', '${GA_ID}');
   `;
   document.head.appendChild(s2);
+
+  const c1 = document.createElement("script");
+  c1.innerHTML = `
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "${CLARITY_ID}");
+  `;
+  document.head.appendChild(c1);
 };
 
 const initApp = async () => {
-  initGaAnalytics();
+  initAnalytics();
 
   try {
     await initPaletteUI();
