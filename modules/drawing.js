@@ -197,6 +197,8 @@ export const draw = () => {
 
   ctx.clearRect(0, 0, cw, ch);
 
+  if (!state.resized) return;
+
   const { width: rw, height: rh } = state.resized;
   const zoom = state.zoom / 100;
   const zw = Math.round(rw * zoom);

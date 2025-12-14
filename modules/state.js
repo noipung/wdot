@@ -32,7 +32,7 @@ export const state = {
   pickedColor: null,
   addColorValidation: {},
   colorsToAdd: [],
-  method: "rgb",
+  method: localStorage.getItem("method") || "rgb",
   workers: {
     adjust: { instance: null, isProcessing: false },
     dither: { instance: null, isProcessing: false },

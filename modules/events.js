@@ -485,15 +485,26 @@ export const initEventListeners = () => {
     },
     {
       dropdown: methodDropdown,
+      init: (dropdown, dropdownCurrentOption) => {
+        const input = dropdown.querySelector(`input[value="${state.method}"]`);
+
+        if (input) {
+          input.checked = true;
+          dropdownCurrentOption.textContent = input.dataset.label;
+        }
+      },
       cb: (value) => {
+        localStorage.setItem("method", value);
         state.method = value;
       },
     },
-  ].forEach(({ dropdown, cb }) => {
+  ].forEach(({ dropdown, cb, init }) => {
     const dropdownOpen = dropdown.querySelector(".dropdown-open");
     const dropdownCurrentOption = dropdown.querySelector(
       ".dropdown-current-option"
     );
+
+    if (init) init(dropdown, dropdownCurrentOption);
 
     dropdown.addEventListener("change", (e) => {
       const target = e.target;
