@@ -1,5 +1,6 @@
-const getAdjustedImageData = (imageData, brightness, contrast, saturation) => {
+const getAdjustedImageData = (imageData, brightness, contrast, saturation, onProgress) => {
   const data = imageData.data;
+  const totalPixels = data.length / 4;
 
   const contrastFactor = (contrast - 50) * 2;
   const factor =
@@ -27,6 +28,11 @@ const getAdjustedImageData = (imageData, brightness, contrast, saturation) => {
     data[i] = Math.min(255, Math.max(0, data[i]));
     data[i + 1] = Math.min(255, Math.max(0, data[i + 1]));
     data[i + 2] = Math.min(255, Math.max(0, data[i + 2]));
+
+    if (onProgress && (i / 4) % Math.max(1, Math.floor(totalPixels / 100)) === 0) {
+      const percentage = Math.round(((i / 4) / totalPixels) * 100);
+      onProgress(percentage);
+    }
   }
   return imageData;
 };
@@ -38,10 +44,13 @@ self.onmessage = (e) => {
     imageData,
     brightness,
     contrast,
-    saturation
+    saturation,
+    (percentage) => {
+      self.postMessage({ type: 'progress', percentage });
+    }
   );
 
-  self.postMessage({ imageData: resultImageData }, [
+  self.postMessage({ type: 'result', imageData: resultImageData }, [
     resultImageData.data.buffer,
   ]);
 };
