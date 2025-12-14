@@ -5,19 +5,7 @@ import { adjust, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 import { resetAllWorkers } from "./worker.js";
 
-const updateProgress = (percentage) => {
-  DOM.ui.processingProgress.textContent = `${Math.round(percentage)}%`;
-};
-
 export const updateImageProcessing = async () => {
-  const startTime = Date.now();
-  let showProgressTimeout = null;
-
-  // 1초 후 진행률 표시 시작
-  showProgressTimeout = setTimeout(() => {
-    DOM.canvas.overlay.classList.add("processing-over-1s");
-  }, 1000);
-
   const adjusted = document.createElement("canvas");
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
@@ -46,10 +34,7 @@ export const updateImageProcessing = async () => {
 
   makeOpaque(resized);
 
-  // dither 진행률만 0-100%로 표시
-  const imageData = await dither(resized, (percentage) => {
-    updateProgress(percentage);
-  });
+  const imageData = await dither(resized);
 
   state.palette.setAllColorCounts(imageData);
 
@@ -69,24 +54,11 @@ export const updateImageProcessing = async () => {
   DOM.ui.resultImage.src = state.dataURL;
 
   document.body.classList.add("ready");
-
-  // 진행률 표시 정리
-  if (showProgressTimeout) {
-    clearTimeout(showProgressTimeout);
-  }
-
-  // 작업 완료 시 소요 시간 표시
-  const endTime = Date.now();
-  const elapsedSeconds = ((endTime - startTime) / 1000).toFixed(2);
-  
-  DOM.ui.processingProgress.textContent = `${elapsedSeconds}초`;
-  DOM.canvas.overlay.classList.remove("processing", "processing-over-1s");
 };
 
 export const drawUpdatedImage = async () => {
   resetAllWorkers();
   DOM.canvas.overlay.classList.add("processing");
-  DOM.ui.processingProgress.textContent = "0%";
 
   try {
     if (!validate()) return;
@@ -94,7 +66,7 @@ export const drawUpdatedImage = async () => {
     await updateImageProcessing();
     draw();
   } finally {
-    DOM.canvas.overlay.classList.remove("processing", "processing-over-1s");
+    DOM.canvas.overlay.classList.remove("processing");
   }
 };
 
@@ -127,8 +99,7 @@ export const handleImageLoad = async (image) => {
 
   state.width = DOM.ui.settingsForm.width.value = image.width;
   state.height = DOM.ui.settingsForm.height.value = image.height;
-  state.viewport.offset = { x: 0, y: 0 };
-  state.viewport.tempOffset = { x: 0, y: 0 };
+  state.movedPosition = state.position = [0, 0];
 
   updateZoom();
 
@@ -139,5 +110,5 @@ export const handleImageLoad = async (image) => {
 };
 
 export const updateZoom = (zoom) => {
-  DOM.ui.zoom.input.value = state.viewport.zoom = zoom || getInitZoom();
+  DOM.ui.zoom.input.value = state.zoom = zoom || getInitZoom();
 };

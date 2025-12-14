@@ -4,6 +4,7 @@ import {
     ZOOM_STEP,
     MIN_ZOOM,
     DRAG_THRESHOLD,
+    DPR,
 } from "../constants.js";
 import {
     validate,
@@ -14,91 +15,80 @@ import {
     preventDefaults,
 } from "../utils.js";
 import { draw } from "../drawing.js";
-import { CoordinateSystem } from "../coordinate-system.js";
 
 // 줌 로직 헬퍼 함수
-// 줌 중심점(캔버스 좌표)을 기준으로 오프셋을 조정
-const getRelativeZoomOffset = (zoomCenterCanvas, zoomFactor) => {
-    if (!state.viewport.bounds) return { x: 0, y: 0 };
-    
-    const imageCenter = CoordinateSystem.getImageCenter();
-    
-    const offsetX = (zoomCenterCanvas.x - imageCenter.x) * (1 - zoomFactor);
-    const offsetY = (zoomCenterCanvas.y - imageCenter.y) * (1 - zoomFactor);
+const getRelativeZoomOffset = (zoomCenter, zoomFactor) => {
+    const imageCenterX = DOM.canvas.el.width / DPR / 2 + state.position[0];
+    const imageCenterY = DOM.canvas.el.height / DPR / 2 + state.position[1];
 
-    return { x: offsetX, y: offsetY };
+    const offsetX = (zoomCenter[0] - imageCenterX) * (1 - zoomFactor);
+    const offsetY = (zoomCenter[1] - imageCenterY) * (1 - zoomFactor);
+
+    return [offsetX, offsetY];
 };
 
 // 줌 이벤트
-const zoom = (deltaY, screenPoint = null) => {
+const zoom = (deltaY, point = null) => {
     const isZoomIn = deltaY < 0;
-    const oldZoom = state.viewport.zoom;
+    const oldZoom = state.zoom;
 
-    state.viewport.zoom = DOM.ui.zoom.input.value = Math.max(
+    state.zoom = DOM.ui.zoom.input.value = Math.max(
         ~~(+DOM.ui.zoom.input.value * (1 + (isZoomIn ? ZOOM_STEP : -ZOOM_STEP))),
         MIN_ZOOM
     );
 
     if (!validate()) return;
 
-    // 커서 중심 줌
-    if (screenPoint) {
-        const zoomFactor = state.viewport.zoom / oldZoom;
-        // 화면 좌표를 캔버스 좌표로 변환
-        const zoomCenterCanvas = CoordinateSystem.screenToCanvas(screenPoint[0], screenPoint[1]);
-        const offset = getRelativeZoomOffset(zoomCenterCanvas, zoomFactor);
+    if (point) {
+        const zoomFactor = state.zoom / oldZoom;
+        const [offsetX, offsetY] = getRelativeZoomOffset(point, zoomFactor);
 
-        state.viewport.offset.x += offset.x;
-        state.viewport.offset.y += offset.y;
-        state.viewport.tempOffset = { ...state.viewport.offset };
+        state.position[0] += offsetX;
+        state.position[1] += offsetY;
+        state.movedPosition = [...state.position];
     }
 
     draw();
 };
 
 const handlePinchZoom = (e) => {
-    if (state.interaction.touches.length < 2) return;
+    if (state.currentTouches.length < 2) return;
 
-    const touch1 = state.interaction.touches[0];
-    const touch2 = state.interaction.touches[1];
+    const touch1 = state.currentTouches[0];
+    const touch2 = state.currentTouches[1];
 
     const currentDistance = getTouchDistance(touch1, touch2);
 
-    if (state.interaction.startTouchDistance > 0) {
-        const zoomFactor = currentDistance / state.interaction.startTouchDistance;
-        const newZoom = Math.max(MIN_ZOOM, ~~(state.interaction.startZoom * zoomFactor));
+    if (state.startTouchDistance > 0) {
+        const zoomFactor = currentDistance / state.startTouchDistance;
+        const newZoom = Math.max(MIN_ZOOM, ~~(state.startZoom * zoomFactor));
 
-        state.viewport.zoom = newZoom;
+        state.zoom = newZoom;
         DOM.ui.zoom.input.value = newZoom;
 
         if (!validate()) return;
 
         const midpoint = getMidpoint(touch1, touch2);
-        const midpointCanvas = CoordinateSystem.screenToCanvas(midpoint[0], midpoint[1]);
-        const startPointCanvas = CoordinateSystem.screenToCanvas(
-            state.interaction.startPoint.x,
-            state.interaction.startPoint.y
-        );
 
-        const deltaX = midpointCanvas.x - startPointCanvas.x;
-        const deltaY = midpointCanvas.y - startPointCanvas.y;
+        const deltaX = midpoint[0] - state.startPosition[0];
+        const deltaY = midpoint[1] - state.startPosition[1];
 
-        const offset = getRelativeZoomOffset(startPointCanvas, zoomFactor);
+        const [offsetX, offsetY] = getRelativeZoomOffset(state.startPosition, zoomFactor);
 
-        moveTempPosition(offset.x + deltaX, offset.y + deltaY);
+        moveTempPosition(offsetX + deltaX, offsetY + deltaY);
 
         requestAnimationFrame(draw);
     }
 };
 
 const startDragging = () => {
-    state.interaction.isDragging = true;
+    state.dragging = true;
     DOM.canvas.overlay.classList.add("dragging");
 };
 
 const moveTempPosition = (deltaX, deltaY) => {
     if (
-        !state.interaction.isDragging &&
+        !state.dragging &&
         Math.abs(deltaX) < DRAG_THRESHOLD &&
         Math.abs(deltaY) < DRAG_THRESHOLD
     )
@@ -106,32 +96,31 @@ const moveTempPosition = (deltaX, deltaY) => {
 
     startDragging();
 
-    state.viewport.tempOffset = {
-        x: state.viewport.offset.x + deltaX,
-        y: state.viewport.offset.y + deltaY,
-    };
+    state.movedPosition = [
+        state.position[0] + deltaX,
+        state.position[1] + deltaY,
+    ];
 };
 
-const highlightColorAt = (screenX, screenY) => {
-    if (!state.dithered || !state.viewport.bounds) return;
+const highlightColorAt = (x, y) => {
+    if (!state.dithered) return;
 
-    // 화면 좌표를 이미지 좌표로 변환
-    const imagePos = CoordinateSystem.screenToImage(screenX, screenY);
-    const { x: ix, y: iy } = imagePos;
+    const [zx, zy, zw, zh] = state.zoomRect;
+
+    const rx = (x - zx) / zw;
+    const ry = (y - zy) / zh;
+    const ax = ~~(rx * state.adjusted.width);
+    const ay = ~~(ry * state.adjusted.height);
+    const ix = ~~(rx * state.width);
+    const iy = ~~(ry * state.height);
 
     if (ix < 0 || ix >= state.width || iy < 0 || iy >= state.height) {
         state.palette.unhighlightAll();
         return;
     }
 
-    // 상대 좌표 계산 (마크 표시용)
-    const bounds = state.viewport.bounds;
-    const canvasPos = CoordinateSystem.screenToCanvas(screenX, screenY);
-    const rx = (canvasPos.x - bounds.x) / bounds.width;
-    const ry = (canvasPos.y - bounds.y) / bounds.height;
-
     const [currentCanvas, currentX, currentY] = state.showOriginal
-        ? [state.adjusted, ~~(rx * state.adjusted.width), ~~(ry * state.adjusted.height)]
+        ? [state.adjusted, ax, ay]
         : [state.dithered, ix, iy];
 
     const currentCtx = currentCanvas.getContext("2d");
@@ -169,9 +158,8 @@ const highlightColorAt = (screenX, screenY) => {
 };
 
 const initState = () => {
-    // 드래그 시작 시 현재 오프셋을 기준으로 설정
-    if (!state.viewport.offset.x && !state.viewport.offset.y) {
-        state.viewport.offset = { ...state.viewport.tempOffset };
+    if (!state.position) {
+        state.position = [...state.movedPosition];
     }
 };
 
@@ -182,7 +170,7 @@ export const initCanvasInteractions = () => {
 
     DOM.ui.zoom.input.addEventListener("change", (e) => {
         let value = Math.max(MIN_ZOOM, ~~e.target.value);
-        e.target.value = state.viewport.zoom = value;
+        e.target.value = state.zoom = value;
 
         if (!validate()) return;
 
@@ -202,21 +190,20 @@ export const initCanvasInteractions = () => {
         preventDefaults(e);
 
         // 모든 터치 포인트 저장
-        state.interaction.touches = Array.from(e.touches);
+        state.currentTouches = Array.from(e.touches);
 
         if (e.touches.length === 1) {
-            state.viewport.offset = { ...state.viewport.tempOffset };
-            state.interaction.startPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            state.position = [...state.movedPosition];
+            state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
         } else if (e.touches.length === 2) {
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
 
-            state.viewport.offset = { ...state.viewport.tempOffset };
-            const midpoint = getMidpoint(touch1, touch2);
-            state.interaction.startPoint = { x: midpoint[0], y: midpoint[1] };
+            state.position = [...state.movedPosition];
+            state.startPosition = getMidpoint(touch1, touch2);
 
-            state.interaction.startTouchDistance = getTouchDistance(touch1, touch2);
-            state.interaction.startZoom = state.viewport.zoom;
+            state.startTouchDistance = getTouchDistance(touch1, touch2);
+            state.startZoom = state.zoom;
         }
     });
 
@@ -224,17 +211,12 @@ export const initCanvasInteractions = () => {
         preventDefaults(e);
 
         // 터치 포인트 업데이트
-        state.interaction.touches = Array.from(e.touches);
+        state.currentTouches = Array.from(e.touches);
 
         if (e.touches.length === 1) {
             const touch = e.touches[0];
-            const startCanvas = CoordinateSystem.screenToCanvas(
-                state.interaction.startPoint.x,
-                state.interaction.startPoint.y
-            );
-            const currentCanvas = CoordinateSystem.screenToCanvas(touch.clientX, touch.clientY);
-            const deltaX = currentCanvas.x - startCanvas.x;
-            const deltaY = currentCanvas.y - startCanvas.y;
+            const deltaX = touch.clientX - state.startPosition[0];
+            const deltaY = touch.clientY - state.startPosition[1];
 
             moveTempPosition(deltaX, deltaY);
 
@@ -247,23 +229,23 @@ export const initCanvasInteractions = () => {
 
     DOM.canvas.controlLayer.addEventListener("touchend", (e) => {
         preventDefaults(e);
-        state.interaction.touches = Array.from(e.touches);
+        state.currentTouches = Array.from(e.touches);
         if (e.touches.length < 2) {
-            state.viewport.offset = { ...state.viewport.tempOffset };
+            state.position = [...state.movedPosition];
             if (e.touches[0])
-                state.interaction.startPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            state.interaction.startTouchDistance = 0;
+                state.startPosition = [e.touches[0].clientX, e.touches[0].clientY];
+            state.startTouchDistance = 0;
         }
 
         if (e.touches.length === 0) {
-            if (!state.interaction.isDragging) {
+            if (!state.dragging) {
                 highlightColorAt(
                     e.changedTouches[0].clientX,
                     e.changedTouches[0].clientY
                 );
             }
-            state.interaction.isDragging = false;
-            state.viewport.offset = { ...state.viewport.tempOffset };
+            state.dragging = false;
+            state.position = [...state.movedPosition];
             DOM.canvas.overlay.classList.remove("dragging");
             if (!validate()) return;
             draw();
@@ -279,8 +261,8 @@ export const initCanvasInteractions = () => {
             if (e.pointerType !== "touch") {
                 if (e.button === 0) {
                     initState();
-                    state.interaction.startPoint = { x: e.clientX, y: e.clientY };
-                    state.interaction.isDragging = false;
+                    state.startPosition = [e.clientX, e.clientY];
+                    state.dragging = false;
                     DOM.canvas.controlLayer.setPointerCapture(e.pointerId);
                 }
             }
@@ -297,13 +279,8 @@ export const initCanvasInteractions = () => {
             ) {
                 e.preventDefault();
 
-                const startCanvas = CoordinateSystem.screenToCanvas(
-                    state.interaction.startPoint.x,
-                    state.interaction.startPoint.y
-                );
-                const currentCanvas = CoordinateSystem.screenToCanvas(e.clientX, e.clientY);
-                const deltaX = currentCanvas.x - startCanvas.x;
-                const deltaY = currentCanvas.y - startCanvas.y;
+                const deltaX = e.clientX - state.startPosition[0];
+                const deltaY = e.clientY - state.startPosition[1];
 
                 moveTempPosition(deltaX, deltaY);
 
@@ -321,15 +298,15 @@ export const initCanvasInteractions = () => {
         (e) => {
             if (e.pointerType === "touch") return;
 
-            if (state.interaction.isDragging) {
-                state.viewport.offset = { ...state.viewport.tempOffset };
+            if (state.dragging) {
+                state.position = [...state.movedPosition];
             }
 
-            if (!state.interaction.isDragging) {
+            if (!state.dragging) {
                 highlightColorAt(e.clientX, e.clientY);
             }
 
-            state.interaction.isDragging = false;
+            state.dragging = false;
             DOM.canvas.controlLayer.releasePointerCapture(e.pointerId);
             DOM.canvas.overlay.classList.remove("dragging");
 
@@ -343,7 +320,7 @@ export const initCanvasInteractions = () => {
     DOM.canvas.controlLayer.addEventListener(
         "pointercancel",
         (e) => {
-            state.interaction.isDragging = false;
+            state.dragging = false;
             DOM.canvas.controlLayer.releasePointerCapture(e.pointerId);
             DOM.canvas.overlay.classList.remove("dragging");
         },

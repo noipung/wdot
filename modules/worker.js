@@ -33,25 +33,15 @@ export const resetWorker = (key) => {
 export const resetAllWorkers = () =>
   Object.keys(state.workers).forEach(resetWorker);
 
-export function createWorkerTask(worker, dataToSend, transferableObjects, onProgress) {
+export function createWorkerTask(worker, dataToSend, transferableObjects) {
   return new Promise((resolve, reject) => {
     const handleMessage = (e) => {
-      const { type } = e.data;
-      
-      if (type === 'progress' && onProgress) {
-        onProgress(e.data.percentage);
-        return; // 진행률 메시지는 계속 리스닝
-      }
-      
-      if (type === 'result') {
-        worker.removeEventListener("message", handleMessage);
-        resolve(e.data);
-      }
+      worker.removeEventListener("message", handleMessage);
+      resolve(e.data);
     };
 
     const handleError = (err) => {
       worker.removeEventListener("error", handleError);
-      worker.removeEventListener("message", handleMessage);
       reject(err);
     };
 

@@ -190,11 +190,9 @@ const getDitherdImageData = (
   height,
   palette,
   ditherIntensity,
-  method,
-  onProgress
+  method
 ) => {
   const data = imageData.data;
-  const totalPixels = width * height;
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -243,21 +241,15 @@ const getDitherdImageData = (
           data[downRightIdx + 2] += ((errB * 1) / 16) * ditherIntensity;
         }
       }
-
-      if (onProgress && (y * width + x) % Math.max(1, Math.floor(totalPixels / 100)) === 0) {
-        const percentage = Math.round(((y * width + x) / totalPixels) * 100);
-        onProgress(percentage);
-      }
     }
   }
 
   return imageData;
 };
 
-const makeTerrainTransparent = (imageData, rgb, onProgress) => {
+const makeTerrainTransparent = (imageData, rgb) => {
   const { data } = imageData;
   const [targetR, targetG, targetB] = rgb;
-  const totalPixels = data.length / 4;
 
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i];
@@ -266,11 +258,6 @@ const makeTerrainTransparent = (imageData, rgb, onProgress) => {
 
     if (r === targetR && g === targetG && b === targetB) {
       data[i] = data[i + 1] = data[i + 2] = data[i + 3] = 0;
-    }
-
-    if (onProgress && (i / 4) % Math.max(1, Math.floor(totalPixels / 100)) === 0) {
-      const percentage = Math.round(((i / 4) / totalPixels) * 100);
-      onProgress(percentage);
     }
   }
 
@@ -288,36 +275,20 @@ self.onmessage = (e) => {
     terrainColor,
   } = e.data;
 
-  const hasTerrain = !!terrainColor;
-  const ditherWeight = hasTerrain ? 0.95 : 1.0; // terrain이 있으면 디더링 95%, 없으면 100%
-
   let resultImageData = getDitherdImageData(
     imageData,
     width,
     height,
     palette,
     ditherIntensity,
-    method,
-    (percentage) => {
-      // 디더링 진행률을 전체의 0-95% (또는 0-100%)로 표시
-      self.postMessage({ type: 'progress', percentage: Math.round(percentage * ditherWeight) });
-    }
+    method
   );
 
   if (terrainColor) {
-    resultImageData = makeTerrainTransparent(
-      resultImageData,
-      terrainColor,
-      (percentage) => {
-        // terrain 처리는 95-100%
-        self.postMessage({ type: 'progress', percentage: 95 + Math.round(percentage * 0.05) });
-      }
-    );
+    resultImageData = makeTerrainTransparent(resultImageData, terrainColor);
   }
 
-  self.postMessage({ type: 'progress', percentage: 100 });
-
-  self.postMessage({ type: 'result', imageData: resultImageData }, [
+  self.postMessage({ imageData: resultImageData }, [
     resultImageData.data.buffer,
   ]);
 };

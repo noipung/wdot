@@ -20,7 +20,6 @@ export const DOM = {
         resultImage: $(".result-image"),
         downloadBtn: $(".download-btn"),
         uploadBtn: $("#upload-btn"),
-        processingProgress: $(".processing-progress"),
         zoom: {
             inBtn: $(".zoom-in"),
             outBtn: $(".zoom-out"),

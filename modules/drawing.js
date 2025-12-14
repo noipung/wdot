@@ -152,9 +152,9 @@ function drawSpeechBubbleFromTail(
 const drawMark = () => {
   const { imageData } = state.mark;
   const [rx, ry] = state.mark.r;
-  const { x: viewX, y: viewY, width: viewWidth, height: viewHeight } = state.viewport.bounds;
-  const x = rx * viewWidth + viewX;
-  const y = ry * viewHeight + viewY;
+  const [zx, zy, zw, zh] = state.zoomRect;
+  const x = rx * zw + zx;
+  const y = ry * zh + zy;
 
   drawSpeechBubbleFromTail(
     DOM.canvas.ctx,
@@ -169,21 +169,21 @@ const drawMark = () => {
 };
 
 const drawGrid = () => {
-  const { x: viewX, y: viewY, width: viewWidth, height: viewHeight } = state.viewport.bounds;
+  const [zx, zy, zw, zh] = state.zoomRect;
   const { width, height } = state;
 
   DOM.canvas.ctx.beginPath();
 
   for (let ix = 0; ix <= width; ix++) {
-    const x = viewX + (viewWidth / width) * ix;
-    DOM.canvas.ctx.moveTo(x, viewY);
-    DOM.canvas.ctx.lineTo(x, viewY + viewHeight);
+    const x = zx + (zw / width) * ix;
+    DOM.canvas.ctx.moveTo(x, zy);
+    DOM.canvas.ctx.lineTo(x, zy + zh);
   }
 
   for (let iy = 0; iy <= height; iy++) {
-    const y = viewY + (viewHeight / height) * iy;
-    DOM.canvas.ctx.moveTo(viewX, y);
-    DOM.canvas.ctx.lineTo(viewX + viewWidth, y);
+    const y = zy + (zh / height) * iy;
+    DOM.canvas.ctx.moveTo(zx, y);
+    DOM.canvas.ctx.lineTo(zx + zw, y);
   }
 
   DOM.canvas.ctx.linewidth = 1;
@@ -199,36 +199,29 @@ export const draw = () => {
   if (!state.resized) return;
 
   const { width: rw, height: rh } = state.resized;
-  const zoom = state.viewport.zoom / 100;
-  const viewWidth = Math.round(rw * zoom);
-  const viewHeight = Math.round(rh * zoom);
+  const zoom = state.zoom / 100;
+  const zw = Math.round(rw * zoom);
+  const zh = Math.round(rh * zoom);
 
-  // 캔버스 중심 계산
-  const canvasCenterX = (cw / DPR - viewWidth) / 2;
-  const canvasCenterY = (ch / DPR - viewHeight) / 2;
+  const center = [
+    Math.round((cw / DPR - zw) / 2),
+    Math.round((ch / DPR - zh) / 2),
+  ];
+  const [px, py] = state.movedPosition;
 
-  // 오프셋 적용
-  const viewX = Math.round(canvasCenterX + state.viewport.tempOffset.x);
-  const viewY = Math.round(canvasCenterY + state.viewport.tempOffset.y);
+  center[0] += px;
+  center[1] += py;
 
   const resultImage = state.showOriginal ? state.adjusted : state.dithered;
 
-  // bounds를 객체로 저장
-  state.viewport.bounds = { x: viewX, y: viewY, width: viewWidth, height: viewHeight };
-
+  state.zoomRect = [...center, zw, zh];
   DOM.canvas.ctx.imageSmoothingEnabled = zoom < 1;
-  DOM.canvas.ctx.drawImage(
-    resultImage,
-    viewX,
-    viewY,
-    viewWidth,
-    viewHeight
-  );
+  DOM.canvas.ctx.drawImage(resultImage, ...state.zoomRect);
 
   if (
     state.showOriginal &&
     state.showGrid &&
-    state.viewport.zoom >= SHOW_GRID_ZOOM_THRESHOLD
+    state.zoom >= SHOW_GRID_ZOOM_THRESHOLD
   )
     drawGrid();
   if (state.mark) drawMark();
