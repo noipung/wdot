@@ -119,8 +119,9 @@ const handleDrop = (e) => {
 };
 
 // 줌 이벤트
-const zoom = (deltaY) => {
+const zoom = (deltaY, point = null) => {
   const isZoomIn = deltaY < 0;
+  const oldZoom = state.zoom;
 
   state.zoom = zoomInput.value = Math.max(
     ~~(+zoomInput.value * (1 + (isZoomIn ? 0.1 : -0.1))),
@@ -128,6 +129,21 @@ const zoom = (deltaY) => {
   );
 
   if (!validate()) return;
+
+  if (point) {
+    const zoomFactor = state.zoom / oldZoom;
+    const [mouseX, mouseY] = point;
+
+    const imageCenterX = canvas.width / DPR / 2 + state.position[0];
+    const imageCenterY = canvas.height / DPR / 2 + state.position[1];
+
+    const offsetX = (mouseX - imageCenterX) * (1 - zoomFactor);
+    const offsetY = (mouseY - imageCenterY) * (1 - zoomFactor);
+
+    state.position[0] += offsetX;
+    state.position[1] += offsetY;
+    state.movedPosition = [...state.position];
+  }
 
   draw();
 };
@@ -180,8 +196,8 @@ const handlePinchZoom = (e) => {
     const imageCenterX = canvas.width / DPR / 2 + state.position[0];
     const imageCenterY = canvas.height / DPR / 2 + state.position[1];
 
-    const offsetX = (midpoint[0] - imageCenterX) * (1 - zoomFactor);
-    const offsetY = (midpoint[1] - imageCenterY) * (1 - zoomFactor);
+    const offsetX = (state.startPosition[0] - imageCenterX) * (1 - zoomFactor);
+    const offsetY = (state.startPosition[1] - imageCenterY) * (1 - zoomFactor);
 
     moveTempPosition(offsetX + deltaX, offsetY + deltaY);
 
@@ -515,7 +531,11 @@ export const initEventListeners = () => {
   });
 
   canvasControlLayer.addEventListener("drop", handleDrop, false);
-  canvasControlLayer.addEventListener("wheel", (e) => zoom(e.deltaY), false);
+  canvasControlLayer.addEventListener(
+    "wheel",
+    (e) => zoom(e.deltaY, [e.clientX, e.clientY]),
+    false
+  );
 
   // 터치 이벤트
   canvasControlLayer.addEventListener("touchstart", (e) => {
@@ -740,8 +760,8 @@ export const initEventListeners = () => {
     savePaletteAlert.textContent = isValid
       ? "이 팔레트를 저장합니다."
       : isEmpty
-      ? "팔레트 이름을 입력해주세요."
-      : "이미 사용 중인 팔레트 이름입니다.";
+        ? "팔레트 이름을 입력해주세요."
+        : "이미 사용 중인 팔레트 이름입니다.";
     savePaletteAlert.classList.toggle("good", isValid);
     savePaletteConfirmBtn.disabled = !isValid;
   });
@@ -806,21 +826,21 @@ export const initEventListeners = () => {
 
   const resetLink =
     (withDraw = true) =>
-    (key) => {
-      const { link, init } = links[key];
+      (key) => {
+        const { link, init } = links[key];
 
-      if (!init.fn) return;
+        if (!init.fn) return;
 
-      const firstInput = document.querySelector(link[0]);
-      const newValue = init.fn();
+        const firstInput = document.querySelector(link[0]);
+        const newValue = init.fn();
 
-      if (firstInput.value == newValue) return;
+        if (firstInput.value == newValue) return;
 
-      firstInput.value = newValue;
-      firstInput.syncInputs();
+        firstInput.value = newValue;
+        firstInput.syncInputs();
 
-      if (withDraw) drawUpdatedImage();
-    };
+        if (withDraw) drawUpdatedImage();
+      };
 
   Object.keys(links).forEach((key) => {
     const { link, init, logic, cb } = links[key];
