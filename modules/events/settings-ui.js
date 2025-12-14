@@ -9,7 +9,6 @@ import {
     validate,
     hex2Rgb,
     getContentColor,
-    dispatchEventTo,
 } from "../utils.js";
 import { setBgOfTerrainColorBtn } from "../palette.js";
 
@@ -43,7 +42,7 @@ export const initSettingsUI = () => {
             cb: (prevValue, newValue) => {
                 if (!validate()) return;
 
-                const newZoom = Math.round(state.zoom * (prevValue / newValue));
+                const newZoom = Math.round(state.viewport.zoom * (prevValue / newValue));
 
                 updateZoom(newZoom);
             },

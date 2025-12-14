@@ -99,7 +99,8 @@ export const handleImageLoad = async (image) => {
 
   state.width = DOM.ui.settingsForm.width.value = image.width;
   state.height = DOM.ui.settingsForm.height.value = image.height;
-  state.movedPosition = state.position = [0, 0];
+  state.viewport.offset = { x: 0, y: 0 };
+  state.viewport.tempOffset = { x: 0, y: 0 };
 
   updateZoom();
 
@@ -110,5 +111,5 @@ export const handleImageLoad = async (image) => {
 };
 
 export const updateZoom = (zoom) => {
-  DOM.ui.zoom.input.value = state.zoom = zoom || getInitZoom();
+  DOM.ui.zoom.input.value = state.viewport.zoom = zoom || getInitZoom();
 };
