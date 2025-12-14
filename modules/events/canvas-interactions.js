@@ -16,6 +16,17 @@ import {
 } from "../utils.js";
 import { draw } from "../drawing.js";
 
+// 줌 로직 헬퍼 함수
+const getRelativeZoomOffset = (zoomCenter, zoomFactor) => {
+    const imageCenterX = DOM.canvas.el.width / DPR / 2 + state.position[0];
+    const imageCenterY = DOM.canvas.el.height / DPR / 2 + state.position[1];
+
+    const offsetX = (zoomCenter[0] - imageCenterX) * (1 - zoomFactor);
+    const offsetY = (zoomCenter[1] - imageCenterY) * (1 - zoomFactor);
+
+    return [offsetX, offsetY];
+};
+
 // 줌 이벤트
 const zoom = (deltaY, point = null) => {
     const isZoomIn = deltaY < 0;
@@ -30,13 +41,7 @@ const zoom = (deltaY, point = null) => {
 
     if (point) {
         const zoomFactor = state.zoom / oldZoom;
-        const [mouseX, mouseY] = point;
-
-        const imageCenterX = DOM.canvas.el.width / DPR / 2 + state.position[0];
-        const imageCenterY = DOM.canvas.el.height / DPR / 2 + state.position[1];
-
-        const offsetX = (mouseX - imageCenterX) * (1 - zoomFactor);
-        const offsetY = (mouseY - imageCenterY) * (1 - zoomFactor);
+        const [offsetX, offsetY] = getRelativeZoomOffset(point, zoomFactor);
 
         state.position[0] += offsetX;
         state.position[1] += offsetY;
@@ -68,11 +73,7 @@ const handlePinchZoom = (e) => {
         const deltaX = midpoint[0] - state.startPosition[0];
         const deltaY = midpoint[1] - state.startPosition[1];
 
-        const imageCenterX = DOM.canvas.el.width / DPR / 2 + state.position[0];
-        const imageCenterY = DOM.canvas.el.height / DPR / 2 + state.position[1];
-
-        const offsetX = (state.startPosition[0] - imageCenterX) * (1 - zoomFactor);
-        const offsetY = (state.startPosition[1] - imageCenterY) * (1 - zoomFactor);
+        const [offsetX, offsetY] = getRelativeZoomOffset(state.startPosition, zoomFactor);
 
         moveTempPosition(offsetX + deltaX, offsetY + deltaY);
 
