@@ -54,6 +54,9 @@ import {
   customPaletteList,
   downloadFileName,
   downloadImageSize,
+  ZOOM_STEP,
+  MIN_ZOOM,
+  PALETTE_NAME_CUSTOM,
 } from "./constants.js";
 import {
   preventDefaults,
@@ -124,8 +127,8 @@ const zoom = (deltaY, point = null) => {
   const oldZoom = state.zoom;
 
   state.zoom = zoomInput.value = Math.max(
-    ~~(+zoomInput.value * (1 + (isZoomIn ? 0.1 : -0.1))),
-    10
+    ~~(+zoomInput.value * (1 + (isZoomIn ? ZOOM_STEP : -ZOOM_STEP))),
+    MIN_ZOOM
   );
 
   if (!validate()) return;
@@ -181,7 +184,7 @@ const handlePinchZoom = (e) => {
 
   if (state.startTouchDistance > 0) {
     const zoomFactor = currentDistance / state.startTouchDistance;
-    const newZoom = Math.max(10, ~~(state.startZoom * zoomFactor));
+    const newZoom = Math.max(MIN_ZOOM, ~~(state.startZoom * zoomFactor));
 
     state.zoom = newZoom;
     zoomInput.value = newZoom;
@@ -455,7 +458,7 @@ export const initEventListeners = () => {
   zoomOutBtn.addEventListener("click", () => zoom(1), false);
 
   zoomInput.addEventListener("change", (e) => {
-    let value = Math.max(10, ~~e.target.value);
+    let value = Math.max(MIN_ZOOM, ~~e.target.value);
     e.target.value = state.zoom = value;
 
     if (!validate()) return;
@@ -470,7 +473,7 @@ export const initEventListeners = () => {
         state.paletteName = value;
         state.palette.setPalette(value);
 
-        const isCustomPalette = value === "커스텀";
+        const isCustomPalette = value === PALETTE_NAME_CUSTOM;
 
         savePaletteBtn.classList.toggle("hidden", !isCustomPalette);
 

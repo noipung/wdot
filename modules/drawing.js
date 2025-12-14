@@ -1,5 +1,17 @@
 import { state } from "./state.js";
-import { canvas, ctx, DPR } from "./constants.js";
+import {
+  canvas,
+  ctx,
+  DPR,
+  SHOW_GRID_ZOOM_THRESHOLD,
+  SPEECH_BUBBLE_WIDTH,
+  SPEECH_BUBBLE_HEIGHT,
+  SPEECH_BUBBLE_RADIUS,
+  SPEECH_BUBBLE_BORDER,
+  GRID_COLOR,
+  SPEECH_BUBBLE_BG_COLOR,
+  SPEECH_BUBBLE_BORDER_COLOR,
+} from "./constants.js";
 
 function drawSpeechBubbleFromTail(
   ctx,
@@ -67,11 +79,13 @@ function drawSpeechBubbleFromTail(
 
   ctx.closePath();
 
-  ctx.fillStyle = "#fff";
+  ctx.closePath();
+
+  ctx.fillStyle = SPEECH_BUBBLE_BG_COLOR;
   ctx.fill();
   ctx.linewidth = 1;
   ctx.lineJoin = "round";
-  ctx.strokeStyle = "#000";
+  ctx.strokeStyle = SPEECH_BUBBLE_BORDER_COLOR;
   ctx.stroke();
 
   const innerX = bubbleX + border;
@@ -143,7 +157,16 @@ const drawMark = () => {
   const x = rx * zw + zx;
   const y = ry * zh + zy;
 
-  drawSpeechBubbleFromTail(ctx, imageData, x, y, 30, 30, 4, 4);
+  drawSpeechBubbleFromTail(
+    ctx,
+    imageData,
+    x,
+    y,
+    SPEECH_BUBBLE_WIDTH,
+    SPEECH_BUBBLE_HEIGHT,
+    SPEECH_BUBBLE_RADIUS,
+    SPEECH_BUBBLE_BORDER
+  );
 };
 
 const drawGrid = () => {
@@ -165,7 +188,7 @@ const drawGrid = () => {
   }
 
   ctx.linewidth = 1;
-  ctx.strokeStyle = "#0002";
+  ctx.strokeStyle = GRID_COLOR;
   ctx.stroke();
 };
 
@@ -194,6 +217,11 @@ export const draw = () => {
   ctx.imageSmoothingEnabled = zoom < 1;
   ctx.drawImage(resultImage, ...state.zoomRect);
 
-  if (state.showOriginal && state.showGrid && state.zoom >= 200) drawGrid();
+  if (
+    state.showOriginal &&
+    state.showGrid &&
+    state.zoom >= SHOW_GRID_ZOOM_THRESHOLD
+  )
+    drawGrid();
   if (state.mark) drawMark();
 };

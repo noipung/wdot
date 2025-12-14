@@ -95,9 +95,9 @@ function ciede2000(lab1, lab2) {
 
   const dE00 = Math.sqrt(
     Math.pow(dLp / Sl, 2) +
-      Math.pow(dCp / Sc, 2) +
-      Math.pow(dHp / Sh, 2) +
-      Rt * (dCp / Sc) * (dHp / Sh)
+    Math.pow(dCp / Sc, 2) +
+    Math.pow(dHp / Sh, 2) +
+    Rt * (dCp / Sc) * (dHp / Sh)
   );
 
   return dE00;

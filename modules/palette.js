@@ -15,6 +15,10 @@ import {
   terrainColorDialog,
   terrainNone,
   unselectAllBtn,
+  PALETTE_TYPE_BASIC,
+  PALETTE_TYPE_LOCKED,
+  PALETTE_TYPE_ADDED,
+  PALETTE_NAME_CUSTOM,
 } from "./constants.js";
 import {
   dispatchEventTo,
@@ -105,8 +109,8 @@ class Palette {
 
     this.setColors(colors);
 
-    this.hasBasicColor = colors.some(({ type }) => type === "basic");
-    this.hasLockedColor = colors.some(({ type }) => type === "locked");
+    this.hasBasicColor = colors.some(({ type }) => type === PALETTE_TYPE_BASIC);
+    this.hasLockedColor = colors.some(({ type }) => type === PALETTE_TYPE_LOCKED);
     this.hasCustomColor = paletteData.customColor;
     this.hasTerrainColor = paletteData.terrainColor;
 
@@ -184,19 +188,19 @@ class Palette {
     const currentPaletteData = state.paletteData[state.paletteName];
 
     currentPaletteData.colors = currentPaletteData.colors.filter(
-      ({ type }) => type !== "added"
+      ({ type }) => type !== PALETTE_TYPE_ADDED
     );
 
     this.addColorBtn = createAddColorBtn();
 
     this.colors
-      .filter(({ type }) => type === "added")
+      .filter(({ type }) => type === PALETTE_TYPE_ADDED)
       .forEach(({ rgb }) => {
         const key = rgb.join(",");
         this.rgbMap.delete(key);
       });
 
-    this.colors = this.colors.filter(({ type }) => type !== "added");
+    this.colors = this.colors.filter(({ type }) => type !== PALETTE_TYPE_ADDED);
     this.changed = true;
   }
 
@@ -232,7 +236,7 @@ class Palette {
   }
 
   selectUnlockedColors() {
-    this.colors.forEach((color) => color.toggle(color.type !== "locked"));
+    this.colors.forEach((color) => color.toggle(color.type !== PALETTE_TYPE_LOCKED));
   }
 
   selectAllColors() {
@@ -295,7 +299,7 @@ class PaletteColor {
     colorCount.classList.add("color-count", "zero");
     colorCount.textContent = "0";
     tooltip.classList.add("tooltip", type);
-    tooltip.textContent = `${name} ${type === "locked" ? "🔒︎" : ""}`;
+    tooltip.textContent = `${name} ${type === PALETTE_TYPE_LOCKED ? "🔒︎" : ""}`;
     li.classList.toggle("disabled", !this.enabled);
 
     check.addEventListener("change", () => {
@@ -312,7 +316,7 @@ class PaletteColor {
     label.tooltip = tooltip;
     li.append(check, label, tooltip);
 
-    if (type === "added") {
+    if (type === PALETTE_TYPE_ADDED) {
       const colorRemoveBtn = document.createElement("button");
 
       colorRemoveBtn.classList.add("color-remove-btn");
@@ -335,9 +339,9 @@ class PaletteColor {
     this.colorCount = colorCount;
     this.check.checked = this.enabled;
 
-    if (this.type === "basic") {
+    if (this.type === PALETTE_TYPE_BASIC) {
       basicPaletteList.append(this.colorListItem);
-    } else if (this.type === "locked") {
+    } else if (this.type === PALETTE_TYPE_LOCKED) {
       lockedPaletteList.append(this.colorListItem);
     } else {
       if (!palette.addColorBtn?.parentNode?.parentNode) {
@@ -427,7 +431,7 @@ export const setPaletteUI = (name, settings = {}) => {
 
   paletteOptionsContainer.insertBefore(
     optionItem,
-    document.querySelector('.option-item:has([value="커스텀"])')
+    document.querySelector(`.option-item:has([value="${PALETTE_NAME_CUSTOM}"])`)
   );
 
   const option = optionItem.querySelector("input");
@@ -480,7 +484,7 @@ export const getCustomPaletteData = (colorTextMap) => {
       colors: parseColorText(colorTextMap[key], false).map(([hex, name]) => ({
         rgb: hex2Rgb(hex),
         name: name || hex,
-        type: "basic",
+        type: PALETTE_TYPE_BASIC,
       })),
     };
   });
@@ -492,7 +496,7 @@ export const setCustomPaletteData = (customPaletteData) => {
   state.paletteData = {
     ...state.initPaletteData,
     ...customPaletteData,
-    커스텀: {
+    [PALETTE_NAME_CUSTOM]: {
       customColor: true,
       terrainColor: false,
       colors: [],
@@ -510,7 +514,7 @@ export const initPaletteUI = async () => {
 
   state.palette = new Palette(state.paletteName);
 
-  const moveCustomToLast = (a, b) => (a === "커스텀") - (b === "커스텀");
+  const moveCustomToLast = (a, b) => (a === PALETTE_NAME_CUSTOM) - (b === PALETTE_NAME_CUSTOM);
 
   Object.keys(state.paletteData)
     .sort(moveCustomToLast)

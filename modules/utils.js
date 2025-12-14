@@ -1,5 +1,17 @@
 import { state } from "./state.js";
-import { canvas, DPR } from "./constants.js";
+import {
+  canvas,
+  DPR,
+  MIN_VALUE,
+  MAX_VALUE,
+  SECONDS_PER_PIXEL_MANUAL,
+  SECONDS_PER_PIXEL_WITH_TOOL,
+  DEFAULT_INIT_ZOOM_FACTOR,
+  LUMA_COEFF_R,
+  LUMA_COEFF_G,
+  LUMA_COEFF_B,
+  LUMA_THRESHOLD,
+} from "./constants.js";
 
 export const preventDefaults = (e) => {
   e.preventDefault();
@@ -8,26 +20,29 @@ export const preventDefaults = (e) => {
 
 export const validate = () =>
   state.image &&
-  state.brightness >= 0 &&
-  state.brightness <= 100 &&
-  state.contrast >= 0 &&
-  state.contrast <= 100 &&
-  state.saturation >= 0 &&
-  state.saturation <= 100 &&
-  state.dither >= 0 &&
-  state.dither <= 100 &&
+  state.brightness >= MIN_VALUE &&
+  state.brightness <= MAX_VALUE &&
+  state.contrast >= MIN_VALUE &&
+  state.contrast <= MAX_VALUE &&
+  state.saturation >= MIN_VALUE &&
+  state.saturation <= MAX_VALUE &&
+  state.dither >= MIN_VALUE &&
+  state.dither <= MAX_VALUE &&
   state.width >= 1 &&
   state.height >= 1;
 
 export const getContentColor = (r, g, b) =>
-  (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.5 ? "#000" : "#fff";
+  (LUMA_COEFF_R * r + LUMA_COEFF_G * g + LUMA_COEFF_B * b) / 255 >
+    LUMA_THRESHOLD
+    ? "#000"
+    : "#fff";
 
 export const dist = (a, b) =>
   a.reduce((sum, val, i) => sum + (val - b[i]) ** 2, 0);
 
 export const calculateTime = (pixels) => ({
-  time: pixels * 30,
-  timeWithFlag: pixels * 27,
+  time: pixels * SECONDS_PER_PIXEL_MANUAL,
+  timeWithFlag: pixels * SECONDS_PER_PIXEL_WITH_TOOL,
 });
 
 export const formatTime = (seconds) => {
@@ -45,7 +60,7 @@ export const formatTime = (seconds) => {
   return result.join(" ");
 };
 
-export const getInitZoom = (size = 3 / 4) =>
+export const getInitZoom = (size = DEFAULT_INIT_ZOOM_FACTOR) =>
   ~~(
     ((state.aspectRatio > canvas.width / canvas.height
       ? canvas.width / state.width
