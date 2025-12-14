@@ -1,8 +1,10 @@
-import { canvas, ctx, DPR } from "./constants.js";
+import { DOM } from "./dom.js";
+import { DPR } from "./constants.js";
 import { validate } from "./utils.js";
 import { draw } from "./drawing.js";
 
 export const resizeCanvas = () => {
+  const { el: canvas, ctx } = DOM.canvas;
   const { width, height } = canvas.getBoundingClientRect();
 
   canvas.width = width * DPR;

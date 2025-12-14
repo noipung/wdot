@@ -1,6 +1,6 @@
 import { state } from "./state.js";
+import { DOM } from "./dom.js";
 import {
-  canvas,
   DPR,
   MIN_VALUE,
   MAX_VALUE,
@@ -60,15 +60,18 @@ export const formatTime = (seconds) => {
   return result.join(" ");
 };
 
-export const getInitZoom = (size = DEFAULT_INIT_ZOOM_FACTOR) =>
-  ~~(
-    ((state.aspectRatio > canvas.width / canvas.height
-      ? canvas.width / state.width
-      : canvas.height / state.height) *
+export const getInitZoom = (size = DEFAULT_INIT_ZOOM_FACTOR) => {
+  const { width, height } = DOM.canvas.el;
+
+  return ~~(
+    ((state.aspectRatio > width / height
+      ? width / state.width
+      : height / state.height) *
       size *
       100) /
     DPR
   );
+};
 
 export const getTouchDistance = (touch1, touch2) => {
   const dx = touch2.clientX - touch1.clientX;

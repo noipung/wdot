@@ -1,7 +1,6 @@
 import { state } from "./state.js";
+import { DOM } from "./dom.js";
 import {
-  canvas,
-  ctx,
   DPR,
   SHOW_GRID_ZOOM_THRESHOLD,
   SPEECH_BUBBLE_WIDTH,
@@ -158,7 +157,7 @@ const drawMark = () => {
   const y = ry * zh + zy;
 
   drawSpeechBubbleFromTail(
-    ctx,
+    DOM.canvas.ctx,
     imageData,
     x,
     y,
@@ -173,29 +172,29 @@ const drawGrid = () => {
   const [zx, zy, zw, zh] = state.zoomRect;
   const { width, height } = state;
 
-  ctx.beginPath();
+  DOM.canvas.ctx.beginPath();
 
   for (let ix = 0; ix <= width; ix++) {
     const x = zx + (zw / width) * ix;
-    ctx.moveTo(x, zy);
-    ctx.lineTo(x, zy + zh);
+    DOM.canvas.ctx.moveTo(x, zy);
+    DOM.canvas.ctx.lineTo(x, zy + zh);
   }
 
   for (let iy = 0; iy <= height; iy++) {
     const y = zy + (zh / height) * iy;
-    ctx.moveTo(zx, y);
-    ctx.lineTo(zx + zw, y);
+    DOM.canvas.ctx.moveTo(zx, y);
+    DOM.canvas.ctx.lineTo(zx + zw, y);
   }
 
-  ctx.linewidth = 1;
-  ctx.strokeStyle = GRID_COLOR;
-  ctx.stroke();
+  DOM.canvas.ctx.linewidth = 1;
+  DOM.canvas.ctx.strokeStyle = GRID_COLOR;
+  DOM.canvas.ctx.stroke();
 };
 
 export const draw = () => {
-  let { width: cw, height: ch } = canvas;
+  let { width: cw, height: ch } = DOM.canvas.el;
 
-  ctx.clearRect(0, 0, cw, ch);
+  DOM.canvas.ctx.clearRect(0, 0, cw, ch);
 
   if (!state.resized) return;
 
@@ -216,8 +215,8 @@ export const draw = () => {
   const resultImage = state.showOriginal ? state.adjusted : state.dithered;
 
   state.zoomRect = [...center, zw, zh];
-  ctx.imageSmoothingEnabled = zoom < 1;
-  ctx.drawImage(resultImage, ...state.zoomRect);
+  DOM.canvas.ctx.imageSmoothingEnabled = zoom < 1;
+  DOM.canvas.ctx.drawImage(resultImage, ...state.zoomRect);
 
   if (
     state.showOriginal &&

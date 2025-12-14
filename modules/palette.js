@@ -1,20 +1,6 @@
 import { state } from "./state.js";
+import { DOM } from "./dom.js";
 import {
-  addColorDialog,
-  addColorPreviewContainer,
-  addColorTabSingle,
-  addColorTextarea,
-  basicPaletteList,
-  colorTextLoaderContainer,
-  customPaletteList,
-  inputColorName,
-  inputHex,
-  lockedPaletteList,
-  paletteOptionsContainer,
-  selectAllBtn,
-  terrainColorDialog,
-  terrainNone,
-  unselectAllBtn,
   PALETTE_TYPE_BASIC,
   PALETTE_TYPE_LOCKED,
   PALETTE_TYPE_ADDED,
@@ -38,21 +24,22 @@ import { setBgOfTerrainColorBtn, updateScrollClass } from "./events.js";
 
 const createAddColorBtn = () => {
   const handleClick = () => {
-    addColorDialog.showModal();
+    DOM.dialog.addColor.el.showModal();
 
-    const onSingleTab = addColorTabSingle.checked;
+    const onSingleTab = DOM.dialog.addColor.tabSingle.checked;
     const textFields = onSingleTab
-      ? [inputHex, inputColorName]
-      : [addColorTextarea];
+      ? [DOM.dialog.addColor.inputHex, DOM.dialog.addColor.inputName]
+      : [DOM.dialog.addColor.textarea];
 
     textFields.forEach((textField) => dispatchEventTo(textField, "input"));
 
-    inputColorName.value = addColorTextarea.value = "";
-    addColorPreviewContainer.textContent = "";
+    DOM.dialog.addColor.inputName.value = DOM.dialog.addColor.textarea.value =
+      "";
+    DOM.dialog.addColor.previewContainer.textContent = "";
 
-    if (onSingleTab) inputHex.select();
+    if (onSingleTab) DOM.dialog.addColor.inputHex.select();
 
-    updateScrollClass(addColorPreviewContainer);
+    updateScrollClass(DOM.dialog.addColor.previewContainer);
   };
 
   const li = document.createElement("li");
@@ -62,14 +49,14 @@ const createAddColorBtn = () => {
   addColorBtn.type = "button";
 
   li.append(addColorBtn);
-  customPaletteList.append(li);
+  DOM.ui.palette.customList.append(li);
 
   return addColorBtn;
 };
 
 const createSetTerrainColorBtn = () => {
   const handleClick = () => {
-    terrainColorDialog.showModal();
+    DOM.dialog.terrainColor.el.showModal();
   };
 
   const li = document.createElement("li");
@@ -79,7 +66,7 @@ const createSetTerrainColorBtn = () => {
   setTerrainColorBtn.type = "button";
 
   li.append(setTerrainColorBtn);
-  basicPaletteList.append(li);
+  DOM.ui.palette.basicList.append(li);
 
   return setTerrainColorBtn;
 };
@@ -97,9 +84,9 @@ class Palette {
 
     state.paletteName = paletteName;
 
-    basicPaletteList.innerHTML = "";
-    lockedPaletteList.innerHTML = "";
-    customPaletteList.innerHTML = "";
+    DOM.ui.palette.basicList.innerHTML = "";
+    DOM.ui.palette.lockedList.innerHTML = "";
+    DOM.ui.palette.customList.innerHTML = "";
 
     const paletteData = state.paletteData[paletteName];
 
@@ -114,9 +101,12 @@ class Palette {
     this.hasCustomColor = paletteData.customColor;
     this.hasTerrainColor = paletteData.terrainColor;
 
-    basicPaletteList.classList.toggle("hidden", !this.hasBasicColor);
-    lockedPaletteList.classList.toggle("hidden", !this.hasLockedColor);
-    customPaletteList.classList.toggle("hidden", !this.hasCustomColor);
+    DOM.ui.palette.basicList.classList.toggle("hidden", !this.hasBasicColor);
+    DOM.ui.palette.lockedList.classList.toggle("hidden", !this.hasLockedColor);
+    DOM.ui.palette.customList.classList.toggle(
+      "hidden",
+      !this.hasCustomColor
+    );
 
     if (this.hasTerrainColor) {
       this.setTerrainColorBtn = createSetTerrainColorBtn();
@@ -124,8 +114,8 @@ class Palette {
       if (this.terrainColor)
         setBgOfTerrainColorBtn(rgb2Hex(...this.terrainColor));
     } else {
-      terrainNone.checked = true;
-      dispatchEventTo(terrainNone, "change");
+      DOM.dialog.terrainColor.noneOption.checked = true;
+      dispatchEventTo(DOM.dialog.terrainColor.noneOption, "change");
     }
 
     if (this.hasCustomColor) this.addColorBtn = createAddColorBtn();
@@ -159,7 +149,7 @@ class Palette {
   }
 
   removeColor(color) {
-    customPaletteList.removeChild(color.colorListItem);
+    DOM.ui.palette.customList.removeChild(color.colorListItem);
 
     const currentPaletteData = state.paletteData[state.paletteName];
 
@@ -183,7 +173,7 @@ class Palette {
   }
 
   removeAddedColors() {
-    customPaletteList.innerHTML = "";
+    DOM.ui.palette.customList.innerHTML = "";
 
     const currentPaletteData = state.paletteData[state.paletteName];
 
@@ -340,14 +330,14 @@ class PaletteColor {
     this.check.checked = this.enabled;
 
     if (this.type === PALETTE_TYPE_BASIC) {
-      basicPaletteList.append(this.colorListItem);
+      DOM.ui.palette.basicList.append(this.colorListItem);
     } else if (this.type === PALETTE_TYPE_LOCKED) {
-      lockedPaletteList.append(this.colorListItem);
+      DOM.ui.palette.lockedList.append(this.colorListItem);
     } else {
       if (!palette.addColorBtn?.parentNode?.parentNode) {
-        customPaletteList.append(this.colorListItem);
+        DOM.ui.palette.customList.append(this.colorListItem);
       } else {
-        customPaletteList.insertBefore(
+        DOM.ui.palette.customList.insertBefore(
           this.colorListItem,
           palette.addColorBtn.parentNode
         );
@@ -420,7 +410,7 @@ const createColorTextLoader = (name) => {
   colorTextLoader.addEventListener("click", () => {
     const colorText = state.colorTexts.get(name);
 
-    insertAndSelectText(addColorTextarea, colorText);
+    insertAndSelectText(DOM.dialog.addColor.textarea, colorText);
   });
 
   return colorTextLoader;
@@ -429,7 +419,7 @@ const createColorTextLoader = (name) => {
 export const setPaletteUI = (name, settings = {}) => {
   const optionItem = createPaletteOptionItem(name, settings);
 
-  paletteOptionsContainer.insertBefore(
+  DOM.ui.palette.optionsContainer.insertBefore(
     optionItem,
     document.querySelector(`.option-item:has([value="${PALETTE_NAME_CUSTOM}"])`)
   );
@@ -451,11 +441,11 @@ export const setPaletteUI = (name, settings = {}) => {
 
   const colorTextLoader = createColorTextLoader(name);
 
-  colorTextLoaderContainer.append(colorTextLoader);
+  DOM.dialog.addColor.loaderContainer.append(colorTextLoader);
 };
 
 export const removePaletteUI = (name) => {
-  const optionItem = paletteOptionsContainer.querySelector(
+  const optionItem = DOM.ui.palette.optionsContainer.querySelector(
     `.option-item:has([value="${name}"])`
   );
   const option = optionItem.querySelector("input");
@@ -470,7 +460,9 @@ export const removePaletteUI = (name) => {
   optionItem.remove();
 
   state.colorTexts.delete(name);
-  colorTextLoaderContainer.querySelector(`[data-label="${name}"]`).remove();
+  DOM.dialog.addColor.loaderContainer
+    .querySelector(`[data-label="${name}"]`)
+    .remove();
 };
 
 export const getCustomPaletteData = (colorTextMap) => {
@@ -531,7 +523,10 @@ export const initPaletteUI = async () => {
     drawUpdatedImage();
   };
 
-  selectAllBtn.addEventListener("click", handleClickSelectAllBtn);
+  DOM.ui.palette.selectAllBtn.addEventListener(
+    "click",
+    handleClickSelectAllBtn
+  );
 
   const handleClickUnselectAllBtn = () => {
     state.palette.unselectAllColors();
@@ -539,5 +534,8 @@ export const initPaletteUI = async () => {
     drawUpdatedImage();
   };
 
-  unselectAllBtn.addEventListener("click", handleClickUnselectAllBtn);
+  DOM.ui.palette.unselectAllBtn.addEventListener(
+    "click",
+    handleClickUnselectAllBtn
+  );
 };

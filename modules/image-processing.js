@@ -1,18 +1,5 @@
 import { state } from "./state.js";
-import {
-  total,
-  totalTime,
-  totalTimeWithFlag,
-  zoomInput,
-  settingsForm,
-  canvasOverlay,
-  zoomInBtn,
-  zoomOutBtn,
-  downloadBtn,
-  sizeBtns,
-  settingsResetBtn,
-  resultImage,
-} from "./constants.js";
+import { DOM } from "./dom.js";
 import { calculateTime, formatTime, getInitZoom, validate } from "./utils.js";
 import { adjust, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
@@ -54,9 +41,9 @@ export const updateImageProcessing = async () => {
   const pixels = state.palette.allCount;
   const { time, timeWithFlag } = calculateTime(pixels);
 
-  total.textContent = `${pixels} 픽셀`;
-  totalTime.textContent = formatTime(time);
-  totalTimeWithFlag.textContent = formatTime(timeWithFlag);
+  DOM.ui.total.textContent = `${pixels} 픽셀`;
+  DOM.ui.totalTime.textContent = formatTime(time);
+  DOM.ui.totalTimeWithFlag.textContent = formatTime(timeWithFlag);
 
   ditheredCtx.putImageData(imageData, 0, 0);
 
@@ -64,14 +51,14 @@ export const updateImageProcessing = async () => {
   state.dithered = dithered;
   state.dataURL = dithered.toDataURL("image/png");
 
-  resultImage.src = state.dataURL;
+  DOM.ui.resultImage.src = state.dataURL;
 
   document.body.classList.add("ready");
 };
 
 export const drawUpdatedImage = async () => {
   resetAllWorkers();
-  canvasOverlay.classList.add("processing");
+  DOM.canvas.overlay.classList.add("processing");
 
   try {
     if (!validate()) return;
@@ -79,49 +66,49 @@ export const drawUpdatedImage = async () => {
     await updateImageProcessing();
     draw();
   } finally {
-    canvasOverlay.classList.remove("processing");
+    DOM.canvas.overlay.classList.remove("processing");
   }
 };
 
 const enableInputs = () => {
-  zoomInBtn.disabled = false;
-  zoomOutBtn.disabled = false;
-  zoomInput.disabled = false;
+  DOM.ui.zoom.inBtn.disabled = false;
+  DOM.ui.zoom.outBtn.disabled = false;
+  DOM.ui.zoom.input.disabled = false;
 
-  downloadBtn.disabled = false;
-  settingsResetBtn.disabled = false;
+  DOM.ui.downloadBtn.disabled = false;
+  DOM.ui.settingsResetBtn.disabled = false;
 
-  settingsForm.brightness.disabled = false;
-  settingsForm.contrast.disabled = false;
-  settingsForm.saturation.disabled = false;
-  settingsForm.dither.disabled = false;
-  settingsForm.width.disabled = false;
-  settingsForm.height.disabled = false;
+  DOM.ui.settingsForm.brightness.disabled = false;
+  DOM.ui.settingsForm.contrast.disabled = false;
+  DOM.ui.settingsForm.saturation.disabled = false;
+  DOM.ui.settingsForm.dither.disabled = false;
+  DOM.ui.settingsForm.width.disabled = false;
+  DOM.ui.settingsForm.height.disabled = false;
 
-  settingsForm["brightness-range"].disabled = false;
-  settingsForm["contrast-range"].disabled = false;
-  settingsForm["saturation-range"].disabled = false;
-  settingsForm["dither-range"].disabled = false;
+  DOM.ui.settingsForm["brightness-range"].disabled = false;
+  DOM.ui.settingsForm["contrast-range"].disabled = false;
+  DOM.ui.settingsForm["saturation-range"].disabled = false;
+  DOM.ui.settingsForm["dither-range"].disabled = false;
 
-  sizeBtns.forEach((btn) => (btn.disabled = false));
+  DOM.ui.sizeBtns.forEach((btn) => (btn.disabled = false));
 };
 
 export const handleImageLoad = async (image) => {
   state.image = image;
   state.aspectRatio = image.width / image.height;
 
-  state.width = settingsForm.width.value = image.width;
-  state.height = settingsForm.height.value = image.height;
+  state.width = DOM.ui.settingsForm.width.value = image.width;
+  state.height = DOM.ui.settingsForm.height.value = image.height;
   state.movedPosition = state.position = [0, 0];
 
   updateZoom();
 
-  canvasOverlay.classList.add("image-loaded");
+  DOM.canvas.overlay.classList.add("image-loaded");
   enableInputs();
 
   drawUpdatedImage();
 };
 
 export const updateZoom = (zoom) => {
-  zoomInput.value = state.zoom = zoom || getInitZoom();
+  DOM.ui.zoom.input.value = state.zoom = zoom || getInitZoom();
 };

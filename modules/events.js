@@ -1,59 +1,8 @@
 import { state } from "./state.js";
+import { DOM } from "./dom.js";
 import {
-  canvas,
-  canvasOverlay,
-  canvasControlLayer,
-  settingsForm,
-  uploadBtn,
-  zoomInBtn,
-  zoomOutBtn,
-  zoomInput,
-  downloadBtn,
-  downloadConfirmBtn,
-  downloadCancelBtn,
-  downloadDialog,
   DRAG_THRESHOLD,
-  paletteResetBtn,
-  settingsResetBtn,
-  sizeBtns,
-  showOriginalInput,
-  pixelatedModeToggle,
-  aside,
   DPR,
-  paletteDropdown,
-  methodDropdown,
-  addColorAlert,
-  addColorCancelBtn,
-  addColorDialog,
-  addColorConfirmBtn,
-  colorPreviewSingle,
-  inputR,
-  inputG,
-  inputB,
-  inputHex,
-  terrainColorCancelBtn,
-  terrainColorDialog,
-  terrainColorInputs,
-  showTerrainBgCheckbox,
-  addColorForm,
-  addColorTextarea,
-  addColorPreviewContainer,
-  addColorTabSingle,
-  showGridInput,
-  resultImage,
-  savePaletteBtn,
-  savePaletteDialog,
-  savePaletteColorPreviewContainer,
-  savePaletteCancelBtn,
-  savePaletteConfirmBtn,
-  savePaletteNameInput,
-  savePaletteColorCount,
-  addColorTabList,
-  savePaletteAlert,
-  inputColorName,
-  customPaletteList,
-  downloadFileName,
-  downloadImageSize,
   ZOOM_STEP,
   MIN_ZOOM,
   PALETTE_NAME_CUSTOM,
@@ -126,8 +75,8 @@ const zoom = (deltaY, point = null) => {
   const isZoomIn = deltaY < 0;
   const oldZoom = state.zoom;
 
-  state.zoom = zoomInput.value = Math.max(
-    ~~(+zoomInput.value * (1 + (isZoomIn ? ZOOM_STEP : -ZOOM_STEP))),
+  state.zoom = DOM.ui.zoom.input.value = Math.max(
+    ~~(+DOM.ui.zoom.input.value * (1 + (isZoomIn ? ZOOM_STEP : -ZOOM_STEP))),
     MIN_ZOOM
   );
 
@@ -137,8 +86,8 @@ const zoom = (deltaY, point = null) => {
     const zoomFactor = state.zoom / oldZoom;
     const [mouseX, mouseY] = point;
 
-    const imageCenterX = canvas.width / DPR / 2 + state.position[0];
-    const imageCenterY = canvas.height / DPR / 2 + state.position[1];
+    const imageCenterX = DOM.canvas.el.width / DPR / 2 + state.position[0];
+    const imageCenterY = DOM.canvas.el.height / DPR / 2 + state.position[1];
 
     const offsetX = (mouseX - imageCenterX) * (1 - zoomFactor);
     const offsetY = (mouseY - imageCenterY) * (1 - zoomFactor);
@@ -187,7 +136,7 @@ const handlePinchZoom = (e) => {
     const newZoom = Math.max(MIN_ZOOM, ~~(state.startZoom * zoomFactor));
 
     state.zoom = newZoom;
-    zoomInput.value = newZoom;
+    DOM.ui.zoom.input.value = newZoom;
 
     if (!validate()) return;
 
@@ -196,8 +145,8 @@ const handlePinchZoom = (e) => {
     const deltaX = midpoint[0] - state.startPosition[0];
     const deltaY = midpoint[1] - state.startPosition[1];
 
-    const imageCenterX = canvas.width / DPR / 2 + state.position[0];
-    const imageCenterY = canvas.height / DPR / 2 + state.position[1];
+    const imageCenterX = DOM.canvas.el.width / DPR / 2 + state.position[0];
+    const imageCenterY = DOM.canvas.el.height / DPR / 2 + state.position[1];
 
     const offsetX = (state.startPosition[0] - imageCenterX) * (1 - zoomFactor);
     const offsetY = (state.startPosition[1] - imageCenterY) * (1 - zoomFactor);
@@ -210,7 +159,7 @@ const handlePinchZoom = (e) => {
 
 const startDragging = () => {
   state.dragging = true;
-  canvasOverlay.classList.add("dragging");
+  DOM.canvas.overlay.classList.add("dragging");
 };
 
 const highlightColorAt = (x, y) => {
@@ -252,11 +201,11 @@ const highlightColorAt = (x, y) => {
       const { addColorBtn } = state.palette;
       addColorBtn.style.background = `rgb(${r}, ${g}, ${b})`;
       addColorBtn.style.color = getContentColor(r, g, b);
-      inputR.value = r;
-      inputG.value = g;
-      inputB.value = b;
-      inputHex.value = rgb2Hex(r, g, b);
-      addColorTabSingle.checked = true;
+      DOM.dialog.addColor.inputR.value = r;
+      DOM.dialog.addColor.inputG.value = g;
+      DOM.dialog.addColor.inputB.value = b;
+      DOM.dialog.addColor.inputHex.value = rgb2Hex(r, g, b);
+      DOM.dialog.addColor.tabSingle.checked = true;
     }
   } else {
     state.palette.highlight(colorOnPalette);
@@ -291,22 +240,23 @@ export const updateScrollClass = (container) => {
 const confirmAddColor = (e) => {
   preventDefaults(e);
 
-  if (addColorTabSingle.checked) {
-    if (!isValidHex(inputHex.value)) {
-      addColorAlert.classList.remove("hidden");
-      addColorAlert.textContent = "헥스코드가 올바르지 않습니다.";
+  if (DOM.dialog.addColor.tabSingle.checked) {
+    if (!isValidHex(DOM.dialog.addColor.inputHex.value)) {
+      DOM.dialog.addColor.alert.classList.remove("hidden");
+      DOM.dialog.addColor.alert.textContent = "헥스코드가 올바르지 않습니다.";
       return;
     }
 
-    addColorAlert.classList.toggle("hidden", !state.contained);
+    DOM.dialog.addColor.alert.classList.toggle("hidden", !state.contained);
 
     if (state.contained) return;
 
-    const r = +inputR.value;
-    const g = +inputG.value;
-    const b = +inputB.value;
+    const r = +DOM.dialog.addColor.inputR.value;
+    const g = +DOM.dialog.addColor.inputG.value;
+    const b = +DOM.dialog.addColor.inputB.value;
     const colorName =
-      inputColorName.value || shortenHex(inputHex.value).toUpperCase();
+      DOM.dialog.addColor.inputName.value ||
+      shortenHex(DOM.dialog.addColor.inputHex.value).toUpperCase();
 
     state.palette.addColor([r, g, b], colorName, "added");
   } else {
@@ -319,9 +269,9 @@ const confirmAddColor = (e) => {
 
   drawUpdatedImage();
 
-  savePaletteBtn.disabled = false;
+  DOM.ui.palette.saveBtn.disabled = false;
 
-  addColorDialog.close();
+  DOM.dialog.addColor.el.close();
 };
 
 const updateAddColorValidationUI = () => {
@@ -339,9 +289,9 @@ const updateAddColorValidationUI = () => {
   const type =
     Object.keys(messages).find((key) => addColorValidation[key]) || "valid";
 
-  addColorAlert.classList.toggle("good", !isInvalid);
-  addColorAlert.textContent = messages[type];
-  addColorConfirmBtn.disabled = isInvalid;
+  DOM.dialog.addColor.alert.classList.toggle("good", !isInvalid);
+  DOM.dialog.addColor.alert.textContent = messages[type];
+  DOM.dialog.addColor.confirmBtn.disabled = isInvalid;
 };
 
 const handleInputRgb = (e) => {
@@ -350,15 +300,21 @@ const handleInputRgb = (e) => {
 
   e.target.value = newValue;
 
-  const rgb = [inputR, inputG, inputB].map(({ value }) => +value);
+  const rgb = [
+    DOM.dialog.addColor.inputR,
+    DOM.dialog.addColor.inputG,
+    DOM.dialog.addColor.inputB,
+  ].map(({ value }) => +value);
 
-  inputHex.value = inputColorName.placeholder = rgb2Hex(...rgb);
+  DOM.dialog.addColor.inputHex.value = DOM.dialog.addColor.inputName.placeholder =
+    rgb2Hex(...rgb);
 
   state.addColorValidation.colorAlreadyExists = !!state.palette.getColorByRgb(
     ...rgb
   );
 
-  colorPreviewSingle.style.background = inputHex.value;
+  DOM.dialog.addColor.previewSingle.style.background =
+    DOM.dialog.addColor.inputHex.value;
 
   updateAddColorValidationUI();
 };
@@ -367,7 +323,7 @@ const handleInputHex = (e) => {
   const newValue =
     "#" + e.target.value.replace(/[^a-f0-9]/gi, "").toUpperCase();
 
-  e.target.value = inputColorName.placeholder = newValue;
+  e.target.value = DOM.dialog.addColor.inputName.placeholder = newValue;
   const invalidHex = (state.addColorValidation.invalidHex =
     !isValidHex(newValue));
 
@@ -378,13 +334,17 @@ const handleInputHex = (e) => {
 
   const rgb = hex2Rgb(newValue);
 
-  [inputR.value, inputG.value, inputB.value] = rgb;
+  [
+    DOM.dialog.addColor.inputR.value,
+    DOM.dialog.addColor.inputG.value,
+    DOM.dialog.addColor.inputB.value,
+  ] = rgb;
 
   state.addColorValidation.colorAlreadyExists = !!state.palette.getColorByRgb(
     ...rgb
   );
 
-  colorPreviewSingle.style.background = newValue;
+  DOM.dialog.addColor.previewSingle.style.background = newValue;
 
   updateAddColorValidationUI();
 };
@@ -412,52 +372,56 @@ const handleInputTextarea = (e) => {
   const value = e.target.value;
   const parsedInfos = parseColorText(value);
 
-  addColorPreviewContainer.innerHTML = "";
+  DOM.dialog.addColor.previewContainer.innerHTML = "";
   state.colorsToAdd = parsedInfos;
 
   if (parsedInfos.length) {
     parsedInfos.forEach((info) => {
       const colorPreview = createColorPreview(...info);
-      addColorPreviewContainer.append(colorPreview);
+      DOM.dialog.addColor.previewContainer.append(colorPreview);
     });
 
-    addColorConfirmBtn.disabled = false;
+    DOM.dialog.addColor.confirmBtn.disabled = false;
   } else {
-    addColorConfirmBtn.disabled = true;
+    DOM.dialog.addColor.confirmBtn.disabled = true;
   }
 
-  updateScrollClass(addColorPreviewContainer);
+  updateScrollClass(DOM.dialog.addColor.previewContainer);
 };
 
 export const initEventListeners = () => {
   // 이미지 드롭 이벤트
 
   ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-    canvasControlLayer.addEventListener(eventName, preventDefaults, false);
+    DOM.canvas.controlLayer.addEventListener(
+      eventName,
+      preventDefaults,
+      false
+    );
   });
 
   ["dragenter", "dragover"].forEach((eventName) => {
-    canvasControlLayer.addEventListener(
+    DOM.canvas.controlLayer.addEventListener(
       eventName,
-      () => canvasOverlay.classList.add("active"),
+      () => DOM.canvas.overlay.classList.add("active"),
       false
     );
   });
 
   ["dragleave", "drop"].forEach((eventName) => {
-    canvasControlLayer.addEventListener(
+    DOM.canvas.controlLayer.addEventListener(
       eventName,
-      () => canvasOverlay.classList.remove("active"),
+      () => DOM.canvas.overlay.classList.remove("active"),
       false
     );
   });
 
-  uploadBtn.addEventListener("change", handleUpload, false);
+  DOM.ui.uploadBtn.addEventListener("change", handleUpload, false);
 
-  zoomInBtn.addEventListener("click", () => zoom(-1), false);
-  zoomOutBtn.addEventListener("click", () => zoom(1), false);
+  DOM.ui.zoom.inBtn.addEventListener("click", () => zoom(-1), false);
+  DOM.ui.zoom.outBtn.addEventListener("click", () => zoom(1), false);
 
-  zoomInput.addEventListener("change", (e) => {
+  DOM.ui.zoom.input.addEventListener("change", (e) => {
     let value = Math.max(MIN_ZOOM, ~~e.target.value);
     e.target.value = state.zoom = value;
 
@@ -468,23 +432,23 @@ export const initEventListeners = () => {
 
   [
     {
-      dropdown: paletteDropdown,
+      dropdown: DOM.ui.palette.dropdown,
       cb: (value) => {
         state.paletteName = value;
         state.palette.setPalette(value);
 
         const isCustomPalette = value === PALETTE_NAME_CUSTOM;
 
-        savePaletteBtn.classList.toggle("hidden", !isCustomPalette);
+        DOM.ui.palette.saveBtn.classList.toggle("hidden", !isCustomPalette);
 
         const noColorInCustomPalette =
           isCustomPalette && !state.paletteData[value].colors.length;
 
-        savePaletteBtn.disabled = noColorInCustomPalette;
+        DOM.ui.palette.saveBtn.disabled = noColorInCustomPalette;
       },
     },
     {
-      dropdown: methodDropdown,
+      dropdown: DOM.ui.methodDropdown,
       init: (dropdown, dropdownCurrentOption) => {
         const input = dropdown.querySelector(`input[value="${state.method}"]`);
 
@@ -544,15 +508,15 @@ export const initEventListeners = () => {
     });
   });
 
-  canvasControlLayer.addEventListener("drop", handleDrop, false);
-  canvasControlLayer.addEventListener(
+  DOM.canvas.controlLayer.addEventListener("drop", handleDrop, false);
+  DOM.canvas.controlLayer.addEventListener(
     "wheel",
     (e) => zoom(e.deltaY, [e.clientX, e.clientY]),
     false
   );
 
   // 터치 이벤트
-  canvasControlLayer.addEventListener("touchstart", (e) => {
+  DOM.canvas.controlLayer.addEventListener("touchstart", (e) => {
     preventDefaults(e);
 
     // 모든 터치 포인트 저장
@@ -573,7 +537,7 @@ export const initEventListeners = () => {
     }
   });
 
-  canvasControlLayer.addEventListener("touchmove", (e) => {
+  DOM.canvas.controlLayer.addEventListener("touchmove", (e) => {
     preventDefaults(e);
 
     // 터치 포인트 업데이트
@@ -593,7 +557,7 @@ export const initEventListeners = () => {
     }
   });
 
-  canvasControlLayer.addEventListener("touchend", (e) => {
+  DOM.canvas.controlLayer.addEventListener("touchend", (e) => {
     preventDefaults(e);
     state.currentTouches = Array.from(e.touches);
     if (e.touches.length < 2) {
@@ -612,16 +576,16 @@ export const initEventListeners = () => {
       }
       state.dragging = false;
       state.position = [...state.movedPosition];
-      canvasOverlay.classList.remove("dragging");
+      DOM.canvas.overlay.classList.remove("dragging");
       if (!validate()) return;
       draw();
     }
   });
 
   // 포인터 이벤트
-  canvasControlLayer.addEventListener("contextmenu", preventDefaults);
+  DOM.canvas.controlLayer.addEventListener("contextmenu", preventDefaults);
 
-  canvasControlLayer.addEventListener(
+  DOM.canvas.controlLayer.addEventListener(
     "pointerdown",
     (e) => {
       if (e.pointerType !== "touch") {
@@ -629,19 +593,19 @@ export const initEventListeners = () => {
           initState();
           state.startPosition = [e.clientX, e.clientY];
           state.dragging = false;
-          canvasControlLayer.setPointerCapture(e.pointerId);
+          DOM.canvas.controlLayer.setPointerCapture(e.pointerId);
         }
       }
     },
     false
   );
 
-  canvasControlLayer.addEventListener(
+  DOM.canvas.controlLayer.addEventListener(
     "pointermove",
     (e) => {
       if (
         e.pointerType !== "touch" &&
-        canvasControlLayer.hasPointerCapture(e.pointerId)
+        DOM.canvas.controlLayer.hasPointerCapture(e.pointerId)
       ) {
         e.preventDefault();
 
@@ -659,7 +623,7 @@ export const initEventListeners = () => {
     false
   );
 
-  canvasControlLayer.addEventListener(
+  DOM.canvas.controlLayer.addEventListener(
     "pointerup",
     (e) => {
       if (e.pointerType === "touch") return;
@@ -673,8 +637,8 @@ export const initEventListeners = () => {
       }
 
       state.dragging = false;
-      canvasControlLayer.releasePointerCapture(e.pointerId);
-      canvasOverlay.classList.remove("dragging");
+      DOM.canvas.controlLayer.releasePointerCapture(e.pointerId);
+      DOM.canvas.overlay.classList.remove("dragging");
 
       if (!validate()) return;
 
@@ -683,17 +647,17 @@ export const initEventListeners = () => {
     false
   );
 
-  canvasControlLayer.addEventListener(
+  DOM.canvas.controlLayer.addEventListener(
     "pointercancel",
     (e) => {
       state.dragging = false;
-      canvasControlLayer.releasePointerCapture(e.pointerId);
-      canvasOverlay.classList.remove("dragging");
+      DOM.canvas.controlLayer.releasePointerCapture(e.pointerId);
+      DOM.canvas.overlay.classList.remove("dragging");
     },
     false
   );
 
-  showOriginalInput.addEventListener("change", (e) => {
+  DOM.ui.showOriginalInput.addEventListener("change", (e) => {
     state.showOriginal = e.target.checked;
     state.palette.unhighlightAll();
 
@@ -702,7 +666,7 @@ export const initEventListeners = () => {
     draw();
   });
 
-  showGridInput.addEventListener("change", (e) => {
+  DOM.ui.showGridInput.addEventListener("change", (e) => {
     state.showGrid = e.target.checked;
 
     if (!validate()) return;
@@ -710,32 +674,32 @@ export const initEventListeners = () => {
     draw();
   });
 
-  pixelatedModeToggle.addEventListener("change", (e) => {
+  DOM.ui.pixelatedModeToggle.addEventListener("change", (e) => {
     state.isPixelMode = e.target.checked;
 
     drawUpdatedImage();
   });
 
-  savePaletteBtn.addEventListener("click", () => {
+  DOM.ui.palette.saveBtn.addEventListener("click", () => {
     const { colors } = state.palette;
     const colorCount = colors.length;
     const hexes = colors.map(({ rgb }) => rgb2Hex(...rgb));
 
     if (!colorCount) return;
 
-    savePaletteColorCount.textContent = colorCount;
+    DOM.dialog.savePalette.colorCount.textContent = colorCount;
 
-    savePaletteDialog.showModal();
-    savePaletteNameInput.select();
-    savePaletteColorPreviewContainer.innerHTML = "";
+    DOM.dialog.savePalette.el.showModal();
+    DOM.dialog.savePalette.nameInput.select();
+    DOM.dialog.savePalette.previewContainer.innerHTML = "";
 
     hexes.forEach((hex) => {
       const colorPreview = createColorPreview(hex);
-      savePaletteColorPreviewContainer.append(colorPreview);
+      DOM.dialog.savePalette.previewContainer.append(colorPreview);
     });
 
-    updateScrollClass(savePaletteColorPreviewContainer);
-    dispatchEventTo(savePaletteNameInput, "input");
+    updateScrollClass(DOM.dialog.savePalette.previewContainer);
+    dispatchEventTo(DOM.dialog.savePalette.nameInput, "input");
   });
 
   const addCustomPalette = (name) => {
@@ -765,37 +729,37 @@ export const initEventListeners = () => {
     setPaletteUI(name, { checked: true, custom: true });
   };
 
-  savePaletteNameInput.addEventListener("input", (e) => {
+  DOM.dialog.savePalette.nameInput.addEventListener("input", (e) => {
     const paletteName = e.target.value.trim();
     const isEmpty = !paletteName;
     const alreadyExists = Object.keys(state.paletteData).includes(paletteName);
     const isValid = !isEmpty && !alreadyExists;
 
-    savePaletteAlert.textContent = isValid
+    DOM.dialog.savePalette.alert.textContent = isValid
       ? "이 팔레트를 저장합니다."
       : isEmpty
         ? "팔레트 이름을 입력해주세요."
         : "이미 사용 중인 팔레트 이름입니다.";
-    savePaletteAlert.classList.toggle("good", isValid);
-    savePaletteConfirmBtn.disabled = !isValid;
+    DOM.dialog.savePalette.alert.classList.toggle("good", isValid);
+    DOM.dialog.savePalette.confirmBtn.disabled = !isValid;
   });
 
-  savePaletteConfirmBtn.addEventListener("click", () => {
-    const paletteName = savePaletteNameInput.value.trim();
+  DOM.dialog.savePalette.confirmBtn.addEventListener("click", () => {
+    const paletteName = DOM.dialog.savePalette.nameInput.value.trim();
 
     addCustomPalette(paletteName);
 
-    savePaletteDialog.close();
+    DOM.dialog.savePalette.el.close();
   });
 
-  savePaletteCancelBtn.addEventListener("click", () =>
-    savePaletteDialog.close()
+  DOM.dialog.savePalette.cancelBtn.addEventListener("click", () =>
+    DOM.dialog.savePalette.el.close()
   );
 
-  paletteResetBtn.addEventListener("click", () => {
+  DOM.ui.palette.resetBtn.addEventListener("click", () => {
     if (state.palette.hasCustomColor) {
       state.palette.removeAddedColors();
-      savePaletteBtn.disabled = true;
+      DOM.ui.palette.saveBtn.disabled = true;
     }
     state.palette.selectUnlockedColors();
 
@@ -910,10 +874,10 @@ export const initEventListeners = () => {
     }
   });
 
-  sizeBtns.forEach((button) => {
+  DOM.ui.sizeBtns.forEach((button) => {
     button.addEventListener("click", () => {
       const { dimension, delta } = button.dataset;
-      const input = settingsForm[dimension];
+      const input = DOM.ui.settingsForm[dimension];
       const value = Math.max(1, +input.value + +delta);
       input.value = value;
       input.dispatchEvent(new InputEvent("change"));
@@ -926,22 +890,22 @@ export const initEventListeners = () => {
     drawUpdatedImage();
   };
 
-  settingsResetBtn.addEventListener("click", resetLinks);
+  DOM.ui.settingsResetBtn.addEventListener("click", resetLinks);
 
   // 다운로드 이벤트
-  downloadBtn.addEventListener("click", (e) => {
+  DOM.ui.downloadBtn.addEventListener("click", (e) => {
     if (!state.dithered) return;
 
-    downloadDialog.showModal();
-    downloadFileName.textContent = state.fileName;
-    downloadImageSize.textContent = `${state.width}×${state.height}`;
+    DOM.dialog.download.el.showModal();
+    DOM.dialog.download.fileName.textContent = state.fileName;
+    DOM.dialog.download.imageSize.textContent = `${state.width}×${state.height}`;
 
-    const { width, naturalWidth } = resultImage;
+    const { width, naturalWidth } = DOM.ui.resultImage;
 
-    resultImage.classList.toggle("smaller", width > naturalWidth);
+    DOM.ui.resultImage.classList.toggle("smaller", width > naturalWidth);
   });
 
-  downloadConfirmBtn.addEventListener("click", (e) => {
+  DOM.dialog.download.confirmBtn.addEventListener("click", (e) => {
     const imageURL = state.dataURL;
     const link = document.createElement("a");
 
@@ -952,22 +916,22 @@ export const initEventListeners = () => {
     link.click();
     document.body.removeChild(link);
 
-    downloadDialog.close();
+    DOM.dialog.download.el.close();
   });
 
-  downloadCancelBtn.addEventListener("click", (e) => {
-    downloadDialog.close();
+  DOM.dialog.download.cancelBtn.addEventListener("click", (e) => {
+    DOM.dialog.download.el.close();
   });
 
-  showTerrainBgCheckbox.addEventListener("change", (e) => {
+  DOM.dialog.terrainColor.showBgCheckbox.addEventListener("change", (e) => {
     const { checked } = e.target;
     state.showTerrainBg = checked;
-    canvas.style.background = checked
+    DOM.canvas.el.style.background = checked
       ? `rgb(${state.palette.terrainColor})`
       : "#0000";
   });
 
-  terrainColorInputs.forEach((input) => {
+  DOM.dialog.terrainColor.inputs.forEach((input) => {
     input.addEventListener("change", (e) => {
       const hex = e.target.value;
 
@@ -977,7 +941,7 @@ export const initEventListeners = () => {
 
       const color = hex !== "none" ? hex : "#0000";
 
-      canvas.style.background = state.showTerrainBg ? color : "#0000";
+      DOM.canvas.el.style.background = state.showTerrainBg ? color : "#0000";
 
       drawUpdatedImage();
     });
@@ -991,32 +955,43 @@ export const initEventListeners = () => {
     label.style.color = getContentColor(...hex2Rgb(color));
   });
 
-  terrainColorCancelBtn.addEventListener("click", (e) => {
-    terrainColorDialog.close();
+  DOM.dialog.terrainColor.cancelBtn.addEventListener("click", (e) => {
+    DOM.dialog.terrainColor.el.close();
   });
 
-  [addColorPreviewContainer, savePaletteColorPreviewContainer].forEach(
-    (colorPreviewContainer) => {
-      colorPreviewContainer.addEventListener("scroll", (e) =>
-        updateScrollClass(e.target)
-      );
-    }
+  [
+    DOM.dialog.addColor.previewContainer,
+    DOM.dialog.savePalette.previewContainer,
+  ].forEach((colorPreviewContainer) => {
+    colorPreviewContainer.addEventListener("scroll", (e) =>
+      updateScrollClass(e.target)
+    );
+  });
+
+  [
+    DOM.dialog.addColor.inputR,
+    DOM.dialog.addColor.inputG,
+    DOM.dialog.addColor.inputB,
+  ].forEach((input) => input.addEventListener("input", handleInputRgb));
+
+  DOM.dialog.addColor.inputHex.addEventListener("input", handleInputHex);
+
+  DOM.dialog.addColor.inputName.addEventListener(
+    "input",
+    handleInputColorName
   );
 
-  [inputR, inputG, inputB].forEach((input) =>
-    input.addEventListener("input", handleInputRgb)
-  );
+  enableAutoResize(DOM.dialog.addColor.textarea);
 
-  inputHex.addEventListener("input", handleInputHex);
-
-  inputColorName.addEventListener("input", handleInputColorName);
-
-  enableAutoResize(addColorTextarea);
-
-  [addColorTabSingle, addColorTabList].forEach((tab) =>
+  [
+    DOM.dialog.addColor.tabSingle,
+    DOM.dialog.addColor.tabList,
+  ].forEach((tab) =>
     tab.addEventListener("change", (e) => {
       const textField =
-        e.target === addColorTabSingle ? inputHex : addColorTextarea;
+        e.target === DOM.dialog.addColor.tabSingle
+          ? DOM.dialog.addColor.inputHex
+          : DOM.dialog.addColor.textarea;
 
       dispatchEventTo(textField, "input");
 
@@ -1024,19 +999,23 @@ export const initEventListeners = () => {
     })
   );
 
-  addColorTextarea.addEventListener("input", handleInputTextarea);
+  DOM.dialog.addColor.textarea.addEventListener("input", handleInputTextarea);
 
-  addColorForm.addEventListener("submit", confirmAddColor);
-  addColorConfirmBtn.addEventListener("click", confirmAddColor);
+  DOM.dialog.addColor.form.addEventListener("submit", confirmAddColor);
+  DOM.dialog.addColor.confirmBtn.addEventListener("click", confirmAddColor);
 
-  addColorCancelBtn.addEventListener("click", () => addColorDialog.close());
+  DOM.dialog.addColor.cancelBtn.addEventListener("click", () =>
+    DOM.dialog.addColor.el.close()
+  );
 
-  aside.addEventListener("pointerdown", (e) => {
+  DOM.ui.aside.addEventListener("pointerdown", (e) => {
     state.palette.unhighlightAll();
 
     if (e.target.matches(".color-remove-btn")) return;
 
-    const colorsToRemove = customPaletteList.querySelectorAll("label.removing");
+    const colorsToRemove = DOM.ui.palette.customList.querySelectorAll(
+      "label.removing"
+    );
 
     if (!colorsToRemove.length) return;
 
@@ -1045,5 +1024,5 @@ export const initEventListeners = () => {
     });
   });
 
-  settingsForm.addEventListener("submit", preventDefaults);
+  DOM.ui.settingsForm.addEventListener("submit", preventDefaults);
 };
