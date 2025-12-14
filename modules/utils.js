@@ -187,3 +187,15 @@ export const parseColorText = (colorText, skipExisting = true) =>
       },
       [[], new Set(), new Set()]
     )[0];
+
+export const updateScrollClass = (container) => {
+  const wrapper = container.parentNode;
+  const { scrollLeft, clientWidth, scrollWidth } = container;
+
+  const epsilon = 2;
+  const atStart = scrollLeft === 0;
+  const atEnd = scrollLeft + clientWidth >= scrollWidth - epsilon;
+
+  wrapper.classList.toggle("at-start", atStart);
+  wrapper.classList.toggle("at-end", atEnd);
+};

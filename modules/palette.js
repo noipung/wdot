@@ -20,7 +20,15 @@ import {
 import { drawUpdatedImage } from "./image-processing.js";
 import { loadPaletteData } from "./palette-loader.js";
 import { draw } from "./drawing.js";
-import { setBgOfTerrainColorBtn, updateScrollClass } from "./events.js";
+import { updateScrollClass } from "./utils.js";
+
+export const setBgOfTerrainColorBtn = (hex) => {
+  const color = hex !== "none" ? hex : "#0000";
+  const { setTerrainColorBtn } = state.palette;
+
+  setTerrainColorBtn.style.setProperty("--background-color", color);
+  setTerrainColorBtn.classList.toggle("applied", hex !== "none");
+};
 
 const createAddColorBtn = () => {
   const handleClick = () => {
