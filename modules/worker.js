@@ -33,15 +33,33 @@ export const resetWorker = (key) => {
 export const resetAllWorkers = () =>
   Object.keys(state.workers).forEach(resetWorker);
 
-export function createWorkerTask(worker, dataToSend, transferableObjects) {
+export function createWorkerTask(worker, dataToSend, transferableObjects, onProgress) {
   return new Promise((resolve, reject) => {
     const handleMessage = (e) => {
+      const data = e.data;
+      const type = data?.type;
+      
+      if (type === 'progress' && onProgress) {
+        onProgress(data.percentage);
+        return; // 진행률 메시지는 계속 리스닝
+      }
+      
+      if (type === 'result') {
+        worker.removeEventListener("message", handleMessage);
+        resolve(data);
+        return;
+      }
+      
+      // type이 없는 경우 (기존 형식 호환)
+      if (!type && data?.imageData) {
       worker.removeEventListener("message", handleMessage);
-      resolve(e.data);
+        resolve(data);
+      }
     };
 
     const handleError = (err) => {
       worker.removeEventListener("error", handleError);
+      worker.removeEventListener("message", handleMessage);
       reject(err);
     };
 

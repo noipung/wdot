@@ -9,7 +9,6 @@ import {
     validate,
     hex2Rgb,
     getContentColor,
-    dispatchEventTo,
 } from "../utils.js";
 import { setBgOfTerrainColorBtn } from "../palette.js";
 

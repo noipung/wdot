@@ -184,25 +184,85 @@ body button {
   opacity: 1;
 }
 
-.spinner {
+.processing-container {
   position: absolute;
   bottom: 0;
   right: 0;
   margin: 1em;
-  width: 2em;
-  aspect-ratio: 1;
-  border: 4px solid #888;
-  border-bottom-color: transparent;
-  border-radius: 50%;
-  display: inline-block;
-  box-sizing: border-box;
-  animation: rotation 0.5s ease-in-out infinite;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  color: #888;
   opacity: 0;
+  transition: opacity 0.2s 2s;
+}
+
+.processing-progress {
+  color: currentColor;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-align: right;
+  opacity: 0;
+  transition: opacity 0.2s 2s;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.progress-eta {
+  white-space: nowrap;
+  opacity: 0.7;
+  font-size: 0.85em;
+}
+
+.progress-percentage {
+  white-space: nowrap;
+}
+
+.canvas-overlay.processing .processing-container {
+  opacity: 1;
   transition: opacity 0.2s;
 }
 
-.canvas-overlay.processing .spinner {
+.canvas-overlay.processing-over-1s .processing-progress {
   opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.canvas-overlay.processing .progress-percentage {
+  width: 2.2em;
+}
+
+.spinner {
+  width: 2em;
+  aspect-ratio: 1;
+  border: 4px solid;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  border-color: #0000;
+  transition: border-color 0.2s;
+
+  &::after {
+    content: "";
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght700/48px.svg")
+      no-repeat center / 100%;
+    opacity: 1;
+  }
+}
+
+.canvas-overlay.processing .spinner {
+  border-color: currentColor;
+  border-bottom-color: transparent;
+  animation: rotation 0.5s ease-in-out infinite;
+
+  &::after {
+    opacity: 0;
+  }
 }
 
 @keyframes rotation {
@@ -673,7 +733,6 @@ main aside {
   border-left: 1px solid #eee;
   display: flex;
   flex-flow: column;
-  gap: 1em;
   justify-content: space-between;
   overflow-y: auto;
 }
@@ -776,6 +835,10 @@ main aside h2 button i {
 
   &:focus {
     border-color: #ccc;
+  }
+
+  &:disabled {
+    color: #0000;
   }
 }
 
@@ -1526,6 +1589,7 @@ h3.size::before {
     box-sizing: border-box;
     border-left: none;
     border-top: 1px solid #eee;
+    gap: 1em;
   }
 
   .canvas-wrapper canvas {

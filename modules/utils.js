@@ -60,6 +60,32 @@ export const formatTime = (seconds) => {
   return result.join(" ");
 };
 
+export const formatElapsedTime = (totalSeconds, fixed = 0) => {
+  if (totalSeconds < 0) return "0초";
+  
+  const seconds = Math.floor(totalSeconds);
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  
+  const parts = [];
+  
+  if (days > 0) parts.push(`${days}일`);
+  if (hours > 0) parts.push(`${hours}시간`);
+  if (minutes > 0) parts.push(`${minutes}분`);
+  if (secs > 0 || parts.length === 0) {
+    const secsWithDecimal = totalSeconds % 60;
+    if (secsWithDecimal === secs) {
+      parts.push(`${secs}초`);
+    } else {
+      parts.push(`${fixed ? secsWithDecimal.toFixed(fixed) : ~~secsWithDecimal}초`);
+    }
+  }
+  
+  return parts.join(" ");
+};
+
 export const getInitZoom = (size = DEFAULT_INIT_ZOOM_FACTOR) => {
   const { width, height } = DOM.canvas.el;
 

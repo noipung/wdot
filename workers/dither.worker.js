@@ -190,9 +190,11 @@ const getDitherdImageData = (
   height,
   palette,
   ditherIntensity,
-  method
+  method,
+  onProgress
 ) => {
   const data = imageData.data;
+  const totalPixels = width * height;
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -241,6 +243,16 @@ const getDitherdImageData = (
           data[downRightIdx + 2] += ((errB * 1) / 16) * ditherIntensity;
         }
       }
+
+      if (onProgress) {
+        const currentPixel = y * width + x;
+        // 1%마다 업데이트하되, 최소 100픽셀마다는 업데이트
+        const updateInterval = Math.max(100, Math.floor(totalPixels / 100));
+        if (currentPixel % updateInterval === 0) {
+          const percentage = Math.min(99, Math.round((currentPixel / totalPixels) * 100));
+          onProgress(percentage);
+        }
+      }
     }
   }
 
@@ -275,20 +287,31 @@ self.onmessage = (e) => {
     terrainColor,
   } = e.data;
 
+  const hasTerrain = !!terrainColor;
+  const ditherWeight = hasTerrain ? 0.95 : 1.0;
+
   let resultImageData = getDitherdImageData(
     imageData,
     width,
     height,
     palette,
     ditherIntensity,
-    method
+    method,
+    (percentage) => {
+      // 디더링 진행률을 전체의 0-95% (또는 0-100%)로 표시
+      const finalPercentage = Math.round(percentage * ditherWeight);
+      self.postMessage({ type: 'progress', percentage: finalPercentage });
+    }
   );
 
   if (terrainColor) {
     resultImageData = makeTerrainTransparent(resultImageData, terrainColor);
   }
 
-  self.postMessage({ imageData: resultImageData }, [
+  // 마지막 100% 진행률 전송
+  self.postMessage({ type: 'progress', percentage: 100 });
+
+  self.postMessage({ type: 'result', imageData: resultImageData }, [
     resultImageData.data.buffer,
   ]);
 };
