@@ -156,6 +156,8 @@ const drawMark = () => {
   const x = rx * zw + zx;
   const y = ry * zh + zy;
 
+  DOM.canvas.ctx.imageSmoothingEnabled = false;
+  
   drawSpeechBubbleFromTail(
     DOM.canvas.ctx,
     imageData,
@@ -217,12 +219,12 @@ export const draw = () => {
   state.zoomRect = [...center, zw, zh];
   DOM.canvas.ctx.imageSmoothingEnabled = zoom < 1;
   DOM.canvas.ctx.drawImage(resultImage, ...state.zoomRect);
-
+  
   if (
     state.showOriginal &&
     state.showGrid &&
     state.zoom >= SHOW_GRID_ZOOM_THRESHOLD
   )
-    drawGrid();
+  drawGrid();
   if (state.mark) drawMark();
 };
