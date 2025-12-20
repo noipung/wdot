@@ -133,7 +133,7 @@ export const updateImageProcessing = async () => {
 export const drawUpdatedImage = async () => {
   resetAllWorkers();
   DOM.canvas.overlay.classList.add("processing");
-  DOM.ui.progressPercentage.textContent = "0%";
+  DOM.ui.progressPercentage.textContent = "";
   DOM.ui.progressEta.textContent = "";
 
   try {
