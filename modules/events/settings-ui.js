@@ -99,13 +99,11 @@ export const initSettingsUI = () => {
                         ? logic(numberValue, input.name)
                         : numberValue;
                 });
-
-                if (cb) cb(prevValue, numberValue);
             };
 
             input.addEventListener(eventType, () => {
                 input.syncInputs();
-                drawUpdatedImage();
+                drawUpdatedImage(cb);
             });
 
             input.syncInputs();

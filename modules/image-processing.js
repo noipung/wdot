@@ -130,7 +130,7 @@ export const updateImageProcessing = async () => {
   }
 };
 
-export const drawUpdatedImage = async () => {
+export const drawUpdatedImage = async (cb) => {
   resetAllWorkers();
   DOM.canvas.overlay.classList.add("processing");
   DOM.ui.progressPercentage.textContent = "";
@@ -140,9 +140,11 @@ export const drawUpdatedImage = async () => {
     if (!validate()) return;
 
     await updateImageProcessing();
+
+    if (cb) cb();
+
     draw();
   } finally {
-    // processing 클래스는 제거하되, processing-over-1s는 완료 시에만 제거
     DOM.canvas.overlay.classList.remove("processing");
   }
 };
