@@ -178,14 +178,14 @@ export const handleImageLoad = async (image) => {
 
   state.width = DOM.ui.settingsForm.width.value = image.width;
   state.height = DOM.ui.settingsForm.height.value = image.height;
-  state.movedPosition = state.position = [0, 0];
-
-  updateZoom();
 
   DOM.canvas.overlay.classList.add("image-loaded");
   enableInputs();
 
-  drawUpdatedImage();
+  drawUpdatedImage(() => {
+    state.movedPosition = state.position = [0, 0];
+    updateZoom();
+  });
 };
 
 export const updateZoom = (zoom) => {
