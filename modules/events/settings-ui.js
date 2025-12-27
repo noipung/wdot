@@ -52,7 +52,7 @@ export const initSettingsUI = () => {
     const resetLink =
         (withDraw = true) =>
             (key) => {
-                const { link, init } = links[key];
+                const { link, init, cb } = links[key];
 
                 if (!init.fn) return;
 
@@ -64,7 +64,7 @@ export const initSettingsUI = () => {
                 firstInput.value = newValue;
                 firstInput.syncInputs();
 
-                if (withDraw) drawUpdatedImage();
+                if (withDraw) drawUpdatedImage(cb);
             };
 
     Object.keys(links).forEach((key) => {
@@ -78,7 +78,6 @@ export const initSettingsUI = () => {
 
             input.syncInputs = () => {
                 let numberValue = +input.value;
-                const prevValue = state[input.name];
 
                 if (input.type === "number" && eventType === "change") {
                     const min = input.min !== "" ? +input.min : -Infinity;
@@ -130,9 +129,12 @@ export const initSettingsUI = () => {
     });
 
     const resetLinks = () => {
-        Object.keys(links).forEach(resetLink(false));
+        const keys = Object.keys(links);
+        keys.forEach(resetLink(false));
 
-        drawUpdatedImage();
+        const cbs = () => keys.forEach((key) => links[key].cb?.());
+
+        drawUpdatedImage(cbs);
     };
 
     DOM.ui.settingsResetBtn.addEventListener("click", resetLinks);
