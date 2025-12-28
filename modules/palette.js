@@ -105,16 +105,15 @@ class Palette {
     this.setColors(colors);
 
     this.hasBasicColor = colors.some(({ type }) => type === PALETTE_TYPE_BASIC);
-    this.hasLockedColor = colors.some(({ type }) => type === PALETTE_TYPE_LOCKED);
+    this.hasLockedColor = colors.some(
+      ({ type }) => type === PALETTE_TYPE_LOCKED
+    );
     this.hasCustomColor = paletteData.customColor;
     this.hasTerrainColor = paletteData.terrainColor;
 
     DOM.ui.palette.basicList.classList.toggle("hidden", !this.hasBasicColor);
     DOM.ui.palette.lockedList.classList.toggle("hidden", !this.hasLockedColor);
-    DOM.ui.palette.customList.classList.toggle(
-      "hidden",
-      !this.hasCustomColor
-    );
+    DOM.ui.palette.customList.classList.toggle("hidden", !this.hasCustomColor);
 
     if (this.hasTerrainColor) {
       this.setTerrainColorBtn = createSetTerrainColorBtn();
@@ -234,7 +233,9 @@ class Palette {
   }
 
   selectUnlockedColors() {
-    this.colors.forEach((color) => color.toggle(color.type !== PALETTE_TYPE_LOCKED));
+    this.colors.forEach((color) =>
+      color.toggle(color.type !== PALETTE_TYPE_LOCKED)
+    );
   }
 
   selectAllColors() {
@@ -297,7 +298,9 @@ class PaletteColor {
     colorCount.classList.add("color-count", "zero");
     colorCount.textContent = "0";
     tooltip.classList.add("tooltip", type);
-    tooltip.textContent = `${name} ${type === PALETTE_TYPE_LOCKED ? "🔒︎" : ""}`;
+    tooltip.textContent = `${name} ${
+      type === PALETTE_TYPE_LOCKED ? "🔒︎" : ""
+    }`;
     li.classList.toggle("disabled", !this.enabled);
 
     check.addEventListener("change", () => {
@@ -514,7 +517,8 @@ export const initPaletteUI = async () => {
 
   state.palette = new Palette(state.paletteName);
 
-  const moveCustomToLast = (a, b) => (a === PALETTE_NAME_CUSTOM) - (b === PALETTE_NAME_CUSTOM);
+  const moveCustomToLast = (a, b) =>
+    (a === PALETTE_NAME_CUSTOM) - (b === PALETTE_NAME_CUSTOM);
 
   Object.keys(state.paletteData)
     .sort(moveCustomToLast)

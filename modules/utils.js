@@ -33,7 +33,7 @@ export const validate = () =>
 
 export const getContentColor = (r, g, b) =>
   (LUMA_COEFF_R * r + LUMA_COEFF_G * g + LUMA_COEFF_B * b) / 255 >
-    LUMA_THRESHOLD
+  LUMA_THRESHOLD
     ? "#000"
     : "#fff";
 
@@ -62,15 +62,15 @@ export const formatTime = (seconds) => {
 
 export const formatElapsedTime = (totalSeconds, fixed = 0) => {
   if (totalSeconds < 0) return "0초";
-  
+
   const seconds = Math.floor(totalSeconds);
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  
+
   const parts = [];
-  
+
   if (days > 0) parts.push(`${days}일`);
   if (hours > 0) parts.push(`${hours}시간`);
   if (minutes > 0) parts.push(`${minutes}분`);
@@ -79,10 +79,12 @@ export const formatElapsedTime = (totalSeconds, fixed = 0) => {
     if (secsWithDecimal === secs) {
       parts.push(`${secs}초`);
     } else {
-      parts.push(`${fixed ? secsWithDecimal.toFixed(fixed) : ~~secsWithDecimal}초`);
+      parts.push(
+        `${fixed ? secsWithDecimal.toFixed(fixed) : ~~secsWithDecimal}초`
+      );
     }
   }
-  
+
   return parts.join(" ");
 };
 

@@ -1,19 +1,25 @@
 import { state } from "./state.js";
 import { DOM } from "./dom.js";
-import { calculateTime, formatTime, formatElapsedTime, getInitZoom, validate } from "./utils.js";
+import {
+  calculateTime,
+  formatTime,
+  formatElapsedTime,
+  getInitZoom,
+  validate,
+} from "./utils.js";
 import { adjust, makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 import { resetAllWorkers } from "./worker.js";
 
 const updateProgress = (percentage, startTime) => {
   DOM.ui.progressPercentage.textContent = `${Math.round(percentage)}%`;
-  
+
   // 예상 소요 시간 계산 (진행률이 1% 이상일 때만)
   if (percentage > 0) {
     const elapsed = (Date.now() - startTime) / 1000; // 초 단위
     const estimatedTotal = (elapsed / percentage) * 100;
     const estimatedRemaining = estimatedTotal - elapsed;
-    
+
     if (estimatedRemaining > 0 && estimatedTotal > 0) {
       const formattedRemaining = formatElapsedTime(estimatedRemaining);
       DOM.ui.progressEta.textContent = `약 ${formattedRemaining} 남음`;
@@ -28,9 +34,10 @@ const updateProgress = (percentage, startTime) => {
 export const updateImageProcessing = async () => {
   const startTime = Date.now();
   let showProgressTimeout = null;
-  
+
   // 이미 진행 중이었다면 바로 표시
-  const wasAlreadyShowing = DOM.canvas.overlay.classList.contains("processing-over-1s");
+  const wasAlreadyShowing =
+    DOM.canvas.overlay.classList.contains("processing-over-1s");
   let shouldShowProgress = wasAlreadyShowing;
 
   // 처음 시작하는 경우에만 1초 후 진행률 표시 시작
@@ -119,11 +126,11 @@ export const updateImageProcessing = async () => {
   const endTime = Date.now();
   const elapsedSeconds = (endTime - startTime) / 1000;
   const formattedElapsed = formatElapsedTime(elapsedSeconds, 2);
-  
+
   if (shouldShowProgress) {
     DOM.ui.progressPercentage.textContent = `총 ${formattedElapsed} 소요`;
     DOM.ui.progressEta.textContent = "";
-    
+
     DOM.canvas.overlay.classList.remove("processing-over-1s");
   } else {
     DOM.canvas.overlay.classList.remove("processing");
@@ -141,8 +148,7 @@ export const drawUpdatedImage = async (cb) => {
 
     await updateImageProcessing();
 
-    if (cb) cb();
-
+    cb?.();
     draw();
   } finally {
     DOM.canvas.overlay.classList.remove("processing");
