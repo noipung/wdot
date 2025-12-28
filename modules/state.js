@@ -38,4 +38,5 @@ export const state = {
     dither: { instance: null, isProcessing: false },
   },
   isPixelMode: false,
+  needsZoomInitialization: false,
 };

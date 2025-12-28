@@ -220,8 +220,6 @@ export const draw = () => {
   DOM.canvas.ctx.imageSmoothingEnabled = zoom < 1;
   DOM.canvas.ctx.drawImage(resultImage, ...state.zoomRect);
 
-  console.log(state.zoom, state.zoomRect);
-
   if (
     state.showOriginal &&
     state.showGrid &&

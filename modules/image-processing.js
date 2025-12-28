@@ -148,6 +148,12 @@ export const drawUpdatedImage = async (cb) => {
 
     await updateImageProcessing();
 
+    if (state.needsZoomInitialization) {
+      state.movedPosition = state.position = [0, 0];
+      updateZoom();
+      state.needsZoomInitialization = false;
+    }
+
     cb?.();
     draw();
   } finally {
@@ -156,26 +162,24 @@ export const drawUpdatedImage = async (cb) => {
 };
 
 const enableInputs = () => {
-  DOM.ui.zoom.inBtn.disabled = false;
-  DOM.ui.zoom.outBtn.disabled = false;
-  DOM.ui.zoom.input.disabled = false;
-
-  DOM.ui.downloadBtn.disabled = false;
-  DOM.ui.settingsResetBtn.disabled = false;
-
-  DOM.ui.settingsForm.brightness.disabled = false;
-  DOM.ui.settingsForm.contrast.disabled = false;
-  DOM.ui.settingsForm.saturation.disabled = false;
-  DOM.ui.settingsForm.dither.disabled = false;
-  DOM.ui.settingsForm.width.disabled = false;
-  DOM.ui.settingsForm.height.disabled = false;
-
-  DOM.ui.settingsForm["brightness-range"].disabled = false;
-  DOM.ui.settingsForm["contrast-range"].disabled = false;
-  DOM.ui.settingsForm["saturation-range"].disabled = false;
-  DOM.ui.settingsForm["dither-range"].disabled = false;
-
-  DOM.ui.sizeBtns.forEach((btn) => (btn.disabled = false));
+  [
+    DOM.ui.zoom.inBtn,
+    DOM.ui.zoom.outBtn,
+    DOM.ui.zoom.input,
+    DOM.ui.downloadBtn,
+    DOM.ui.settingsResetBtn,
+    DOM.ui.settingsForm.brightness,
+    DOM.ui.settingsForm.contrast,
+    DOM.ui.settingsForm.saturation,
+    DOM.ui.settingsForm.dither,
+    DOM.ui.settingsForm.width,
+    DOM.ui.settingsForm.height,
+    DOM.ui.settingsForm["brightness-range"],
+    DOM.ui.settingsForm["contrast-range"],
+    DOM.ui.settingsForm["saturation-range"],
+    DOM.ui.settingsForm["dither-range"],
+    ...DOM.ui.sizeBtns,
+  ].forEach((el) => (el.disabled = false));
 };
 
 export const handleImageLoad = async (image) => {
@@ -188,10 +192,8 @@ export const handleImageLoad = async (image) => {
   DOM.canvas.overlay.classList.add("image-loaded");
   enableInputs();
 
-  drawUpdatedImage(() => {
-    state.movedPosition = state.position = [0, 0];
-    updateZoom();
-  });
+  state.needsZoomInitialization = true;
+  drawUpdatedImage();
 };
 
 export const updateZoom = (zoom) => {
