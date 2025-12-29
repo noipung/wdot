@@ -11,6 +11,7 @@ import {
   LUMA_COEFF_G,
   LUMA_COEFF_B,
   LUMA_THRESHOLD,
+  ZOOM_LEVEL_DECIMAL_PLACES,
 } from "./constants.js";
 
 export const preventDefaults = (e) => {
@@ -91,14 +92,14 @@ export const formatElapsedTime = (totalSeconds, fixed = 0) => {
 export const getInitZoom = (size = DEFAULT_INIT_ZOOM_FACTOR) => {
   const { width, height } = DOM.canvas.el;
 
-  return ~~(
+  return (
     ((state.aspectRatio > width / height
       ? width / state.width
       : height / state.height) *
       size *
       100) /
     DPR
-  );
+  ).toFixed(ZOOM_LEVEL_DECIMAL_PLACES);
 };
 
 export const getTouchDistance = (touch1, touch2) => {

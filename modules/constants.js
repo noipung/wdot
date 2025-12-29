@@ -3,8 +3,9 @@ export const DPR = window.devicePixelRatio || 1;
 export const GA_ID = "G-3V8JLXQZ5F";
 export const CLARITY_ID = "ugv6yvdo6v";
 
-export const ZOOM_STEP = 0.1;
-export const MIN_ZOOM = 10;
+export const ZOOM_STEP = 0.15;
+export const MIN_ZOOM = 0.5;
+export const ZOOM_LEVEL_DECIMAL_PLACES = 2;
 export const SHOW_GRID_ZOOM_THRESHOLD = 200;
 export const SPEECH_BUBBLE_WIDTH = 30;
 export const SPEECH_BUBBLE_HEIGHT = 30;

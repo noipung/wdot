@@ -1,6 +1,12 @@
 import { state } from "../state.js";
 import { DOM } from "../dom.js";
-import { ZOOM_STEP, MIN_ZOOM, DRAG_THRESHOLD, DPR } from "../constants.js";
+import {
+  ZOOM_STEP,
+  MIN_ZOOM,
+  DRAG_THRESHOLD,
+  DPR,
+  ZOOM_LEVEL_DECIMAL_PLACES,
+} from "../constants.js";
 import {
   validate,
   getTouchDistance,
@@ -28,7 +34,10 @@ const zoom = (deltaY, point = null) => {
   const oldZoom = state.zoom;
 
   state.zoom = DOM.ui.zoom.input.value = Math.max(
-    ~~(+DOM.ui.zoom.input.value * (1 + (isZoomIn ? ZOOM_STEP : -ZOOM_STEP))),
+    (
+      +DOM.ui.zoom.input.value *
+      (1 + (isZoomIn ? ZOOM_STEP : -ZOOM_STEP))
+    ).toFixed(ZOOM_LEVEL_DECIMAL_PLACES),
     MIN_ZOOM
   );
 
@@ -56,7 +65,10 @@ const handlePinchZoom = (e) => {
 
   if (state.startTouchDistance > 0) {
     const zoomFactor = currentDistance / state.startTouchDistance;
-    const newZoom = Math.max(MIN_ZOOM, ~~(state.startZoom * zoomFactor));
+    const newZoom = Math.max(
+      MIN_ZOOM,
+      (state.startZoom * zoomFactor).toFixed(ZOOM_LEVEL_DECIMAL_PLACES)
+    );
 
     state.zoom = newZoom;
     DOM.ui.zoom.input.value = newZoom;
@@ -163,7 +175,10 @@ export const initCanvasInteractions = () => {
   DOM.ui.zoom.outBtn.addEventListener("click", () => zoom(1), false);
 
   DOM.ui.zoom.input.addEventListener("change", (e) => {
-    let value = Math.max(MIN_ZOOM, ~~e.target.value);
+    let value = Math.max(
+      MIN_ZOOM,
+      (+e.target.value).toFixed(ZOOM_LEVEL_DECIMAL_PLACES)
+    );
     e.target.value = state.zoom = value;
 
     if (!validate()) return;
