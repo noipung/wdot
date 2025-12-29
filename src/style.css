@@ -433,6 +433,7 @@ body button {
 
 .palette-dropdown .option-item label .option-label {
   white-space: normal;
+  word-break: break-all;
 }
 
 .dropdown-current-option {
@@ -551,6 +552,7 @@ label[for$="dropdown-open"] i {
 .option-item label .option-remove-btn {
   width: 1.3em;
   aspect-ratio: 1;
+  flex-shrink: 0;
   color: currentColor;
   background: currentColor;
   mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/delete/wght700/48px.svg")
