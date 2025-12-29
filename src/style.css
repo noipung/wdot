@@ -997,11 +997,13 @@ h3.size::before {
 
 .tooltip {
   position: absolute;
+  display: flex;
+  gap: 0.2em;
   right: 0;
   bottom: 100%;
   background: #000;
   color: #fff;
-  padding: 0.3em 0.4em 0.4em;
+  padding: 0.4em;
   border-radius: 4px;
   font-size: 0.8em;
   white-space: nowrap;
@@ -1063,8 +1065,15 @@ h3.size::before {
   outline-color: #000;
 }
 
-.palette li label.highlighted + .tooltip {
-  background-color: #000;
+.palette li .tooltip.locked::after {
+  content: "";
+  display: inline-block;
+  width: 1lh;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/lock/wght600/48px.svg")
+    no-repeat center / 100%;
+  vertical-align: middle;
 }
 
 .palette li .tooltip {

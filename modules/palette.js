@@ -301,9 +301,7 @@ class PaletteColor {
     colorCount.classList.add("color-count", "zero");
     colorCount.textContent = "0";
     tooltip.classList.add("tooltip", type);
-    tooltip.textContent = `${name} ${
-      type === PALETTE_TYPE_LOCKED ? "🔒︎" : ""
-    }`;
+    tooltip.textContent = name;
     li.classList.toggle("disabled", !this.enabled);
 
     check.addEventListener("change", () => {
