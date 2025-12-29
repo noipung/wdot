@@ -432,7 +432,7 @@ body button {
 }
 
 .palette-dropdown .option-item label .option-label {
-  text-wrap: wrap;
+  white-space: normal;
 }
 
 .dropdown-current-option {
@@ -1532,6 +1532,7 @@ h3.size::before {
 
 .color-text-loader-container {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 

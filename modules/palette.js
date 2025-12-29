@@ -72,6 +72,7 @@ const createSetTerrainColorBtn = () => {
   setTerrainColorBtn.addEventListener("click", handleClick);
   setTerrainColorBtn.classList.add("set-terrain-color-btn");
   setTerrainColorBtn.type = "button";
+  setTerrainColorBtn.setAttribute("aria-label", "지형 색 설정");
 
   li.append(setTerrainColorBtn);
   DOM.ui.palette.basicList.append(li);
@@ -390,6 +391,7 @@ const createPaletteOptionItem = (name, settings = {}) => {
   if (settings.custom) {
     removeBtn = document.createElement("button");
     removeBtn.classList.add("option-remove-btn");
+    removeBtn.setAttribute("aria-label", "삭제");
   }
 
   optionItem.classList.add("option-item");
