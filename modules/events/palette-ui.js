@@ -179,16 +179,7 @@ export const initPaletteUI = () => {
   [
     {
       dropdown: DOM.ui.palette.dropdown,
-      init: (dropdown, dropdownCurrentOption) => {
-        const input = dropdown.querySelector(
-          `input[value="${state.paletteName}"]`
-        );
-
-        if (!input) return;
-
-        input.checked = true;
-        dropdownCurrentOption.textContent = input.dataset.label;
-      },
+      init: "paletteName",
       cb: (value) => {
         if (value !== PALETTE_NAME_CUSTOM) {
           localStorage.setItem("palette_name", value);
@@ -208,14 +199,7 @@ export const initPaletteUI = () => {
     },
     {
       dropdown: DOM.ui.methodDropdown,
-      init: (dropdown, dropdownCurrentOption) => {
-        const input = dropdown.querySelector(`input[value="${state.method}"]`);
-
-        if (input) {
-          input.checked = true;
-          dropdownCurrentOption.textContent = input.dataset.label;
-        }
-      },
+      init: "method",
       cb: (value) => {
         localStorage.setItem("method", value);
         state.method = value;
@@ -227,7 +211,14 @@ export const initPaletteUI = () => {
       ".dropdown-current-option"
     );
 
-    if (init) init(dropdown, dropdownCurrentOption);
+    if (init) {
+      const input = dropdown.querySelector(`input[value="${state[init]}"]`);
+
+      if (input) {
+        input.checked = true;
+        dropdownCurrentOption.textContent = input.dataset.label;
+      }
+    }
 
     dropdown.addEventListener("change", (e) => {
       const target = e.target;
