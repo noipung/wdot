@@ -419,11 +419,26 @@ body button {
 
 .palette-dropdown {
   display: inline-block;
+  max-width: calc(100% - 7em);
 }
 
 .palette-dropdown
   > :is(label[for="palette-dropdown-open"], .dropdown-options-container) {
   border-color: #ddd;
+}
+
+.palette-dropdown .dropdown-options-container {
+  max-width: 70%;
+}
+
+.palette-dropdown .option-item label .option-label {
+  text-wrap: wrap;
+}
+
+.dropdown-current-option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dropdown-open {
@@ -520,6 +535,7 @@ label[for$="dropdown-open"] i {
 .option-item label i {
   display: block;
   width: 1em;
+  flex-shrink: 0;
   aspect-ratio: 1;
   background: currentColor;
   mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/check/wght600/48px.svg")

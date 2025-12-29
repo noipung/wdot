@@ -26,7 +26,7 @@
               <span class="progress-eta"></span>
               <span class="progress-percentage">0%</span>
             </div>
-          <div class="spinner"></div>
+            <div class="spinner"></div>
           </div>
           <div class="canvas-control-layer"></div>
           <div class="show-original-input-wrapper">
@@ -49,12 +49,12 @@
             <button
               class="zoom-btn zoom-in"
               disabled
-              autocomplete="off"
+              aria-label="확대"
             ></button>
             <button
               class="zoom-btn zoom-out"
               disabled
-              autocomplete="off"
+              aria-label="축소"
             ></button>
             <input
               type="number"
@@ -150,12 +150,12 @@
               <button
                 type="button"
                 class="save-palette-btn hidden"
-                autocomplete="off"
                 disabled
+                aria-label="팔레트 저장"
               >
                 <i></i>
               </button>
-              <button type="button" class="reset-btn" autocomplete="off">
+              <button type="button" class="reset-btn" aria-label="초기화">
                 <i></i>
               </button>
             </h2>
@@ -180,7 +180,7 @@
                 type="button"
                 class="reset-btn"
                 disabled
-                autocomplete="off"
+                aria-label="초기화"
               >
                 <i></i>
               </button>
@@ -296,7 +296,6 @@
                     data-dimension="width"
                     data-delta="-10"
                     disabled
-                    autocomplete="off"
                   >
                     -10
                   </button>
@@ -306,7 +305,6 @@
                     data-dimension="width"
                     data-delta="-1"
                     disabled
-                    autocomplete="off"
                   >
                     -1
                   </button>
@@ -316,7 +314,6 @@
                     data-dimension="width"
                     data-delta="1"
                     disabled
-                    autocomplete="off"
                   >
                     +1
                   </button>
@@ -326,7 +323,6 @@
                     data-dimension="width"
                     data-delta="10"
                     disabled
-                    autocomplete="off"
                   >
                     +10
                   </button>
@@ -350,7 +346,6 @@
                     data-dimension="height"
                     data-delta="-10"
                     disabled
-                    autocomplete="off"
                   >
                     -10
                   </button>
@@ -360,7 +355,6 @@
                     data-dimension="height"
                     data-delta="-1"
                     disabled
-                    autocomplete="off"
                   >
                     -1
                   </button>
@@ -370,7 +364,6 @@
                     data-dimension="height"
                     data-delta="1"
                     disabled
-                    autocomplete="off"
                   >
                     +1
                   </button>
@@ -380,7 +373,6 @@
                     data-dimension="height"
                     data-delta="10"
                     disabled
-                    autocomplete="off"
                   >
                     +10
                   </button>
@@ -421,9 +413,7 @@
               </label>
             </div>
           </div>
-          <button class="download-btn" disabled autocomplete="off">
-            도트 이미지 다운로드
-          </button>
+          <button class="download-btn" disabled>도트 이미지 다운로드</button>
         </div>
       </aside>
     </main>
