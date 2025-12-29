@@ -2,12 +2,13 @@ import { state } from "../state.js";
 import { DOM } from "../dom.js";
 import { handleImageLoad } from "../image-processing.js";
 import { preventDefaults } from "../utils.js";
+import { MESSAGES } from "../constants.js";
 
 const handleFile = (file) => {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    console.error("이미지 파일만 업로드할 수 있습니다.");
+    console.error(MESSAGES.ERROR.IMAGE_ONLY);
     return;
   }
 

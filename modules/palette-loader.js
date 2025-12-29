@@ -1,12 +1,14 @@
+import { MESSAGES } from "./constants.js";
+
 export const loadPaletteData = async () => {
   try {
     const response = await fetch(new URL("/palette.json", import.meta.url));
     if (!response.ok) {
-      throw new Error("팔레트 데이터를 불러오지 못했습니다.");
+      throw new Error(MESSAGES.ERROR.PALETTE_LOAD_FAILED);
     }
     return await response.json();
   } catch (error) {
-    console.error("팔레트 데이터 로딩 에러:", error);
+    console.error(MESSAGES.ERROR.PALETTE_LOAD_ERROR, error);
 
     return {
       WPlace: {

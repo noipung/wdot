@@ -5,6 +5,7 @@ import {
   PALETTE_TYPE_LOCKED,
   PALETTE_TYPE_ADDED,
   PALETTE_NAME_CUSTOM,
+  UI_LABELS,
 } from "./constants.js";
 import {
   dispatchEventTo,
@@ -55,6 +56,7 @@ const createAddColorBtn = () => {
   addColorBtn.addEventListener("click", handleClick);
   addColorBtn.classList.add("add-color-btn");
   addColorBtn.type = "button";
+  addColorBtn.setAttribute("aria-label", UI_LABELS.ADD_COLOR);
 
   li.append(addColorBtn);
   DOM.ui.palette.customList.append(li);
@@ -72,7 +74,7 @@ const createSetTerrainColorBtn = () => {
   setTerrainColorBtn.addEventListener("click", handleClick);
   setTerrainColorBtn.classList.add("set-terrain-color-btn");
   setTerrainColorBtn.type = "button";
-  setTerrainColorBtn.setAttribute("aria-label", "지형 색 설정");
+  setTerrainColorBtn.setAttribute("aria-label", UI_LABELS.SET_TERRAIN_COLOR);
 
   li.append(setTerrainColorBtn);
   DOM.ui.palette.basicList.append(li);
@@ -391,7 +393,7 @@ const createPaletteOptionItem = (name, settings = {}) => {
   if (settings.custom) {
     removeBtn = document.createElement("button");
     removeBtn.classList.add("option-remove-btn");
-    removeBtn.setAttribute("aria-label", "삭제");
+    removeBtn.setAttribute("aria-label", UI_LABELS.DELETE);
   }
 
   optionItem.classList.add("option-item");

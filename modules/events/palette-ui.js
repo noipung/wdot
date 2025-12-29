@@ -1,7 +1,7 @@
 import { state } from "../state.js";
 import { DOM } from "../dom.js";
 import { drawUpdatedImage } from "../image-processing.js";
-import { PALETTE_NAME_CUSTOM } from "../constants.js";
+import { PALETTE_NAME_CUSTOM, MESSAGES } from "../constants.js";
 import {
   preventDefaults,
   isValidHex,
@@ -34,10 +34,10 @@ const updateAddColorValidationUI = () => {
   const { addColorValidation } = state;
 
   const messages = {
-    invalidHex: "헥스코드가 올바르지 않습니다.",
-    colorAlreadyExists: "현재 팔레트에 중복되는 색이 있습니다.",
-    nameAlreadyExists: "현재 팔레트에 중복되는 색 이름이 있습니다.",
-    valid: "이 색을 추가합니다.",
+    invalidHex: MESSAGES.VALIDATION.INVALID_HEX,
+    colorAlreadyExists: MESSAGES.VALIDATION.COLOR_ALREADY_EXISTS,
+    nameAlreadyExists: MESSAGES.VALIDATION.NAME_ALREADY_EXISTS,
+    valid: MESSAGES.VALIDATION.VALID_COLOR,
   };
 
   const isInvalid = Object.values(addColorValidation).some((error) => error);
@@ -56,7 +56,7 @@ const confirmAddColor = (e) => {
   if (DOM.dialog.addColor.tabSingle.checked) {
     if (!isValidHex(DOM.dialog.addColor.inputHex.value)) {
       DOM.dialog.addColor.alert.classList.remove("hidden");
-      DOM.dialog.addColor.alert.textContent = "헥스코드가 올바르지 않습니다.";
+      DOM.dialog.addColor.alert.textContent = MESSAGES.VALIDATION.INVALID_HEX;
       return;
     }
 
@@ -314,10 +314,10 @@ export const initPaletteUI = () => {
     const isValid = !isEmpty && !alreadyExists;
 
     DOM.dialog.savePalette.alert.textContent = isValid
-      ? "이 팔레트를 저장합니다."
+      ? MESSAGES.VALIDATION.VALID_PALETTE_SAVE
       : isEmpty
-      ? "팔레트 이름을 입력해주세요."
-      : "이미 사용 중인 팔레트 이름입니다.";
+      ? MESSAGES.VALIDATION.EMPTY_PALETTE_NAME
+      : MESSAGES.VALIDATION.PALETTE_ALREADY_EXISTS;
     DOM.dialog.savePalette.alert.classList.toggle("good", isValid);
     DOM.dialog.savePalette.confirmBtn.disabled = !isValid;
   });

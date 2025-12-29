@@ -30,3 +30,26 @@ export const PALETTE_TYPE_BASIC = "basic";
 export const PALETTE_TYPE_LOCKED = "locked";
 export const PALETTE_TYPE_ADDED = "added";
 export const PALETTE_NAME_CUSTOM = "커스텀";
+
+export const MESSAGES = {
+  VALIDATION: {
+    INVALID_HEX: "헥스코드가 올바르지 않습니다.",
+    COLOR_ALREADY_EXISTS: "현재 팔레트에 중복되는 색이 있습니다.",
+    NAME_ALREADY_EXISTS: "현재 팔레트에 중복되는 색 이름이 있습니다.",
+    VALID_COLOR: "이 색을 추가합니다.",
+    EMPTY_PALETTE_NAME: "팔레트 이름을 입력해주세요.",
+    PALETTE_ALREADY_EXISTS: "이미 사용 중인 팔레트 이름입니다.",
+    VALID_PALETTE_SAVE: "이 팔레트를 저장합니다.",
+  },
+  ERROR: {
+    IMAGE_ONLY: "이미지 파일만 업로드할 수 있습니다.",
+    PALETTE_LOAD_FAILED: "팔레트 데이터를 불러오지 못했습니다.",
+    PALETTE_LOAD_ERROR: "팔레트 데이터 로딩 에러:",
+  },
+};
+
+export const UI_LABELS = {
+  SET_TERRAIN_COLOR: "지형 색 설정",
+  DELETE: "삭제",
+  ADD_COLOR: "색 추가",
+};
