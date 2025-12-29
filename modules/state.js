@@ -17,7 +17,7 @@ export const state = {
   currentTouches: [],
   initPaletteData: {},
   paletteData: {},
-  paletteName: "WPlace",
+  paletteName: localStorage.getItem("palette_name") || "WPlace",
   palette: null,
   colorTexts: new Map(),
   fileName: null,

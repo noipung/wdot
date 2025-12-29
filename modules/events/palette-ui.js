@@ -179,7 +179,20 @@ export const initPaletteUI = () => {
   [
     {
       dropdown: DOM.ui.palette.dropdown,
+      init: (dropdown, dropdownCurrentOption) => {
+        const input = dropdown.querySelector(
+          `input[value="${state.paletteName}"]`
+        );
+
+        if (!input) return;
+
+        input.checked = true;
+        dropdownCurrentOption.textContent = input.dataset.label;
+      },
       cb: (value) => {
+        if (value !== PALETTE_NAME_CUSTOM) {
+          localStorage.setItem("palette_name", value);
+        }
         state.paletteName = value;
         state.palette.setPalette(value);
 
