@@ -320,7 +320,7 @@ class PaletteColor {
 
     if (type === PALETTE_TYPE_ADDED) {
       const colorRemoveBtn = document.createElement("button");
-
+      colorRemoveBtn.type = "button";
       colorRemoveBtn.classList.add("color-remove-btn");
 
       label.append(colorRemoveBtn);

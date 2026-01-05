@@ -32,12 +32,9 @@ export const initSettingsUI = () => {
       },
       logic: (value, name) =>
         ~~(value * state.aspectRatio ** (name === "width" ? -1 : 1)),
-      cb: (prevValue, newValue) => {
+      cb: () => {
         if (!validate()) return;
-
-        const newZoom = Math.round(state.zoom * (prevValue / newValue));
-
-        updateZoom(newZoom);
+        updateZoom();
       },
     },
   };
