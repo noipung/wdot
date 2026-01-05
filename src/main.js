@@ -1,7 +1,7 @@
-import "../modules/events.js";
-import { initEventListeners } from "../modules/events.js";
-import { initPaletteUI } from "../modules/palette.js";
 import { GA_ID, CLARITY_ID } from "../modules/constants.js";
+import { initPaletteUI } from "../modules/palette.js";
+import { initI18n } from "../modules/i18n.js";
+import { initEventListeners } from "../modules/events.js";
 import "../modules/ui.js";
 
 const initAnalytics = () => {
@@ -34,6 +34,9 @@ const initAnalytics = () => {
 
 const initApp = async () => {
   initAnalytics();
+
+  // i18n 초기화
+  initI18n();
 
   try {
     await initPaletteUI();

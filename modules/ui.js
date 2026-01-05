@@ -19,7 +19,6 @@ export const resizeCanvas = () => {
   draw();
 };
 
-// 창 크기 변경 시 캔버스 리사이즈
 addEventListener("resize", resizeCanvas);
 
 // 초기 캔버스 크기 설정

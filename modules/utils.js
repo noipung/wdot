@@ -13,6 +13,7 @@ import {
   LUMA_THRESHOLD,
   ZOOM_LEVEL_DECIMAL_PLACES,
 } from "./constants.js";
+import { getLanguage, t } from "./i18n.js";
 
 export const preventDefaults = (e) => {
   e.preventDefault();
@@ -46,47 +47,43 @@ export const calculateTime = (pixels) => ({
   timeWithFlag: pixels * SECONDS_PER_PIXEL_WITH_TOOL,
 });
 
-export const formatTime = (seconds) => {
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+export const formatTime = (
+  totalSeconds,
+  { fixed = 0, includeRelativeTerms = false } = {}
+) => {
+  const d_unit = t("TIME.d");
+  const h_unit = t("TIME.h");
+  const m_unit = t("TIME.m");
+  const s_unit = t("TIME.s");
+  const soon = t("TIME.soon");
+  const suffix = t("TIME.suffix");
+  const sep = t("TIME.sep");
 
-  let result = [];
-  if (days > 0) result.push(`${days}일`);
-  if (hours > 0) result.push(`${hours}시간`);
-  if (minutes > 0) result.push(`${minutes}분`);
-  if (secs > 0 || seconds === 0) result.push(`${secs}초`);
+  if (totalSeconds <= 0) return includeRelativeTerms ? soon : `0${s_unit}`;
 
-  return result.join(" ");
-};
-
-export const formatElapsedTime = (totalSeconds, fixed = 0) => {
-  if (totalSeconds < 0) return "0초";
-
-  const seconds = Math.floor(totalSeconds);
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
   const parts = [];
 
-  if (days > 0) parts.push(`${days}일`);
-  if (hours > 0) parts.push(`${hours}시간`);
-  if (minutes > 0) parts.push(`${minutes}분`);
-  if (secs > 0 || parts.length === 0) {
-    const secsWithDecimal = totalSeconds % 60;
-    if (secsWithDecimal === secs) {
-      parts.push(`${secs}초`);
-    } else {
-      parts.push(
-        `${fixed ? secsWithDecimal.toFixed(fixed) : ~~secsWithDecimal}초`
-      );
+  if (days > 0) parts.push(`${days}${d_unit}`);
+  if (hours > 0) parts.push(`${hours}${h_unit}`);
+  if (minutes > 0) parts.push(`${minutes}${m_unit}`);
+
+  const formattedSec =
+    seconds % 1 === 0 ? Math.floor(seconds).toString() : seconds.toFixed(fixed);
+
+  if (+formattedSec > 0 || parts.length === 0) {
+    if (includeRelativeTerms && +formattedSec <= 0 && parts.length === 0) {
+      return soon;
     }
+    parts.push(`${formattedSec}${s_unit}`);
   }
 
-  return parts.join(" ");
+  const result = parts.join(sep);
+  return includeRelativeTerms ? t("TIME.REMAINING", { time: result }) : result;
 };
 
 export const getInitZoom = (size = DEFAULT_INIT_ZOOM_FACTOR) => {

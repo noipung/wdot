@@ -36,6 +36,10 @@
   color: #aaa;
 }
 
+[data-i18n]:not(input) {
+  white-space: pre;
+}
+
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
@@ -350,12 +354,12 @@ body button {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/image/wght600/48px.svg");
 }
 
-#show-original + label::after {
-  content: "도트 표시 중";
+#show-original:not(:checked) + label .label-original {
+  display: none;
 }
 
-#show-original:checked + label::after {
-  content: "원본 표시 중";
+#show-original:checked + label .label-dot {
+  display: none;
 }
 
 #show-grid + label i {
@@ -1605,6 +1609,10 @@ h3.size::before {
 
 .add-color-dialog .input-item label::before {
   display: none;
+}
+
+:lang(ja) label[for="contrast"] {
+  font-size: 0.75em;
 }
 
 @media (max-width: 720px) {

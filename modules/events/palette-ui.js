@@ -14,6 +14,7 @@ import {
   updateScrollClass,
   enableAutoResize,
 } from "../utils.js";
+import { t } from "../i18n.js";
 import {
   getCustomPaletteData,
   removePaletteUI,
@@ -34,10 +35,10 @@ const updateAddColorValidationUI = () => {
   const { addColorValidation } = state;
 
   const messages = {
-    invalidHex: MESSAGES.VALIDATION.INVALID_HEX,
-    colorAlreadyExists: MESSAGES.VALIDATION.COLOR_ALREADY_EXISTS,
-    nameAlreadyExists: MESSAGES.VALIDATION.NAME_ALREADY_EXISTS,
-    valid: MESSAGES.VALIDATION.VALID_COLOR,
+    invalidHex: t(MESSAGES.VALIDATION.INVALID_HEX),
+    colorAlreadyExists: t(MESSAGES.VALIDATION.COLOR_ALREADY_EXISTS),
+    nameAlreadyExists: t(MESSAGES.VALIDATION.NAME_ALREADY_EXISTS),
+    valid: t(MESSAGES.VALIDATION.VALID_COLOR),
   };
 
   const isInvalid = Object.values(addColorValidation).some((error) => error);
@@ -56,7 +57,9 @@ const confirmAddColor = (e) => {
   if (DOM.dialog.addColor.tabSingle.checked) {
     if (!isValidHex(DOM.dialog.addColor.inputHex.value)) {
       DOM.dialog.addColor.alert.classList.remove("hidden");
-      DOM.dialog.addColor.alert.textContent = MESSAGES.VALIDATION.INVALID_HEX;
+      DOM.dialog.addColor.alert.textContent = t(
+        MESSAGES.VALIDATION.INVALID_HEX
+      );
       return;
     }
 
@@ -173,7 +176,7 @@ const handleInputTextarea = (e) => {
   updateScrollClass(DOM.dialog.addColor.previewContainer);
 };
 
-export const initPaletteUI = () => {
+export const initPaletteUIEvents = () => {
   enableAutoResize(DOM.dialog.addColor.textarea);
 
   [
@@ -216,7 +219,7 @@ export const initPaletteUI = () => {
 
       if (input) {
         input.checked = true;
-        dropdownCurrentOption.textContent = input.dataset.label;
+        dropdownCurrentOption.textContent = t(input.dataset.label);
       }
     }
 
@@ -224,7 +227,7 @@ export const initPaletteUI = () => {
       const target = e.target;
 
       if (target.matches('.option-item input[type="radio"]')) {
-        dropdownCurrentOption.textContent = target.dataset.label;
+        dropdownCurrentOption.textContent = t(target.dataset.label);
         dropdownOpen.checked = false;
 
         cb(target.value);
@@ -314,10 +317,10 @@ export const initPaletteUI = () => {
     const isValid = !isEmpty && !alreadyExists;
 
     DOM.dialog.savePalette.alert.textContent = isValid
-      ? MESSAGES.VALIDATION.VALID_PALETTE_SAVE
+      ? t(MESSAGES.VALIDATION.VALID_PALETTE_SAVE)
       : isEmpty
-      ? MESSAGES.VALIDATION.EMPTY_PALETTE_NAME
-      : MESSAGES.VALIDATION.PALETTE_ALREADY_EXISTS;
+      ? t(MESSAGES.VALIDATION.EMPTY_PALETTE_NAME)
+      : t(MESSAGES.VALIDATION.PALETTE_ALREADY_EXISTS);
     DOM.dialog.savePalette.alert.classList.toggle("good", isValid);
     DOM.dialog.savePalette.confirmBtn.disabled = !isValid;
   });

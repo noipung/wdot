@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import { DOM } from "./dom.js";
+import { t } from "./i18n.js";
 import {
   PALETTE_TYPE_BASIC,
   PALETTE_TYPE_LOCKED,
@@ -403,7 +404,11 @@ const createPaletteOptionItem = (name, settings = {}) => {
   input.checked = !!settings.checked;
   label.htmlFor = id;
   labelInner.classList.add("option-label");
-  labelInner.textContent = name;
+  labelInner.textContent =
+    name === PALETTE_NAME_CUSTOM ? t("PALETTE_CUSTOM") : name;
+  if (name === PALETTE_NAME_CUSTOM) {
+    input.dataset.label = "PALETTE_CUSTOM";
+  }
 
   label.append(icon, labelInner);
 

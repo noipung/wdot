@@ -1,12 +1,7 @@
 import { state } from "./state.js";
 import { DOM } from "./dom.js";
-import {
-  calculateTime,
-  formatTime,
-  formatElapsedTime,
-  getInitZoom,
-  validate,
-} from "./utils.js";
+import { t } from "./i18n.js";
+import { calculateTime, formatTime, getInitZoom, validate } from "./utils.js";
 import { makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 import { resetAllWorkers } from "./worker.js";
@@ -21,8 +16,10 @@ const updateProgress = (percentage, startTime) => {
     const estimatedRemaining = estimatedTotal - elapsed;
 
     if (estimatedRemaining > 0 && estimatedTotal > 0) {
-      const formattedRemaining = formatElapsedTime(estimatedRemaining);
-      DOM.ui.progressEta.textContent = `약 ${formattedRemaining} 남음`;
+      const formattedRemaining = formatTime(estimatedRemaining, {
+        includeRelativeTerms: true,
+      });
+      DOM.ui.progressEta.textContent = formattedRemaining;
     } else {
       DOM.ui.progressEta.textContent = "";
     }
@@ -158,7 +155,7 @@ export const updateImageProcessing = async () => {
   const pixels = state.palette.allCount;
   const { time, timeWithFlag } = calculateTime(pixels);
 
-  DOM.ui.total.textContent = `${pixels} 픽셀`;
+  DOM.ui.total.textContent = `${pixels} ${t("PIXELS")}`;
   DOM.ui.totalTime.textContent = formatTime(time);
   DOM.ui.totalTimeWithFlag.textContent = formatTime(timeWithFlag);
 
@@ -180,10 +177,12 @@ export const updateImageProcessing = async () => {
   // 작업 완료 시 소요 시간 표시
   const endTime = Date.now();
   const elapsedSeconds = (endTime - startTime) / 1000;
-  const formattedElapsed = formatElapsedTime(elapsedSeconds, 2);
+  const formattedElapsed = formatTime(elapsedSeconds, { fixed: 2 });
 
   if (shouldShowProgress) {
-    DOM.ui.progressPercentage.textContent = `총 ${formattedElapsed} 소요`;
+    DOM.ui.progressPercentage.textContent = t("RESULT_SUMMARY", {
+      time: formattedElapsed,
+    });
     DOM.ui.progressEta.textContent = "";
 
     DOM.canvas.overlay.classList.remove("processing-over-1s");
