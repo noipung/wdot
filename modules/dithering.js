@@ -1,29 +1,6 @@
 import { state } from "./state.js";
 import { createWorkerTask } from "./worker.js";
 
-export async function adjust(canvas) {
-  const ctx = canvas.getContext("2d");
-  const { width, height } = canvas;
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const { brightness, contrast, saturation } = state;
-
-  const dataToSend = { imageData, brightness, contrast, saturation };
-
-  const transferableObjects = [imageData.data.buffer];
-
-  state.workers.adjust.isProcessing = true;
-
-  const result = await createWorkerTask(
-    state.workers.adjust.instance,
-    dataToSend,
-    transferableObjects
-  );
-
-  state.workers.adjust.isProcessing = false;
-
-  return result.imageData;
-}
-
 export async function dither(canvas, onProgress) {
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const { width, height } = canvas;

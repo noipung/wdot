@@ -7,7 +7,7 @@ import {
   getInitZoom,
   validate,
 } from "./utils.js";
-import { adjust, makeOpaque, dither } from "./dithering.js";
+import { makeOpaque, dither } from "./dithering.js";
 import { draw } from "./drawing.js";
 import { resetAllWorkers } from "./worker.js";
 
@@ -51,22 +51,64 @@ export const updateImageProcessing = async () => {
     DOM.canvas.overlay.classList.add("processing-over-1s");
   }
 
-  const adjusted = document.createElement("canvas");
+  const updateSVGFilter = () => {
+    const filter = document.getElementById("adjust-filter");
+    const feColorMatrix = filter.querySelector("feColorMatrix");
+
+    const contrastFactor = (state.contrast - 50) * 2;
+    const f = (259 * (contrastFactor + 255)) / (255 * (259 - contrastFactor));
+    const brightnessOffset = ((state.brightness - 50) * 255) / 100;
+    const s = state.saturation / 50;
+
+    // Contrast & Brightness adjustment:
+    // newC = f * (C - 128) + 128 + brightnessOffset
+    //      = f*C - 128*f + 128 + b_off
+    //      = f*C + (128*(1-f) + b_off)
+    const offset = (128 * (1 - f) + brightnessOffset) / 255;
+
+    // Saturation adjustment:
+    // finalC = (newC - avg) * s + avg
+    //        = newC * s + avg * (1-s)
+    //        = newC * s + (R+G+B)/3 * (1-s)
+    //        = (f*C + offset) * s + (R+G+B) * ((1-s)/3)
+
+    const cMat = f * s; // diagonal elements
+    const avgMat = (1 - s) / 3; // off-diagonal elements
+    const finalOffset = offset * s;
+
+    const matrix = [
+      cMat + avgMat,
+      avgMat,
+      avgMat,
+      0,
+      finalOffset,
+      avgMat,
+      cMat + avgMat,
+      avgMat,
+      0,
+      finalOffset,
+      avgMat,
+      avgMat,
+      cMat + avgMat,
+      0,
+      finalOffset,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ].join(" ");
+
+    feColorMatrix.setAttribute("values", matrix);
+  };
+
+  updateSVGFilter();
+
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
-  const adjustedCtx = adjusted.getContext("2d", { willReadFrequently: true });
   const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
   const ditheredCtx = dithered.getContext("2d", { willReadFrequently: true });
-
-  adjusted.width = state.image.width;
-  adjusted.height = state.image.height;
-  adjustedCtx.drawImage(state.image, 0, 0);
-
-  const adjustedImageData = await adjust(adjusted);
-
-  adjustedCtx.putImageData(adjustedImageData, 0, 0);
-  state.adjusted = adjusted;
 
   const pw = state.width;
   const ph = state.height;
@@ -75,7 +117,9 @@ export const updateImageProcessing = async () => {
   resized.height = dithered.height = ph;
 
   resizedCtx.imageSmoothingEnabled = !state.isPixelMode;
-  resizedCtx.drawImage(state.adjusted, 0, 0, pw, ph);
+  resizedCtx.filter = "url(#adjust-filter)";
+  resizedCtx.drawImage(state.image, 0, 0, pw, ph);
+  resizedCtx.filter = "none";
 
   makeOpaque(resized);
 

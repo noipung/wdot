@@ -22,7 +22,6 @@ export const state = {
   colorTexts: new Map(),
   fileName: null,
   image: null,
-  adjusted: null,
   resized: null,
   dithered: null,
   dataURL: null,
@@ -34,7 +33,6 @@ export const state = {
   colorsToAdd: [],
   method: localStorage.getItem("method") || "rgb",
   workers: {
-    adjust: { instance: null, isProcessing: false },
     dither: { instance: null, isProcessing: false },
   },
   isPixelMode: false,

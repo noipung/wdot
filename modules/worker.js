@@ -1,10 +1,8 @@
 import { state } from "./state.js";
 
-import AdjustWorker from "../workers/adjust.worker.js?worker";
 import DitherWorker from "../workers/dither.worker.js?worker";
 
 const workersMap = {
-  adjust: AdjustWorker,
   dither: DitherWorker,
 };
 
