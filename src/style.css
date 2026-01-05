@@ -757,6 +757,7 @@ main aside {
   flex-flow: column;
   justify-content: space-between;
   overflow-y: auto;
+  gap: 0.5em;
 }
 
 main aside h2 {
