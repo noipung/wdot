@@ -22,6 +22,7 @@ export const state = {
   colorTexts: new Map(),
   fileName: null,
   image: null,
+  adjusted: null,
   resized: null,
   dithered: null,
   dataURL: null,

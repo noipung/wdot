@@ -104,11 +104,22 @@ export const updateImageProcessing = async () => {
 
   updateSVGFilter();
 
+  const adjusted = document.createElement("canvas");
   const resized = document.createElement("canvas");
   const dithered = document.createElement("canvas");
 
+  const adjustedCtx = adjusted.getContext("2d", { willReadFrequently: true });
   const resizedCtx = resized.getContext("2d", { willReadFrequently: true });
   const ditheredCtx = dithered.getContext("2d", { willReadFrequently: true });
+
+  adjusted.width = state.image.width;
+  adjusted.height = state.image.height;
+
+  adjustedCtx.filter = "url(#adjust-filter)";
+  adjustedCtx.drawImage(state.image, 0, 0);
+  adjustedCtx.filter = "none";
+
+  state.adjusted = adjusted;
 
   const pw = state.width;
   const ph = state.height;

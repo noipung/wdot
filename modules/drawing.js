@@ -214,16 +214,11 @@ export const draw = () => {
   center[0] += px;
   center[1] += py;
 
-  const resultImage = state.showOriginal ? state.image : state.dithered;
+  const resultImage = state.showOriginal ? state.adjusted : state.dithered;
 
   state.zoomRect = [...center, zw, zh];
   DOM.canvas.ctx.imageSmoothingEnabled = zoom < 1;
-
-  if (state.showOriginal) {
-    DOM.canvas.ctx.filter = "url(#adjust-filter)";
-  }
   DOM.canvas.ctx.drawImage(resultImage, ...state.zoomRect);
-  DOM.canvas.ctx.filter = "none";
 
   if (
     state.showOriginal &&
