@@ -5,8 +5,15 @@ import ja from "./locales/ja.json";
 export const TRANSLATIONS = { ko, en, ja };
 
 export const getLanguage = () => {
-  const lang = navigator.language.split("-")[0];
-  return TRANSLATIONS[lang] ? lang : "en";
+  const urlParams = new URLSearchParams(window.location.search);
+  const langQuery = urlParams.get("lang");
+
+  if (langQuery && TRANSLATIONS[langQuery]) {
+    return langQuery;
+  }
+
+  const browserLang = navigator.language.split("-")[0];
+  return TRANSLATIONS[browserLang] ? browserLang : "en";
 };
 
 export const t = (path, params = {}) => {
@@ -39,6 +46,13 @@ export const t = (path, params = {}) => {
 export const initI18n = () => {
   const lang = getLanguage();
   document.documentElement.lang = lang;
+
+  const url = new URL(window.location);
+  const query = url.searchParams.get("lang");
+  if (lang !== "ko" && query !== lang) {
+    url.searchParams.set("lang", lang);
+    window.history.replaceState({}, "", url);
+  }
 
   const elements = document.querySelectorAll("[data-i18n]");
   elements.forEach((el) => {
