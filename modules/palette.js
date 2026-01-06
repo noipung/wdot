@@ -28,6 +28,8 @@ export const setBgOfTerrainColorBtn = (hex) => {
   const color = hex !== "none" ? hex : "#0000";
   const { setTerrainColorBtn } = state.palette;
 
+  if (!setTerrainColorBtn) return;
+
   setTerrainColorBtn.style.setProperty("--background-color", color);
   setTerrainColorBtn.classList.toggle("applied", hex !== "none");
 };

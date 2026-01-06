@@ -147,6 +147,7 @@ body button {
   inset: 0;
   margin: 2em;
   padding: 2em;
+  white-space: normal;
   word-break: keep-all;
   text-align: center;
   display: flex;
@@ -804,6 +805,13 @@ main aside h2 button i {
   font-size: 0.9em;
   color: #888;
   white-space: nowrap;
+}
+
+.save-palette-form {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  gap: 1em;
 }
 
 .save-palette-alert {

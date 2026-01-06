@@ -176,6 +176,41 @@ const handleInputTextarea = (e) => {
   updateScrollClass(DOM.dialog.addColor.previewContainer);
 };
 
+const addCustomPalette = (name) => {
+  const { colors } = state.palette;
+
+  const alreadyExists = Object.keys(state.paletteData).includes(name);
+
+  if (alreadyExists) return;
+
+  const colorTextData = localStorage.getItem("custom_palette_color_text_data");
+  const colorTextMap = colorTextData ? JSON.parse(colorTextData) : {};
+  const currentColorTexts = formatColorTexts(colors);
+
+  colorTextMap[name] = currentColorTexts;
+
+  const customPaletteData = getCustomPaletteData(colorTextMap);
+
+  setCustomPaletteData(customPaletteData);
+
+  localStorage.setItem(
+    "custom_palette_color_text_data",
+    JSON.stringify(colorTextMap)
+  );
+
+  setPaletteUI(name, { checked: true, custom: true });
+};
+
+const confirmSavePalette = (e) => {
+  preventDefaults(e);
+
+  const paletteName = DOM.dialog.savePalette.nameInput.value.trim();
+
+  addCustomPalette(paletteName);
+
+  DOM.dialog.savePalette.el.close();
+};
+
 export const initPaletteUIEvents = () => {
   enableAutoResize(DOM.dialog.addColor.textarea);
 
@@ -283,33 +318,6 @@ export const initPaletteUIEvents = () => {
     dispatchEventTo(DOM.dialog.savePalette.nameInput, "input");
   });
 
-  const addCustomPalette = (name) => {
-    const { colors } = state.palette;
-
-    const alreadyExists = Object.keys(state.paletteData).includes(name);
-
-    if (alreadyExists) return;
-
-    const colorTextData = localStorage.getItem(
-      "custom_palette_color_text_data"
-    );
-    const colorTextMap = colorTextData ? JSON.parse(colorTextData) : {};
-    const currentColorTexts = formatColorTexts(colors);
-
-    colorTextMap[name] = currentColorTexts;
-
-    const customPaletteData = getCustomPaletteData(colorTextMap);
-
-    setCustomPaletteData(customPaletteData);
-
-    localStorage.setItem(
-      "custom_palette_color_text_data",
-      JSON.stringify(colorTextMap)
-    );
-
-    setPaletteUI(name, { checked: true, custom: true });
-  };
-
   DOM.dialog.savePalette.nameInput.addEventListener("input", (e) => {
     const paletteName = e.target.value.trim();
     const isEmpty = !paletteName;
@@ -325,13 +333,11 @@ export const initPaletteUIEvents = () => {
     DOM.dialog.savePalette.confirmBtn.disabled = !isValid;
   });
 
-  DOM.dialog.savePalette.confirmBtn.addEventListener("click", () => {
-    const paletteName = DOM.dialog.savePalette.nameInput.value.trim();
-
-    addCustomPalette(paletteName);
-
-    DOM.dialog.savePalette.el.close();
-  });
+  DOM.dialog.savePalette.form.addEventListener("submit", confirmSavePalette);
+  DOM.dialog.savePalette.confirmBtn.addEventListener(
+    "click",
+    confirmSavePalette
+  );
 
   DOM.dialog.savePalette.cancelBtn.addEventListener("click", () =>
     DOM.dialog.savePalette.el.close()

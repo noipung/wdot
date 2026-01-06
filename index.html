@@ -739,41 +739,48 @@
     </dialog>
     <dialog class="dialog save-palette-dialog">
       <div class="dialog-inner">
-        <div
-          class="alert save-palette-alert good"
-          data-i18n="VALIDATION.VALID_PALETTE_SAVE"
-        >
-          이 팔레트를 저장합니다.
-        </div>
-        <div class="input-item">
-          <label for="save-palette-name-input" data-i18n="PALETTE_NAME"
-            >팔레트 이름</label
+        <form class="save-palette-form">
+          <div
+            class="alert save-palette-alert good"
+            data-i18n="VALIDATION.VALID_PALETTE_SAVE"
           >
-          <input
-            type="text"
-            name="save-palette-name-input"
-            id="save-palette-name-input"
-            value="이름"
-            data-i18n-attr="value:NAME"
-          />
-        </div>
-        <div class="input-item">
-          <div class="color-preview-wrapper">
-            <div class="color-preview-container"></div>
+            이 팔레트를 저장합니다.
           </div>
-          <div>
-            = <span class="save-palette-color-count">0</span
-            ><span data-i18n="COLOR_COUNT">색</span>
+          <div class="input-item">
+            <label for="save-palette-name-input" data-i18n="PALETTE_NAME"
+              >팔레트 이름</label
+            >
+            <input
+              type="text"
+              name="save-palette-name-input"
+              id="save-palette-name-input"
+              value="이름"
+              data-i18n-attr="value:NAME"
+            />
           </div>
-        </div>
-        <div class="dialog-btn-wrapper">
-          <button class="confirm-btn" autocomplete="off" data-i18n="SAVE">
-            저장
-          </button>
-          <button class="cancel-btn" autocomplete="off" data-i18n="CANCEL">
-            취소
-          </button>
-        </div>
+          <div class="input-item">
+            <div class="color-preview-wrapper">
+              <div class="color-preview-container"></div>
+            </div>
+            <div>
+              = <span class="save-palette-color-count">0</span
+              ><span data-i18n="COLOR_COUNT">색</span>
+            </div>
+          </div>
+          <div class="dialog-btn-wrapper">
+            <button class="confirm-btn" autocomplete="off" data-i18n="SAVE">
+              저장
+            </button>
+            <button
+              type="button"
+              class="cancel-btn"
+              autocomplete="off"
+              data-i18n="CANCEL"
+            >
+              취소
+            </button>
+          </div>
+        </form>
       </div>
     </dialog>
     <svg

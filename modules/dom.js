@@ -79,6 +79,7 @@ export const DOM = {
     },
     savePalette: {
       el: $(".save-palette-dialog"),
+      form: $(".save-palette-form"),
       previewContainer: $(".save-palette-dialog .color-preview-container"),
       alert: $(".save-palette-alert"),
       nameInput: $("#save-palette-name-input"),
