@@ -1,4 +1,5 @@
 {
+  "OG_TITLE": "Wdot - Wplace 이미지 변환기",
   "APP_DESCRIPTION": "이미지 색상을 밝기, 대비, 채도, 디더링 등 옵션을 적용하여 Wplace 등 특정 팔레트 색상으로 변환하는 이미지 변환기.",
   "DRAG_HERE": "여기에 이미지 끌어오기",
   "SHOW_ORIGINAL": "원본 보기",

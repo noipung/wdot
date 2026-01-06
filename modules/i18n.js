@@ -81,4 +81,30 @@ export const initI18n = () => {
       }
     }
   });
+
+  // OG Locale handling
+  const locales = { ko: "ko_KR", en: "en_US", ja: "ja_JP" };
+  const currentLocale = locales[lang] || "en_US";
+
+  let ogLocale = document.querySelector('meta[property="og:locale"]');
+  if (!ogLocale) {
+    ogLocale = document.createElement("meta");
+    ogLocale.setAttribute("property", "og:locale");
+    document.head.appendChild(ogLocale);
+  }
+  ogLocale.setAttribute("content", currentLocale);
+
+  // Remove existing alternates to avoid duplicates on re-init
+  document
+    .querySelectorAll('meta[property="og:locale:alternate"]')
+    .forEach((el) => el.remove());
+
+  Object.entries(locales).forEach(([l, locale]) => {
+    if (l !== lang) {
+      const alt = document.createElement("meta");
+      alt.setAttribute("property", "og:locale:alternate");
+      alt.setAttribute("content", locale);
+      document.head.appendChild(alt);
+    }
+  });
 };

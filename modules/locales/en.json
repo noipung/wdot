@@ -1,4 +1,5 @@
 {
+  "OG_TITLE": "Wdot - Wplace Image Converter",
   "APP_DESCRIPTION": "An image converter that transforms image colors into specific palette colors like Wplace by applying options such as brightness, contrast, saturation, and dithering.",
   "DRAG_HERE": "Drag image here",
   "SHOW_ORIGINAL": "Show Original",
