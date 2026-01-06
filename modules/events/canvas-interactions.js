@@ -14,6 +14,7 @@ import {
   rgb2Hex,
   getContentColor,
   preventDefaults,
+  dispatchEventTo,
 } from "../utils.js";
 import { draw } from "../drawing.js";
 
@@ -268,10 +269,14 @@ export const initCanvasInteractions = () => {
     (e) => {
       if (e.pointerType !== "touch") {
         if (e.button === 0) {
-          initState();
-          state.startPosition = [e.clientX, e.clientY];
-          state.dragging = false;
-          DOM.canvas.controlLayer.setPointerCapture(e.pointerId);
+          if (!DOM.canvas.overlay.classList.contains("image-loaded")) {
+            DOM.ui.uploadBtn.click();
+          } else {
+            initState();
+            state.startPosition = [e.clientX, e.clientY];
+            state.dragging = false;
+            DOM.canvas.controlLayer.setPointerCapture(e.pointerId);
+          }
         }
       }
     },

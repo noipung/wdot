@@ -243,11 +243,13 @@ export const handleImageLoad = async (image) => {
   state.width = DOM.ui.settingsForm.width.value = image.width;
   state.height = DOM.ui.settingsForm.height.value = image.height;
 
-  DOM.canvas.overlay.classList.add("image-loaded");
-  enableInputs();
-
   state.needsZoomInitialization = true;
   drawUpdatedImage();
+
+  if (DOM.canvas.overlay.classList.contains("image-loaded")) return;
+
+  DOM.canvas.overlay.classList.add("image-loaded");
+  enableInputs();
 };
 
 export const updateZoom = (zoom) => {
