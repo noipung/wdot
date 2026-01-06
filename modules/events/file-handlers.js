@@ -3,12 +3,13 @@ import { DOM } from "../dom.js";
 import { handleImageLoad } from "../image-processing.js";
 import { preventDefaults } from "../utils.js";
 import { MESSAGES } from "../constants.js";
+import { t } from "../i18n.js";
 
 const handleFile = (file) => {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    console.error(MESSAGES.ERROR.IMAGE_ONLY);
+    console.error(t(MESSAGES.ERROR.IMAGE_ONLY));
     return;
   }
 

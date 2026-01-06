@@ -59,7 +59,7 @@ const createAddColorBtn = () => {
   addColorBtn.addEventListener("click", handleClick);
   addColorBtn.classList.add("add-color-btn");
   addColorBtn.type = "button";
-  addColorBtn.setAttribute("aria-label", UI_LABELS.ADD_COLOR);
+  addColorBtn.setAttribute("aria-label", t(UI_LABELS.ADD_COLOR));
 
   li.append(addColorBtn);
   DOM.ui.palette.customList.append(li);
@@ -77,7 +77,7 @@ const createSetTerrainColorBtn = () => {
   setTerrainColorBtn.addEventListener("click", handleClick);
   setTerrainColorBtn.classList.add("set-terrain-color-btn");
   setTerrainColorBtn.type = "button";
-  setTerrainColorBtn.setAttribute("aria-label", UI_LABELS.SET_TERRAIN_COLOR);
+  setTerrainColorBtn.setAttribute("aria-label", t(UI_LABELS.SET_TERRAIN_COLOR));
 
   li.append(setTerrainColorBtn);
   DOM.ui.palette.basicList.append(li);
@@ -394,7 +394,7 @@ const createPaletteOptionItem = (name, settings = {}) => {
   if (settings.custom) {
     removeBtn = document.createElement("button");
     removeBtn.classList.add("option-remove-btn");
-    removeBtn.setAttribute("aria-label", UI_LABELS.DELETE);
+    removeBtn.setAttribute("aria-label", t(UI_LABELS.DELETE));
   }
 
   optionItem.classList.add("option-item");

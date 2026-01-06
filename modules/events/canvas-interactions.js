@@ -14,7 +14,6 @@ import {
   rgb2Hex,
   getContentColor,
   preventDefaults,
-  dispatchEventTo,
 } from "../utils.js";
 import { draw } from "../drawing.js";
 
