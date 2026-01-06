@@ -1624,6 +1624,11 @@ h3.size::before {
   font-size: 0.75em;
 }
 
+:lang(ja) .canvas-overlay .drag-here {
+  word-break: break-all;
+  word-break: auto-phrase;
+}
+
 @media (max-width: 720px) {
   main {
     flex-flow: column;
