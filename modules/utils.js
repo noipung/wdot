@@ -13,7 +13,7 @@ import {
   LUMA_THRESHOLD,
   ZOOM_LEVEL_DECIMAL_PLACES,
 } from "./constants.js";
-import { getLanguage, t } from "./i18n.js";
+import { t } from "./i18n.js";
 
 export const preventDefaults = (e) => {
   e.preventDefault();

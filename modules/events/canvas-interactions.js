@@ -269,7 +269,8 @@ export const initCanvasInteractions = () => {
       if (e.pointerType !== "touch") {
         if (e.button === 0) {
           if (!DOM.canvas.overlay.classList.contains("image-loaded")) {
-            DOM.ui.uploadBtn.click();
+            preventDefaults(e);
+            DOM.ui.uploadBtn.focus();
           } else {
             initState();
             state.startPosition = [e.clientX, e.clientY];
