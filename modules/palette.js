@@ -159,6 +159,15 @@ class Palette {
 
     const key = rgb.join(",");
     this.rgbMap.set(key, color);
+
+    if (type === PALETTE_TYPE_ADDED) {
+      saveAddedColorsToStorage(state.paletteName);
+    }
+
+    state.colorTexts.set(
+      state.paletteName,
+      formatColorTexts(currentPaletteData.colors)
+    );
   }
 
   removeColor(color) {
@@ -174,11 +183,22 @@ class Palette {
 
     if (index === -1) return;
 
+    const isAddedType = this.colors[index].type === PALETTE_TYPE_ADDED;
+
     this.colors.splice(index, 1);
     this.changed = true;
 
     const key = color.rgb.join(",");
     this.rgbMap.delete(key);
+
+    if (isAddedType) {
+      saveAddedColorsToStorage(state.paletteName);
+    }
+
+    state.colorTexts.set(
+      state.paletteName,
+      formatColorTexts(currentPaletteData.colors)
+    );
   }
 
   setTerrainColor(hex) {
@@ -205,6 +225,13 @@ class Palette {
 
     this.colors = this.colors.filter(({ type }) => type !== PALETTE_TYPE_ADDED);
     this.changed = true;
+
+    saveAddedColorsToStorage(state.paletteName);
+
+    state.colorTexts.set(
+      state.paletteName,
+      formatColorTexts(currentPaletteData.colors)
+    );
   }
 
   getEnabledColorRgbs() {
@@ -468,52 +495,130 @@ export const removePaletteUI = (name) => {
   const optionItem = DOM.ui.palette.optionsContainer.querySelector(
     `.option-item:has([value="${name}"])`
   );
-  const option = optionItem.querySelector("input");
-  const previousOptionItem = optionItem.previousElementSibling;
-  const previousOption = previousOptionItem.querySelector("input");
+  if (!optionItem) return;
 
-  if (option.checked) {
-    previousOption.checked = true;
-    dispatchEventTo(previousOption, "change");
+  const option = optionItem.querySelector("input");
+  const fallbackOptionItem =
+    optionItem.previousElementSibling || optionItem.nextElementSibling;
+
+  if (option.checked && fallbackOptionItem) {
+    const fallbackOption = fallbackOptionItem.querySelector("input");
+    if (fallbackOption) {
+      fallbackOption.checked = true;
+      dispatchEventTo(fallbackOption, "change");
+    }
   }
 
   optionItem.remove();
 
   state.colorTexts.delete(name);
-  DOM.dialog.addColor.loaderContainer
-    .querySelector(`[data-label="${name}"]`)
-    .remove();
+  const loaderBtn = DOM.dialog.addColor.loaderContainer.querySelector(
+    `[data-label="${name}"]`
+  );
+  if (loaderBtn) loaderBtn.remove();
+};
+
+export const saveAddedColorsToStorage = (paletteName) => {
+  const currentPaletteData = state.paletteData[paletteName];
+  if (!currentPaletteData) return;
+
+  const addedColors = currentPaletteData.colors.filter(
+    ({ type }) => type === PALETTE_TYPE_ADDED
+  );
+
+  const colorTextData = localStorage.getItem("custom_palette_color_text_data");
+  const colorTextMap = colorTextData ? JSON.parse(colorTextData) : {};
+
+  const addedKey = `${paletteName}@added`;
+
+  if (addedColors.length > 0) {
+    colorTextMap[addedKey] = formatColorTexts(addedColors);
+  } else {
+    delete colorTextMap[addedKey];
+  }
+
+  localStorage.setItem(
+    "custom_palette_color_text_data",
+    JSON.stringify(colorTextMap)
+  );
 };
 
 export const getCustomPaletteData = (colorTextMap) => {
   const customPaletteData = {};
 
   Object.keys(colorTextMap).forEach((key) => {
-    customPaletteData[key] = {
-      customColor: true,
-      terrainColor: false,
-      isCustomPalette: true,
-      colors: parseColorText(colorTextMap[key], false).map(([hex, name]) => ({
+    const isAddedEntry = key.endsWith("@added");
+    const paletteName = isAddedEntry ? key.slice(0, -6) : key;
+    const isBuiltIn = !!state.initPaletteData?.[paletteName];
+
+    const parsedColors = parseColorText(colorTextMap[key], false).map(
+      ([hex, name]) => ({
         rgb: hex2Rgb(hex),
         name: name || hex,
-        type: PALETTE_TYPE_BASIC,
-      })),
-    };
+        type: isAddedEntry ? PALETTE_TYPE_ADDED : PALETTE_TYPE_BASIC,
+      })
+    );
+
+    if (!customPaletteData[paletteName]) {
+      customPaletteData[paletteName] = {
+        customColor: true,
+        terrainColor: false,
+        isCustomPalette: !isBuiltIn,
+        colors: [],
+        addedColors: [],
+      };
+    }
+
+    if (isAddedEntry) {
+      customPaletteData[paletteName].addedColors = parsedColors;
+    } else {
+      customPaletteData[paletteName].colors = parsedColors;
+    }
   });
 
   return customPaletteData;
 };
 
 export const setCustomPaletteData = (customPaletteData) => {
-  state.paletteData = {
-    ...state.initPaletteData,
-    ...customPaletteData,
-    [PALETTE_NAME_CUSTOM]: {
-      customColor: true,
-      terrainColor: false,
-      colors: [],
-    },
+  const combinedPaletteData = {};
+
+  // initPaletteData의 각 팔레트 객체를 얕은 복사하여 원본 데이터 오염 방지
+  Object.keys(state.initPaletteData).forEach((key) => {
+    const originalPalette = state.initPaletteData[key];
+    combinedPaletteData[key] = {
+      ...originalPalette,
+      colors: [...originalPalette.colors],
+    };
+  });
+
+  combinedPaletteData[PALETTE_NAME_CUSTOM] = {
+    customColor: true,
+    terrainColor: false,
+    colors: [],
   };
+
+  Object.keys(customPaletteData).forEach((paletteName) => {
+    const data = customPaletteData[paletteName];
+
+    if (combinedPaletteData[paletteName]) {
+      // 빌트인 팔레트일 경우 추가 색상만 병합 (이미 복사된 배열에 concat)
+      if (data.addedColors.length > 0) {
+        combinedPaletteData[paletteName].colors = combinedPaletteData[
+          paletteName
+        ].colors.concat(data.addedColors);
+      }
+    } else {
+      // 커스텀 팔레트일 경우 새로 정의하고 추가 색상 병합
+      combinedPaletteData[paletteName] = {
+        customColor: true,
+        terrainColor: false,
+        isCustomPalette: true,
+        colors: data.colors.concat(data.addedColors),
+      };
+    }
+  });
+
+  state.paletteData = combinedPaletteData;
 };
 
 export const initPaletteUI = async () => {
@@ -526,17 +631,28 @@ export const initPaletteUI = async () => {
 
   state.palette = new Palette(state.paletteName);
 
-  const moveCustomToLast = (a, b) =>
-    (a === PALETTE_NAME_CUSTOM) - (b === PALETTE_NAME_CUSTOM);
+  const sortedPaletteNames = Object.keys(state.paletteData).sort((a, b) => {
+    if (a === PALETTE_NAME_CUSTOM) return 1;
+    if (b === PALETTE_NAME_CUSTOM) return -1;
 
-  Object.keys(state.paletteData)
-    .sort(moveCustomToLast)
-    .forEach((name, i) => {
-      setPaletteUI(name, {
-        checked: i === 0,
-        custom: state.paletteData[name].isCustomPalette,
-      });
+    const dataA = state.paletteData[a];
+    const dataB = state.paletteData[b];
+
+    const isACustom = !!dataA.isCustomPalette;
+    const isBCustom = !!dataB.isCustomPalette;
+
+    if (!isACustom && isBCustom) return -1;
+    if (isACustom && !isBCustom) return 1;
+
+    return 0;
+  });
+
+  sortedPaletteNames.forEach((name, i) => {
+    setPaletteUI(name, {
+      checked: i === 0,
+      custom: state.paletteData[name].isCustomPalette,
     });
+  });
 
   const handleClickSelectAllBtn = () => {
     state.palette.selectAllColors();

@@ -275,7 +275,7 @@ export const initPaletteUIEvents = () => {
       const target = e.target;
 
       if (target.matches(".option-remove-btn")) {
-        const name = target.previousElementSibling.textContent;
+        const name = target.previousElementSibling.textContent.trim();
         const colorTextData = localStorage.getItem(
           "custom_palette_color_text_data"
         );
@@ -285,6 +285,7 @@ export const initPaletteUIEvents = () => {
 
         delete state.paletteData[name];
         delete colorTextMap[name];
+        delete colorTextMap[`${name}@added`];
 
         const newColorTextData = JSON.stringify(colorTextMap);
 
