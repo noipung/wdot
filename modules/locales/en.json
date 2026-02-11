@@ -85,5 +85,26 @@
     "SET_TERRAIN_COLOR": "Set Terrain Color",
     "DELETE": "Delete",
     "ADD_COLOR": "Add Color"
+  },
+  "ABOUT": {
+    "DESCRIPTION": "This is Wdot, an image palette color converter. Here is a guide on how to use the site.",
+    "TIP_1": {
+      "TITLE": "How to Convert Images",
+      "STEP_1": "Upload the image you want to convert.",
+      "STEP_2": "Select the colors from the palette.",
+      "STEP_3": "Adjust brightness, contrast, saturation, dither, width, and height as desired.",
+      "STEP_4": "Click the download button to save your image."
+    },
+    "TIP_2": {
+      "TITLE": "How to Match Large Pixel Art",
+      "STEP_1": "Upload the pixel art image you want to convert.",
+      "STEP_2": "Switch to 'Original View' in the top left. A button to show the grid will appear. Click that button.",
+      "STEP_3": "Turn on 'Pixel Mode' next to the upload button. Reduce the size until the grid aligns perfectly with the pixels.",
+      "STEP_4": "Once it fits, switch back to 'Result View'. You will see the pixel art where one pixel occupies exactly one block."
+    },
+    "GITHUB": "GitHub Repo",
+    "ISSUES": "Report an Issue",
+    "DONATION": "Support",
+    "DONATION_LINK": "https://ko-fi.com/noipung"
   }
 }

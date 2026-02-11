@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap&text=wdot");
+
 :root {
   --scrollbar-size: 10px;
   --scrollbar-thumb: #ddd;
@@ -72,10 +74,18 @@ h3 {
   font-size: 1em;
 }
 
-ul {
+ul,
+ol {
   margin: 0;
+}
+
+ul {
   padding: 0;
   list-style: none;
+}
+
+ol {
+  padding-left: 1em;
 }
 
 input:is([type="text"], [type="number"]) {
@@ -92,6 +102,10 @@ html,
 body,
 main {
   height: 100%;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
 }
 
 main {
@@ -720,7 +734,9 @@ label[for$="dropdown-open"] i {
   font-weight: bold;
   padding: 0.6em;
   cursor: pointer;
-  transition: color 0.2s, background-color 0.2s;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
   border-left: 1px solid #eee;
 
   &:hover {
@@ -839,15 +855,39 @@ main aside h2 button i {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/palette/wght600/48px.svg");
 }
 
+.about-btn,
 .reset-btn {
   position: absolute;
-  right: 0;
   top: 50%;
   translate: 0 -50%;
 }
 
+.about-btn {
+  left: 0;
+  background: #0000;
+  padding: 0;
+
+  &:not(:disabled):hover {
+    background: #0000;
+
+    & img {
+      filter: brightness(0.8);
+    }
+  }
+}
+
+.reset-btn {
+  right: 0;
+}
+
 .reset-btn i {
   mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/replay/wght600/48px.svg");
+}
+
+.about-btn img {
+  width: 1.6em;
+  aspect-ratio: 1;
+  display: block;
 }
 
 .settings {
@@ -1039,7 +1079,9 @@ h3.size::before {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s, background-color 0.2s;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s;
   margin-bottom: 4px;
   z-index: 20;
 }
@@ -1467,6 +1509,109 @@ h3.size::before {
   gap: 1em;
 }
 
+.about-dialog {
+  --dialog-width: 400px;
+}
+
+.about-dialog h2 {
+  display: flex;
+  font-family: "Pixelify Sans", sans-serif;
+  font-weight: normal;
+  font-size: 48px;
+  text-transform: lowercase;
+  gap: 0.2em;
+  justify-content: center;
+}
+
+.about-dialog h2 img {
+  width: 64px;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin: 0.5em 0;
+  color: #555;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.about-content .folding label {
+  display: inline-flex;
+  cursor: pointer;
+  gap: 0.5em;
+}
+
+.about-content .folding label i {
+  display: block;
+  width: 1em;
+  flex-shrink: 0;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/keyboard_arrow_down/wght600/48px.svg")
+    no-repeat center / 120%;
+  transition: rotate 0.3s;
+}
+
+.about-content .folding input {
+  display: none;
+}
+
+.about-content .folding ol {
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.2s,
+    margin-top 0.2s;
+}
+
+.about-content .folding ol::-webkit-scrollbar-thumb {
+  background: #0000;
+}
+
+.about-content .folding input:checked + ol {
+  max-height: 250px;
+  margin-top: 0.5em;
+  overflow: auto;
+}
+
+.about-content .folding label:has(+ input:checked) i {
+  rotate: 0.5turn;
+}
+
+.about-content .description {
+  white-space: inherit;
+}
+
+.about-content ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  font-size: 0.9em;
+}
+
+.about-content .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+.about-content a {
+  color: #555;
+  font-size: 0.8em;
+  display: flex;
+  gap: 0.3em;
+  align-items: center;
+}
+
+.about-content a i {
+  width: 1.2em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: url("/github-icon.svg") no-repeat center / 100%;
+}
+
 .add-color-dialog {
   --dialog-width: 400px;
   border-top-left-radius: 0;
@@ -1535,8 +1680,8 @@ h3.size::before {
     position: absolute;
     inset: 0 -2px;
     pointer-events: none;
-    background: linear-gradient(to right, #fff 2px, #0000) no-repeat top left /
-        20px,
+    background:
+      linear-gradient(to right, #fff 2px, #0000) no-repeat top left / 20px,
       linear-gradient(to left, #fff 2px, #0000) no-repeat top right / 20px;
     transition: background-size 0.2s;
   }
@@ -1669,6 +1814,8 @@ h3.size::before {
 
   .dialog {
     margin: 2.5em auto;
+    max-height: calc(100vh - 7.5em);
+    overflow-y: auto;
   }
 
   .add-color-dialog {

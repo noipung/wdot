@@ -78,7 +78,7 @@ export const initSettingsUI = () => {
         input.value = state[input.name] = numberValue;
 
         const restInputs = inputs.filter(
-          (currentInput) => currentInput !== input
+          (currentInput) => currentInput !== input,
         );
 
         if (restInputs.length === 0) return;
@@ -128,6 +128,14 @@ export const initSettingsUI = () => {
   };
 
   DOM.ui.settingsResetBtn.addEventListener("click", resetLinks);
+
+  DOM.ui.aboutBtn.addEventListener("click", (e) => {
+    DOM.dialog.about.el.showModal();
+  });
+
+  DOM.dialog.about.cancelBtn.addEventListener("click", (e) => {
+    DOM.dialog.about.el.close();
+  });
 
   // 다운로드 이벤트
   DOM.ui.downloadBtn.addEventListener("click", (e) => {

@@ -18,6 +18,7 @@ export const DOM = {
     totalTime: $(".total-time"),
     totalTimeWithFlag: $(".total-time-with-flag"),
     resultImage: $(".result-image"),
+    aboutBtn: $(".about-btn"),
     downloadBtn: $(".download-btn"),
     uploadBtn: $("#upload-btn"),
     processingProgress: $(".processing-progress"),
@@ -44,6 +45,10 @@ export const DOM = {
     sizeBtns: $$(".size-btn"),
   },
   dialog: {
+    about: {
+      el: $(".about-dialog"),
+      cancelBtn: $(".about-dialog .cancel-btn"),
+    },
     download: {
       el: $(".download-dialog"),
       fileName: $(".file-name"),
