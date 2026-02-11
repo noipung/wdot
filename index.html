@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="src/style.css" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="icon"
+      href="/icon.svg"
+      type="image/svg+xml"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      href="/icon-dark.svg"
+      type="image/svg+xml"
+      media="(prefers-color-scheme: dark)"
+    />
     <title>Wdot</title>
     <meta
       name="description"
@@ -202,11 +213,17 @@
                 data-i18n-attr="aria-label:ABOUT"
                 aria-label="서비스 정보"
               >
-                <img
-                  src="/favicon.svg"
-                  alt="서비스 정보 아이콘"
-                  data-i18n-attr="alt:ABOUT_ICON"
-                />
+                <picture>
+                  <source
+                    srcset="/icon-dark.svg"
+                    media="(prefers-color-scheme: dark)"
+                  />
+                  <img
+                    src="/icon.svg"
+                    alt="서비스 정보 아이콘"
+                    data-i18n-attr="alt:ABOUT_ICON"
+                  />
+                </picture>
               </button>
               <button
                 type="button"
@@ -812,11 +829,17 @@
     <dialog class="dialog about-dialog">
       <div class="dialog-inner">
         <h2>
-          <img
-            src="/favicon.svg"
-            alt="Wdot 아이콘"
-            data-i18n-attr="alt:WDOT_ICON"
-          />Wdot
+          <picture>
+            <source
+              srcset="/icon-dark.svg"
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              src="/icon.svg"
+              alt="Wdot 아이콘"
+              data-i18n-attr="alt:WDOT_ICON"
+            /> </picture
+          >Wdot
         </h2>
         <div class="about-content">
           <p class="description" data-i18n="ABOUT.DESCRIPTION">
