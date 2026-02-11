@@ -2,129 +2,87 @@
 
 :root {
   --scrollbar-size: 10px;
-  --scrollbar-thumb: #ddd;
-  --scrollbar-thumb-hover: #ccc;
   --scrollbar-track: #0000;
   --dialog-width: 300px;
 
   /* Background */
-  --bg: #fff;
-  --bg-elevated: #fff;
-  --bg-hover: #f8f8f8;
-  --bg-button: #eee;
-  --bg-button-hover: #ccc;
-  --bg-aside: #fff;
-  --bg-dialog: #fff;
-  --bg-canvas-1: #fff;
-  --bg-canvas-2: #ddd;
+  --scrollbar-thumb: light-dark(#ddd, #444);
+  --scrollbar-thumb-hover: light-dark(#ccc, #555);
+  --bg: light-dark(#fff, #1e1e1e);
+  --bg-elevated: light-dark(#fff, #282828);
+  --bg-hover: light-dark(#f8f8f8, #333);
+  --bg-button: light-dark(#eee, #333);
+  --bg-button-hover: light-dark(#ccc, #444);
+  --bg-aside: light-dark(#fff, #1e1e1e);
+  --bg-dialog: light-dark(#fff, #222);
+  --bg-canvas-1: light-dark(#fff, #2a2a2a);
+  --bg-canvas-2: light-dark(#ddd, #333);
   --bg-canvas: repeating-conic-gradient(
       var(--bg-canvas-1) 0 25%,
       var(--bg-canvas-2) 0 50%
     )
     center / 20px 20px;
-  --bg-tab: linear-gradient(#eee, #ddd);
-  --bg-tab-active: #fff;
-  --bg-fade-edge: #fff;
+  --bg-tab: light-dark(
+    linear-gradient(#eee, #ddd),
+    linear-gradient(#333, #2a2a2a)
+  );
+  --bg-tab-active: light-dark(#fff, #222);
+  --bg-fade-edge: light-dark(#fff, #222);
 
   /* Active (checked) */
-  --active-color: #3172e7;
-  --active-bg: #e8effc;
-  --active-bg-hover: #e0eafb;
-  --active-border: #a5c2f3;
-  --active-border-alt: #d2e0f9;
-  --active-btn-disabled: #b1cbfa;
+  --active-color: light-dark(#3172e7, #5b9bf8);
+  --active-bg: light-dark(#e8effc, #2a3a5a);
+  --active-bg-hover: light-dark(#e0eafb, #334a68);
+  --active-border: light-dark(#a5c2f3, #4a6da0);
+  --active-border-alt: light-dark(#d2e0f9, #3a5070);
+  --active-btn-disabled: light-dark(#b1cbfa, #3a5070);
 
   /* Primary */
-  --primary: #3172e7;
-  --primary-hover: #124ebe;
-  --primary-on: #fff;
+  --primary: light-dark(#3172e7, #5b9bf8);
+  --primary-hover: light-dark(#124ebe, #7ab0fa);
+  --primary-on: light-dark(#fff, #121212);
 
   /* Text */
-  --text: #000;
-  --text-secondary: #555;
-  --text-muted: #888;
-  --text-placeholder: #aaa;
-  --text-disabled: #ccc;
-  --text-tab-inactive: #aaa;
+  --text: light-dark(#000, #e0e0e0);
+  --text-secondary: light-dark(#555, #aaa);
+  --text-muted: light-dark(#888, #888);
+  --text-placeholder: light-dark(#aaa, #666);
+  --text-disabled: light-dark(#ccc, #555);
+  --text-tab-inactive: light-dark(#aaa, #777);
 
   /* Border */
-  --border: #ddd;
-  --border-dark: #ccc;
-  --border-light: #eee;
+  --border: light-dark(#ddd, #444);
+  --border-dark: light-dark(#ccc, #555);
+  --border-light: light-dark(#eee, #333);
 
   /* Tooltip */
-  --tooltip-bg: #000;
-  --tooltip-text: #fff;
+  --tooltip-bg: light-dark(#000, #e0e0e0);
+  --tooltip-text: light-dark(#fff, #1e1e1e);
 
   /* Selection */
-  --selection: #3172e740;
+  --selection: light-dark(#3172e740, #5b9bf840);
 
   /* Alert */
-  --alert-error: #e55;
-  --alert-good: #5f91ec;
+  --alert-error: light-dark(#e55, #f66);
+  --alert-good: light-dark(#5f91ec, #7ab0fa);
 
   /* Misc */
-  --icon-color: #000;
-  --highlight-outline: #000;
-  --focus-outline: #000;
-  --drag-here-color: #0006;
+  --icon-color: light-dark(#000, #e0e0e0);
+  --highlight-outline: light-dark(#000, #e0e0e0);
+  --focus-outline: light-dark(#000, #e0e0e0);
+  --drag-here-color: light-dark(#0006, #fff4);
 
+  /* 기본은 시스템 설정을 따름 */
   color-scheme: light dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --scrollbar-thumb: #444;
-    --scrollbar-thumb-hover: #555;
+/* 테마 강제 설정: about 다이얼로그에서 선택한 값 반영 */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
 
-    --bg: #1e1e1e;
-    --bg-elevated: #282828;
-    --bg-hover: #333;
-    --bg-button: #333;
-    --bg-button-hover: #444;
-    --bg-aside: #1e1e1e;
-    --bg-dialog: #222;
-    --bg-canvas-1: #2a2a2a;
-    --bg-canvas-2: #333;
-    --bg-tab: linear-gradient(#333, #2a2a2a);
-    --bg-tab-active: #222;
-    --bg-fade-edge: #222;
-
-    --active-color: #5b9bf8;
-    --active-bg: #2a3a5a;
-    --active-bg-hover: #334a68;
-    --active-border: #4a6da0;
-    --active-border-alt: #3a5070;
-    --active-btn-disabled: #3a5070;
-
-    --primary: #5b9bf8;
-    --primary-hover: #7ab0fa;
-    --primary-on: #121212;
-
-    --text: #e0e0e0;
-    --text-secondary: #aaa;
-    --text-muted: #888;
-    --text-placeholder: #666;
-    --text-disabled: #555;
-    --text-tab-inactive: #777;
-
-    --border: #444;
-    --border-dark: #555;
-    --border-light: #333;
-
-    --tooltip-bg: #e0e0e0;
-    --tooltip-text: #1e1e1e;
-
-    --selection: #5b9bf840;
-
-    --alert-error: #f66;
-    --alert-good: #7ab0fa;
-
-    --icon-color: #e0e0e0;
-    --highlight-outline: #e0e0e0;
-    --focus-outline: #e0e0e0;
-    --drag-here-color: #fff4;
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 ::-webkit-scrollbar {
@@ -1013,9 +971,13 @@ main aside h2 button i {
 }
 
 @media (prefers-color-scheme: dark) {
-  .about-btn:not(:disabled):hover img {
+  :root:not([data-theme="light"]) .about-btn:not(:disabled):hover img {
     filter: brightness(2);
   }
+}
+
+:root[data-theme="dark"] .about-btn:not(:disabled):hover img {
+  filter: brightness(2);
 }
 
 .settings {
@@ -1654,6 +1616,72 @@ h3.size::before {
   width: 64px;
 }
 
+.theme-settings {
+  display: flex;
+  justify-content: center;
+}
+
+.theme-segment {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.theme-segment input {
+  display: none;
+}
+
+.theme-segment label {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.5em 0.8em;
+  cursor: pointer;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border);
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+
+  &:last-of-type {
+    border-right: none;
+  }
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+}
+
+.theme-segment input:checked + label {
+  color: var(--active-color);
+  background: var(--active-bg);
+
+  &:hover {
+    background: var(--active-bg-hover);
+  }
+}
+
+.theme-segment label i {
+  display: block;
+  width: 1.1em;
+  aspect-ratio: 1;
+  background: currentColor;
+  mask: no-repeat center / 100%;
+}
+
+.theme-segment label[for="theme-light"] i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/light_mode/wght600/48px.svg");
+}
+
+.theme-segment label[for="theme-system"] i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/laptop/wght600/48px.svg");
+}
+
+.theme-segment label[for="theme-dark"] i {
+  mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/dark_mode/wght600/48px.svg");
+}
 .about-content {
   display: flex;
   flex-direction: column;

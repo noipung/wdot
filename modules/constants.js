@@ -53,3 +53,10 @@ export const UI_LABELS = {
   DELETE: "UI_LABELS.DELETE",
   ADD_COLOR: "UI_LABELS.ADD_COLOR",
 };
+
+// Theme
+export const THEME_STORAGE_KEY = "theme";
+export const THEME_ICONS = {
+  LIGHT: "/icon.svg",
+  DARK: "/icon-dark.svg",
+};

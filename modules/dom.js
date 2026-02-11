@@ -8,6 +8,14 @@ export const DOM = {
     controlLayer: $(".canvas-control-layer"),
     ctx: $("canvas").getContext("2d", { willReadFrequently: true }),
   },
+  theme: {
+    root: document.documentElement,
+    radios: $$('input[name="theme"]'),
+    faviconLight: $("#favicon-light"),
+    faviconDark: $("#favicon-dark"),
+    iconSources: $$(".theme-icon-source"),
+    iconImgs: $$(".theme-icon-img"),
+  },
   ui: {
     settingsForm: $(".settings"),
     showOriginalInput: $("#show-original"),

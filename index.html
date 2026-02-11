@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="src/style.css" />
     <link
+      id="favicon-light"
       rel="icon"
       href="/icon.svg"
       type="image/svg+xml"
       media="(prefers-color-scheme: light)"
     />
     <link
+      id="favicon-dark"
       rel="icon"
       href="/icon-dark.svg"
       type="image/svg+xml"
@@ -215,10 +217,12 @@
               >
                 <picture>
                   <source
+                    class="theme-icon-source"
                     srcset="/icon-dark.svg"
                     media="(prefers-color-scheme: dark)"
                   />
                   <img
+                    class="theme-icon-img"
                     src="/icon.svg"
                     alt="서비스 정보 아이콘"
                     data-i18n-attr="alt:ABOUT_ICON"
@@ -831,16 +835,41 @@
         <h2>
           <picture>
             <source
+              class="theme-icon-source"
               srcset="/icon-dark.svg"
               media="(prefers-color-scheme: dark)"
             />
             <img
+              class="theme-icon-img"
               src="/icon.svg"
               alt="Wdot 아이콘"
               data-i18n-attr="alt:WDOT_ICON"
-            /> </picture
-          >Wdot
+            />
+          </picture>
+          Wdot
         </h2>
+        <div class="theme-settings">
+          <div class="theme-segment">
+            <input type="radio" name="theme" id="theme-light" value="light" />
+            <label for="theme-light"
+              ><i></i><span data-i18n="THEME.LIGHT">라이트</span></label
+            >
+            <input
+              type="radio"
+              name="theme"
+              id="theme-system"
+              value="system"
+              checked
+            />
+            <label for="theme-system"
+              ><i></i><span data-i18n="THEME.SYSTEM">시스템</span></label
+            >
+            <input type="radio" name="theme" id="theme-dark" value="dark" />
+            <label for="theme-dark"
+              ><i></i><span data-i18n="THEME.DARK">다크</span></label
+            >
+          </div>
+        </div>
         <div class="about-content">
           <p class="description" data-i18n="ABOUT.DESCRIPTION">
             이미지 팔레트 색 변환기 사이트, Wdot입니다. 아래는 사이트의 사용
