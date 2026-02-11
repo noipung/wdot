@@ -57,6 +57,6 @@ export const UI_LABELS = {
 // Theme
 export const THEME_STORAGE_KEY = "theme";
 export const THEME_ICONS = {
-  LIGHT: "/icon.svg",
-  DARK: "/icon-dark.svg",
+  LIGHT: `${import.meta.env.BASE_URL}icon.svg`,
+  DARK: `${import.meta.env.BASE_URL}icon-dark.svg`,
 };
