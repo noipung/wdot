@@ -86,6 +86,11 @@
     "DELETE": "Delete",
     "ADD_COLOR": "Add Color"
   },
+  "THEME": {
+    "LIGHT": "Light",
+    "SYSTEM": "Device Setting",
+    "DARK": "Dark"
+  },
   "ABOUT": {
     "DESCRIPTION": "This is Wdot, an image palette color converter. Here is a guide on how to use the site.",
     "TIP_1": {

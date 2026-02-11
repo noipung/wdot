@@ -86,6 +86,11 @@
     "DELETE": "削除",
     "ADD_COLOR": "色追加"
   },
+  "THEME": {
+    "LIGHT": "ライト",
+    "SYSTEM": "端末の設定",
+    "DARK": "ダーク"
+  },
   "ABOUT": {
     "DESCRIPTION": "画像パレット色変換ツール、Wdotです。以下、当サイトの使い方をご案内します。",
     "TIP_1": {

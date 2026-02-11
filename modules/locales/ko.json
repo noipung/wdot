@@ -86,6 +86,11 @@
     "DELETE": "삭제",
     "ADD_COLOR": "색 추가"
   },
+  "THEME": {
+    "LIGHT": "라이트",
+    "SYSTEM": "기기 설정",
+    "DARK": "다크"
+  },
   "ABOUT": {
     "DESCRIPTION": "이미지 팔레트 색 변환기 사이트, Wdot입니다. 아래는 사이트의 사용 방법입니다.",
     "TIP_1": {
