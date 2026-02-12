@@ -22,10 +22,9 @@
       var(--bg-canvas-2) 0 50%
     )
     center / 20px 20px;
-  --bg-tab: light-dark(
-    linear-gradient(#eee, #ddd),
-    linear-gradient(#333, #2a2a2a)
-  );
+  --bg-tab-1: light-dark(#eee, #333);
+  --bg-tab-2: light-dark(#ddd, #2a2a2a);
+  --bg-tab: linear-gradient(var(--bg-tab-1), var(--bg-tab-2));
   --bg-tab-active: light-dark(#fff, #222);
   --bg-fade-edge: light-dark(#fff, #222);
 
