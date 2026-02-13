@@ -60,3 +60,13 @@ export const THEME_ICONS = {
   LIGHT: `${import.meta.env.BASE_URL}icon.svg`,
   DARK: `${import.meta.env.BASE_URL}icon-dark.svg`,
 };
+
+export const THEME_ICON_CONFIG = {
+  system: {
+    media: "(prefers-color-scheme: dark)",
+    srcset: THEME_ICONS.DARK,
+    src: THEME_ICONS.LIGHT,
+  },
+  dark: { media: "not all", srcset: THEME_ICONS.DARK, src: THEME_ICONS.DARK },
+  light: { media: "not all", srcset: THEME_ICONS.DARK, src: THEME_ICONS.LIGHT },
+};

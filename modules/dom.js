@@ -10,9 +10,8 @@ export const DOM = {
   },
   theme: {
     root: document.documentElement,
+    favicon: $("#favicon"),
     radios: $$('input[name="theme"]'),
-    faviconLight: $("#favicon-light"),
-    faviconDark: $("#favicon-dark"),
     iconSources: $$(".theme-icon-source"),
     iconImgs: $$(".theme-icon-img"),
   },

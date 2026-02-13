@@ -1,94 +1,79 @@
 import { DOM } from "../dom.js";
-import { THEME_ICONS, THEME_STORAGE_KEY } from "../constants.js";
+import {
+  THEME_ICONS,
+  THEME_STORAGE_KEY,
+  THEME_ICON_CONFIG,
+} from "../constants.js";
 
 export const initThemeUI = () => {
-  const themeRadios = DOM.theme.radios;
-  const rootEl = DOM.theme.root;
+  const {
+    radios: themeRadios,
+    root: rootEl,
+    favicon,
+    iconSources,
+    iconImgs,
+  } = DOM.theme;
+  let currentMediaQuery = null;
+  let currentHandler = null;
+
+  const cleanupListener = () => {
+    if (currentMediaQuery && currentHandler) {
+      currentMediaQuery.removeEventListener("change", currentHandler);
+      currentMediaQuery = null;
+      currentHandler = null;
+    }
+  };
 
   const updateThemeAssets = (value) => {
+    cleanupListener();
+
+    const isSystem = value === "system";
+    const isDark = value === "dark";
     const lightIcon = THEME_ICONS.LIGHT;
     const darkIcon = THEME_ICONS.DARK;
 
-    // 파비콘: 항상 동적 파비콘 하나만으로 관리
-    let dynamicFavicon = document.getElementById("favicon-dynamic");
+    // 1. Favicon 업데이트 함수
+    const setFavicon = (dark) => {
+      favicon.href = dark ? darkIcon : lightIcon;
+    };
 
-    if (!dynamicFavicon) {
-      dynamicFavicon = document.createElement("link");
-      dynamicFavicon.id = "favicon-dynamic";
-      dynamicFavicon.rel = "icon";
-      dynamicFavicon.type = "image/svg+xml";
-      document.head.appendChild(dynamicFavicon);
-    }
-
-    if (value === "system") {
-      // system: 현재 OS 테마에 맞춰 즉시 파비콘을 갱신
-      const prefersDark = window.matchMedia?.(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      dynamicFavicon.href = prefersDark ? darkIcon : lightIcon;
+    if (isSystem) {
+      currentMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      currentHandler = (e) => setFavicon(e.matches);
+      setFavicon(currentMediaQuery.matches);
+      currentMediaQuery.addEventListener("change", currentHandler);
     } else {
-      // 수동(light/dark): 선택된 테마에 맞게 강제
-      dynamicFavicon.href = value === "dark" ? darkIcon : lightIcon;
+      setFavicon(isDark);
     }
 
-    // about 버튼 / about 다이얼로그 로고
-    const sources = DOM.theme.iconSources;
-    const imgs = DOM.theme.iconImgs;
-
-    if (value === "system") {
-      // OS 기준: source는 다크 미디어쿼리, img는 라이트 아이콘
-      sources.forEach((source) => {
-        source.media = "(prefers-color-scheme: dark)";
-        source.srcset = darkIcon;
-      });
-      imgs.forEach((img) => {
-        img.src = lightIcon;
-      });
-    } else if (value === "dark") {
-      // 수동 다크: source 비활성화, img를 다크 아이콘으로
-      sources.forEach((source) => {
-        source.media = "not all";
-        source.srcset = darkIcon;
-      });
-      imgs.forEach((img) => {
-        img.src = darkIcon;
-      });
-    } else {
-      // 수동 라이트: source 비활성화, img를 라이트 아이콘으로
-      sources.forEach((source) => {
-        source.media = "not all";
-        source.srcset = darkIcon;
-      });
-      imgs.forEach((img) => {
-        img.src = lightIcon;
-      });
-    }
+    // 2. Icon Sources & Images 업데이트
+    const { media, srcset, src } = THEME_ICON_CONFIG[value];
+    iconSources.forEach((s) => {
+      s.media = media;
+      s.srcset = srcset;
+    });
+    iconImgs.forEach((img) => {
+      img.src = src;
+    });
   };
 
-  const applyTheme = (value) => {
-    if (value === "light") {
-      rootEl.dataset.theme = "light";
-    } else if (value === "dark") {
-      rootEl.dataset.theme = "dark";
-    } else {
-      // system: 명시적인 테마 설정 제거 → CSS light-dark() + prefers-color-scheme 사용
-      delete rootEl.dataset.theme;
-    }
+  const applyTheme = (value, save = true) => {
+    // dataset 처리 (null이면 속성 삭제 효과)
+    rootEl.dataset.theme = value === "system" ? "" : value;
+    if (!rootEl.dataset.theme) delete rootEl.dataset.theme;
 
     updateThemeAssets(value);
-    localStorage.setItem(THEME_STORAGE_KEY, value);
+    if (save) localStorage.setItem(THEME_STORAGE_KEY, value);
   };
 
+  // 초기화
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "system";
-  applyTheme(savedTheme);
+  applyTheme(savedTheme, false); // 초기 로드 시엔 저장 생략
 
   themeRadios.forEach((radio) => {
     radio.checked = radio.value === savedTheme;
-
     radio.addEventListener("change", (e) => {
-      if (!e.target.checked) return;
-      applyTheme(e.target.value);
+      if (e.target.checked) applyTheme(e.target.value);
     });
   });
 };
-
